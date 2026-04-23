@@ -1,8 +1,9 @@
 package ru.practicum.ewm.mapper;
 
 import org.junit.jupiter.api.Test;
-import ru.practicum.ewm.dto.EndpointHitDto;
-import ru.practicum.ewm.model.EndpointHit;
+import ru.practicum.stat.server.mapper.EndpointHitMapper;
+import ru.practicum.stat.dto.EndpointHitDto;
+import ru.practicum.stat.server.model.EndpointHit;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.model;
+package ru.practicum.stat.server.model;
 
 import jakarta.persistence.*;
 import lombok.*;

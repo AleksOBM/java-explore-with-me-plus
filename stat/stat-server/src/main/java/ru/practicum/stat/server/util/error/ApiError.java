@@ -1,4 +1,4 @@
-package ru.practicum.ewm.util.error;
+package ru.practicum.stat.server.util.error;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

@@ -6,14 +6,34 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(value = {"ewm", "client"})
+@ComponentScan(value = {"ru.practicum.ewm", "ru.practicum.stat.client"})
 public class MainServiceApp {
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(MainServiceApp.class, args);
 
-		StatClient statClient = context.getBean(StatClient.class);
-//		statClient.hit(new ParamHitDto("/event/1"));
-//		StatDto stat = statClient.getStat(new ParamDto("/event/1"));
-//		System.out.println(stat);
+		// region easy test
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//		LocalDateTime now = LocalDateTime.now();
+//
+//		StatClient statClient = context.getBean(StatClient.class);
+//		statClient.hit(
+//				EndpointHitDto.builder()
+//						.app("ru.practicum.ewm")
+//						.uri("/event/1")
+//						.ip("0.0.0.0")
+//						.actionType("unique")
+//						.timestamp(now)
+//						.build()
+//		);
+//		List<ViewStatsDto> stats = statClient.getStat(
+//				StatsRequest.builder()
+//						.uris(List.of("/event/1"))
+//						.start(now.format(formatter))
+//						.end(LocalDateTime.now().format(formatter))
+//						.unique(true)
+//						.build()
+//		);
+//		System.out.println(stats);
+		// endrerion easy test
 	}
 }

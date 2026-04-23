@@ -1,4 +1,4 @@
-package ru.practicum.ewm.dto;
+package ru.practicum.stat.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,5 +22,6 @@ public class StatsRequest {
 
     private List<String> uris;
 
+    @Builder.Default
     private Boolean unique = false;
 }

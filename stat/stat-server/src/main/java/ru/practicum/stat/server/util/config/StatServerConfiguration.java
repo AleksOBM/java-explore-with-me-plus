@@ -1,4 +1,4 @@
-package ru.practicum.ewm.util.config;
+package ru.practicum.stat.server.util.config;
 
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;

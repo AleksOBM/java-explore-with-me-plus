@@ -1,4 +1,4 @@
-package ru.practicum.ewm;
+package ru.practicum.stat.client;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,9 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.practicum.ewm.dto.EndpointHitDto;
-import ru.practicum.ewm.dto.StatsRequest;
-import ru.practicum.ewm.dto.ViewStatsDto;
+import ru.practicum.stat.dto.EndpointHitDto;
+import ru.practicum.stat.dto.StatsRequest;
+import ru.practicum.stat.dto.ViewStatsDto;
 
 import java.net.URI;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 @Component
 public class StatClient {
 
-    @Value("${stat-service.url}")
+    @Value("${client.url}")
     private String serverUrl;
 
     private final RestTemplate rest;
