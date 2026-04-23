@@ -2,6 +2,7 @@ package ru.practicum.ewm.util.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,14 +14,34 @@ import java.io.StringWriter;
 @RestControllerAdvice
 public class StatErrorHandler {
 
-	@ExceptionHandler
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ApiError handleException(Exception e, HttpStatus status) {
-		log.info("500 {}", e.getMessage(), e);
+	// Обработка 400 Bad Request
+	@ExceptionHandler({
+			MethodArgumentNotValidException.class,
+			IllegalArgumentException.class
+	})
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ApiError handleBadRequest(final Exception e) { // Здесь Exception
+		log.error("400 Bad Request: {}", e.getMessage());
+		return new ApiError(
+				HttpStatus.BAD_REQUEST,
+				"Bad Request",
+				e.getMessage(),
+				getStackTrace(e)
+		);
+	}
+
+	private String getStackTrace(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
-		String stackTrace = sw.toString();
-		return new ApiError(status, "Error ....", e.getMessage(), stackTrace);
+		return sw.toString();
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ApiError handleException(Exception e) {
+		log.info("500 {}", e.getMessage(), e);
+		String stackTrace = getStackTrace(e);
+		return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error ....", e.getMessage(), stackTrace);
 	}
 }
