@@ -1,7 +1,6 @@
-package ru.practicum.ewm.mapper;
+package ru.practicum.stat.server.mapper;
 
 import org.junit.jupiter.api.Test;
-import ru.practicum.stat.server.mapper.EndpointHitMapper;
 import ru.practicum.stat.dto.EndpointHitDto;
 import ru.practicum.stat.server.model.EndpointHit;
 import java.time.LocalDateTime;
@@ -25,6 +24,4 @@ class EndpointHitMapperTest {
         assertEquals(dto.getIp(), entity.getIp());
         assertEquals(dto.getTimestamp(), entity.getTimestamp());
     }
-
-
 }
