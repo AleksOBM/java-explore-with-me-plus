@@ -6,10 +6,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "stats")
-@Getter @Setter @Builder
-@AllArgsConstructor @NoArgsConstructor
-
-public class Event {
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class EndpointHit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +25,6 @@ public class Event {
     @Column(nullable = false, length = 45)
     private String ip;
 
-    @Column(name = "event_timestamp", nullable = false)
+    @Column(name = "hit_timestamp", nullable = false)
     private LocalDateTime timestamp;
 }

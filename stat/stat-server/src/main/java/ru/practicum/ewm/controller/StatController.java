@@ -1,14 +1,14 @@
 package ru.practicum.ewm.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import ru.practicum.ewm.StatDto;
-import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.service.StatsService;
+import ru.practicum.ewm.dto.EndpointHitDto;
+import ru.practicum.ewm.dto.ViewStatsDto;
+import ru.practicum.ewm.service.StatService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,20 +16,20 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class StatsController {
+public class StatController {
 
-    private final StatsService statsService;
+    private final StatService statService;
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void hit(@RequestBody Event event) {
+    public void hit(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         log.info("Сохранение статистики: сервис={}, uri={}, ip={}",
-                event.getApp(), event.getUri(), event.getIp());
-        statsService.saveHit(event);
+                endpointHitDto.getApp(), endpointHitDto.getUri(), endpointHitDto.getIp());
+        statService.saveHit(endpointHitDto);
     }
 
     @GetMapping("/stats")
-    public List<StatDto> getStats(
+    public List<ViewStatsDto> getStats(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(required = false) List<String> uris,
@@ -39,9 +39,9 @@ public class StatsController {
 
         if (start.isAfter(end)) {
             log.warn("Некорректный диапазон дат: start={} позже end={}", start, end);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Дата окончания не может быть раньше даты начала");
+            throw new IllegalArgumentException("Дата окончания не может быть раньше даты начала");
         }
 
-        return statsService.getStats(start, end, uris, unique);
+        return statService.getStats(start, end, uris, unique);
     }
 }
