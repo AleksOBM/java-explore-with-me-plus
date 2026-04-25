@@ -1,5 +1,6 @@
 package ru.practicum.ewm.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -15,5 +16,8 @@ import ru.practicum.ewm.util.entity.BaseEntity;
 @Table(name = "categories")
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventCategory  extends BaseEntity {
+public class EventCategory extends BaseEntity {
+
+	@Column(nullable = false)
+	String name;
 }

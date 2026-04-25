@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record FreeEventDto(
+		long id,
 		String annotation,
 		EventCategory category,
 		String description,
