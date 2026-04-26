@@ -1,15 +1,13 @@
 package ru.practicum.ewm.dto;
 
 import lombok.Builder;
-import ru.practicum.ewm.model.EventCategory;
-
 import java.time.LocalDateTime;
 
 @Builder
 public record EventDto(
-		long id,
+		Long id,
 		String annotation,
-		EventCategory category,
+		EventCategoryDto category,
 		String description,
 		LocalDateTime eventDate,
 		EventLocationDto location,

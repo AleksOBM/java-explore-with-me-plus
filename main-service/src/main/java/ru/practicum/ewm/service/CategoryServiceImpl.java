@@ -16,6 +16,8 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public EventCategoryDto adminAddNewCategory(EventCategoryDto eventCategoryDto) {
 		EventCategory category = CategoryMapper.toEntity(eventCategoryDto);
-		return CategoryMapper.toDto(categoryRepository.save(category));
+		EventCategory newCategory = categoryRepository.save(category);
+		EventCategoryDto dto = CategoryMapper.toDto(newCategory);
+		return dto;
 	}
 }

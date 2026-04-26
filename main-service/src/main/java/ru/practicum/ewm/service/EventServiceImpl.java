@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dto.EventBigDto;
 import ru.practicum.ewm.dto.EventDto;
+import ru.practicum.ewm.dto.EventLowDto;
 import ru.practicum.ewm.dto.FreeGetDto;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.EventCategory;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.util.UtilService;
@@ -44,12 +46,14 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public EventBigDto userAddNewEvent(Long userId, EventDto eventDto) {
+	public EventBigDto userAddNewEvent(Long userId, EventLowDto eventLowDto) {
 		User initiator = utilService.getUserById(userId);
+		EventCategory eventCategory = utilService.getCategoryById(eventLowDto.category());
 
 		// todo: это заглушка
-		Event event = EventMapper.fromEventDto(
-				eventDto,
+		Event event = EventMapper.fromEventLowDto(
+				eventLowDto,
+				eventCategory,
 				0,
 				LocalDateTime.now(),
 				initiator,
@@ -58,7 +62,7 @@ public class EventServiceImpl implements EventService {
 				10L
 		);
 
-		return EventMapper.toEventBigDto(event);
+		return EventMapper.toEventBigDto(eventRepository.save(event));
 	}
 
 	private void sendHitRequest(HttpServletRequest request) {

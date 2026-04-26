@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import ru.practicum.ewm.dto.EventBigDto;
-import ru.practicum.ewm.dto.EventDto;
+import ru.practicum.ewm.dto.EventLowDto;
 import ru.practicum.ewm.service.EventService;
 
 @RestController
@@ -17,8 +17,8 @@ public class UserEventController {
 
 	@PostMapping
 	public EventBigDto addEvent(@PathVariable Long userId,
-	                            @RequestBody @Valid EventDto userGetEventDto) {
+	                            @RequestBody @Valid EventLowDto eventLowDto) {
 
-		return eventService.userAddNewEvent(userId, userGetEventDto);
+		return eventService.userAddNewEvent(userId, eventLowDto);
 	}
 }

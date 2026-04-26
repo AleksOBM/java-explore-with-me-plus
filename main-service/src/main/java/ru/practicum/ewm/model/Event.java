@@ -3,6 +3,7 @@ package ru.practicum.ewm.model;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -15,10 +16,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "events")
 @SuperBuilder
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event extends BaseEntity {
 
-	@Column(nullable = false)
+	@Column(nullable = false,  length = 2000)
 	String annotation;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -31,7 +33,7 @@ public class Event extends BaseEntity {
 	@Column(nullable = false)
 	LocalDateTime createdOn;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 7000)
 	String description;
 
 	@Column(nullable = false)
@@ -61,7 +63,7 @@ public class Event extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	EventState state;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 120)
 	String title;
 
 	@Column(nullable = false)

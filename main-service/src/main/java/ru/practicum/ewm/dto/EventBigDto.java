@@ -1,7 +1,6 @@
 package ru.practicum.ewm.dto;
 
 import lombok.Builder;
-import ru.practicum.ewm.model.EventCategory;
 import ru.practicum.ewm.model.EventState;
 
 import java.time.LocalDateTime;
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 public record EventBigDto(
 		Long id,
 		String annotation,
-		EventCategory category,
+		EventCategoryDto category,
 		int confirmedRequests,
 		LocalDateTime createdOn,
 		String description,
