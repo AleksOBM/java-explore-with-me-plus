@@ -1,11 +1,11 @@
-package ru.practicum.ewm.dto.free;
+package ru.practicum.ewm.dto;
 
 import lombok.Builder;
 
 import java.util.List;
 
 @Builder
-public record FreeGetEventDto(
+public record FreeGetDto(
 		String text,
 		List<Integer> categories,
 		Boolean paid,

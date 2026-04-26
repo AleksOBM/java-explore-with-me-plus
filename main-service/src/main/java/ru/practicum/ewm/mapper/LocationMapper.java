@@ -2,7 +2,7 @@ package ru.practicum.ewm.mapper;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.NonNull;
-import ru.practicum.ewm.dto.free.EventLocationDto;
+import ru.practicum.ewm.dto.EventLocationDto;
 import ru.practicum.ewm.model.EventLocation;
 
 @UtilityClass

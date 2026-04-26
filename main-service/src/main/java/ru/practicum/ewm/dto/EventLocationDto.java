@@ -1,4 +1,4 @@
-package ru.practicum.ewm.dto.free;
+package ru.practicum.ewm.dto;
 
 import lombok.Builder;
 

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.dto.free;
+package ru.practicum.ewm.dto;
 
 import lombok.Builder;
 import ru.practicum.ewm.model.EventCategory;
@@ -6,7 +6,7 @@ import ru.practicum.ewm.model.EventCategory;
 import java.time.LocalDateTime;
 
 @Builder
-public record FreeEventDto(
+public record EventDto(
 		long id,
 		String annotation,
 		EventCategory category,

@@ -3,15 +3,17 @@ package ru.practicum.ewm.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
-import ru.practicum.ewm.dto.free.FreeEventDto;
-import ru.practicum.ewm.dto.free.FreeGetEventDto;
+import ru.practicum.ewm.dto.EventBigDto;
+import ru.practicum.ewm.dto.EventDto;
+import ru.practicum.ewm.dto.FreeGetDto;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.EventState;
+import ru.practicum.ewm.model.User;
+import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.error.exception.HitRequestException;
-import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.stat.client.StatClient;
 import ru.practicum.stat.dto.EndpointHitDto;
 
@@ -23,28 +25,40 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
 
 	private final EventRepository eventRepository;
+	private final UtilService utilService;
 	private final StatClient statClient;
 
 	@Value("${app.name}")
 	private String appName;
 
 	@Override
-	public List<FreeEventDto> getFreeEvents(FreeGetEventDto freeGetEventDto) {
+	public List<EventDto> getFreeEvents(FreeGetDto freeGetDto) {
 		return List.of();
 	}
 
 	@Override
-	public FreeEventDto getFreeEventById(Long eventId, HttpServletRequest request) {
+	public EventDto getFreeEventById(Long eventId, HttpServletRequest request) {
 		sendHitRequest(request);
-		Event event = getEventById(eventId);
-		return EventMapper.toFreeEventDto(event);
+		Event event = utilService.getEventById(eventId);
+		return EventMapper.toEventDto(event);
 	}
 
-	@NonNull
-	private Event getEventById(Long eventId) {
-		return eventRepository.findById(eventId).orElseThrow(
-				() -> new NotFoundException("Событие с id=" + eventId + " не найдено")
+	@Override
+	public EventBigDto userAddNewEvent(Long userId, EventDto eventDto) {
+		User initiator = utilService.getUserById(userId);
+
+		// todo: это заглушка
+		Event event = EventMapper.fromEventDto(
+				eventDto,
+				0,
+				LocalDateTime.now(),
+				initiator,
+				LocalDateTime.now().plusDays(1),
+				EventState.PUBLISHED,
+				10L
 		);
+
+		return EventMapper.toEventBigDto(event);
 	}
 
 	private void sendHitRequest(HttpServletRequest request) {
