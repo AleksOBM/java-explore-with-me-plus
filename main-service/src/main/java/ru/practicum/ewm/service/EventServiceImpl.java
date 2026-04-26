@@ -10,13 +10,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
-import ru.practicum.ewm.dto.EventBigDto;
-import ru.practicum.ewm.dto.EventDto;
-import ru.practicum.ewm.dto.EventLowDto;
+import ru.practicum.ewm.dto.EventFullDto;
+import ru.practicum.ewm.dto.EventShortDto;
+import ru.practicum.ewm.dto.NewEventDto;
 import ru.practicum.ewm.dto.FreeGetDto;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.EventCategory;
+import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.util.UtilService;
@@ -41,21 +41,36 @@ public class EventServiceImpl implements EventService {
 	private String appName;
 
 	@Override
-	public List<EventDto> getFreeEvents(@NonNull FreeGetDto dto) {
-		Specification<Event> spec = SpecBuilder.<Event>builder()
+	public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
+		sendHitRequest(request);
+
+		LocalDateTime now = LocalDateTime.now();
+
+		SpecBuilder<Event> builder = SpecBuilder.<Event>builder()
+				.and(EventSpecifications.isPublished())
 				.andIf(dto.text() != null && !dto.text().isBlank(),
 						() -> EventSpecifications.textContains(dto.text()))
 				.andIf(dto.categories() != null && !dto.categories().isEmpty(),
 						() -> EventSpecifications.hasCategories(dto.categories()))
 				.andIf(dto.paid() != null,
 						() -> EventSpecifications.isPaid(dto.paid()))
-				.andIf(dto.rangeStart() != null,
-						() -> EventSpecifications.dateAfter(dto.rangeStart()))
-				.andIf(dto.rangeEnd() != null,
-						() -> EventSpecifications.dateBefore(dto.rangeEnd()))
 				.andIf(Boolean.TRUE.equals(dto.onlyAvailable()),
-						() -> EventSpecifications.onlyAvailable(true))
-				.build();
+						() -> EventSpecifications.onlyAvailable(true));
+
+		boolean hasStart = dto.rangeStart() != null;
+		boolean hasEnd = dto.rangeEnd() != null;
+
+		if (!hasStart && !hasEnd) {
+			builder.and(EventSpecifications.eventDateAfterNow(now));
+		} else {
+			builder
+					.andIf(hasStart,
+							() -> EventSpecifications.dateAfter(dto.rangeStart()))
+					.andIf(hasEnd,
+							() -> EventSpecifications.dateBefore(dto.rangeEnd()));
+		}
+
+		Specification<Event> spec = builder.build();
 
 		Sort sort = Sort.unsorted();
 
@@ -74,35 +89,35 @@ public class EventServiceImpl implements EventService {
 
 		return eventRepository.findAll(spec, pageable)
 				.stream()
-				.map(EventMapper::toEventDto)
+				.map(EventMapper::toEventShortDto)
 				.toList();
 	}
 
 	@Override
-	public EventDto getFreeEventById(Long eventId, HttpServletRequest request) {
+	public EventFullDto getFreeEventById(Long eventId, HttpServletRequest request) {
 		sendHitRequest(request);
 		Event event = utilService.getEventById(eventId);
-		return EventMapper.toEventDto(event);
+		return EventMapper.toEventFullDto(event);
 	}
 
 	@Override
-	public EventBigDto userAddNewEvent(Long userId, EventLowDto eventLowDto) {
+	public EventFullDto userAddNewEvent(Long userId, @NonNull NewEventDto newEventDto) {
 		User initiator = utilService.getUserById(userId);
-		EventCategory eventCategory = utilService.getCategoryById(eventLowDto.category());
+		Category category = utilService.getCategoryById(newEventDto.category());
 
 		// todo: это заглушка
-		Event event = EventMapper.fromEventLowDto(
-				eventLowDto,
-				eventCategory,
+		Event event = EventMapper.fromNewEventDto(
+				newEventDto,
+				category,
 				0,
-				LocalDateTime.now(),
+				LocalDateTime.now().minusHours(1),
 				initiator,
-				LocalDateTime.now().plusDays(1),
+				LocalDateTime.now().minusMinutes(1),
 				EventState.PUBLISHED,
 				10L
 		);
 
-		return EventMapper.toEventBigDto(eventRepository.save(event));
+		return EventMapper.toEventFullDto(eventRepository.save(event));
 	}
 
 	private void sendHitRequest(HttpServletRequest request) {

@@ -4,9 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 @Builder
-public record EventCategoryDto(
+public record NewUserRequest(
 
-		Long id,
+		@NotBlank
+		String email,
 
 		@NotBlank
 		String name

@@ -17,5 +17,5 @@ import ru.practicum.ewm.util.entity.BaseEntity;
 @SuperBuilder
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventCompilation  extends BaseEntity {
+public class Compilation extends BaseEntity {
 }

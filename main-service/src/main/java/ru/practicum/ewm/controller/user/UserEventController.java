@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import ru.practicum.ewm.dto.EventBigDto;
-import ru.practicum.ewm.dto.EventLowDto;
+import ru.practicum.ewm.dto.EventFullDto;
+import ru.practicum.ewm.dto.NewEventDto;
 import ru.practicum.ewm.service.EventService;
 
 @RestController
@@ -16,9 +16,9 @@ public class UserEventController {
 	private final EventService eventService;
 
 	@PostMapping
-	public EventBigDto addEvent(@PathVariable Long userId,
-	                            @RequestBody @Valid EventLowDto eventLowDto) {
+	public EventFullDto addEvent(@PathVariable Long userId,
+	                             @RequestBody @Valid NewEventDto newEventDto) {
 
-		return eventService.userAddNewEvent(userId, eventLowDto);
+		return eventService.userAddNewEvent(userId, newEventDto);
 	}
 }

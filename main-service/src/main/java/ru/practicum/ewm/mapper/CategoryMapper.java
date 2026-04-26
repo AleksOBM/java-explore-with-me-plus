@@ -2,21 +2,28 @@ package ru.practicum.ewm.mapper;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.NonNull;
-import ru.practicum.ewm.dto.EventCategoryDto;
-import ru.practicum.ewm.model.EventCategory;
+import ru.practicum.ewm.dto.CategoryDto;
+import ru.practicum.ewm.dto.NewCategoryDto;
+import ru.practicum.ewm.model.Category;
 
 @UtilityClass
 public class CategoryMapper {
-	public EventCategoryDto toDto(@NonNull EventCategory eventCategory) {
-		return EventCategoryDto.builder()
-				.id(eventCategory.getId())
-				.name(eventCategory.getName())
+	public CategoryDto toDto(@NonNull Category category) {
+		return CategoryDto.builder()
+				.id(category.getId())
+				.name(category.getName())
 				.build();
 	}
 
-	public EventCategory toEntity(@NonNull EventCategoryDto eventCategoryDto) {
-		return EventCategory.builder()
-				.name(eventCategoryDto.name())
+	public Category toEntity(@NonNull CategoryDto categoryDto) {
+		return Category.builder()
+				.name(categoryDto.name())
+				.build();
+	}
+
+	public Category toEntity(@NonNull NewCategoryDto newCategoryDto) {
+		return Category.builder()
+				.name(newCategoryDto.name())
 				.build();
 	}
 }

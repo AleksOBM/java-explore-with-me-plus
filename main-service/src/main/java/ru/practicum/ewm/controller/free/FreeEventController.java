@@ -4,7 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.EventDto;
+import ru.practicum.ewm.dto.EventFullDto;
+import ru.practicum.ewm.dto.EventShortDto;
 import ru.practicum.ewm.dto.FreeGetDto;
 import ru.practicum.ewm.service.EventService;
 
@@ -17,26 +18,17 @@ public class FreeEventController {
 
 	private final EventService eventService;
 
-	/**
-	 * {{baseUrl}}/events?
-	 * paid=true&
-	 * rangeStart=2022-01-06%2013%3A30%3A38&
-	 * rangeEnd=2097-09-06%2013%3A30%3A38&
-	 * onlyAvailable=false&
-	 * sort=EVENT_DATE&
-	 * from=0&
-	 * size=1000
-	 */
 	@GetMapping
-	public List<EventDto> getFreeEvents(@RequestParam String text,
-	                                    @RequestParam List<Integer> categories,
-	                                    @RequestParam Boolean paid,
-	                                    @RequestParam String rangeStart,
-	                                    @RequestParam String rangeEnd,
-	                                    @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-	                                    @RequestParam FreeGetDto.FreeEventSort sort,
-	                                    @RequestParam(defaultValue = "0") Integer from,
-	                                    @RequestParam(defaultValue = "10") Integer size) {
+	public List<EventShortDto> getFreeEvents(@RequestParam String text,
+	                                         @RequestParam List<Integer> categories,
+	                                         @RequestParam Boolean paid,
+	                                         @RequestParam String rangeStart,
+	                                         @RequestParam String rangeEnd,
+	                                         @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+	                                         @RequestParam FreeGetDto.FreeEventSort sort,
+	                                         @RequestParam(defaultValue = "0") Integer from,
+	                                         @RequestParam(defaultValue = "10") Integer size,
+	                                         HttpServletRequest request) {
 
 		FreeGetDto freeGetDto = FreeGetDto.builder()
 				.text(text)
@@ -50,12 +42,12 @@ public class FreeEventController {
 				.size(size)
 				.build();
 
-		return eventService.getFreeEvents(freeGetDto);
+		return eventService.getFreeEvents(freeGetDto, request);
 	}
 
 	@GetMapping(value = "/{eventId}")
-	public EventDto getFreeEventById(@PathVariable Long eventId,
-	                                 HttpServletRequest request) {
+	public EventFullDto getFreeEventById(@PathVariable Long eventId,
+	                                     HttpServletRequest request) {
 		return eventService.getFreeEventById(eventId, request);
 	}
 }

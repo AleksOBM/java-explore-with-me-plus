@@ -4,7 +4,8 @@ import jakarta.persistence.criteria.Join;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.EventCategory;
+import ru.practicum.ewm.model.Category;
+import ru.practicum.ewm.model.EventState;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +14,7 @@ import java.util.List;
 @UtilityClass
 public class EventSpecifications {
 
-	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	/// Поиск по тексту
 	public Specification<Event> textContains(String text) {
@@ -38,7 +39,7 @@ public class EventSpecifications {
 				return null;
 			}
 
-			Join<Event, EventCategory> categoryJoin = root.join("category");
+			Join<Event, Category> categoryJoin = root.join("category");
 
 			return categoryJoin.get("id").in(categories);
 		};
@@ -96,5 +97,17 @@ public class EventSpecifications {
 					)
 			);
 		};
+	}
+
+	/// Статус = PUBLISHED
+	public Specification<Event> isPublished() {
+		return (root, query, cb) ->
+				cb.equal(root.get("state"), EventState.PUBLISHED);
+	}
+
+	/// Дата в будущем
+	public Specification<Event> eventDateAfterNow(LocalDateTime now) {
+		return (root, query, cb) ->
+				cb.greaterThan(root.get("eventDate"), now);
 	}
 }

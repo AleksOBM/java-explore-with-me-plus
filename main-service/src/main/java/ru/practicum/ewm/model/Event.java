@@ -1,5 +1,6 @@
 package ru.practicum.ewm.model;
 
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 import ru.practicum.ewm.util.entity.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -25,10 +29,10 @@ public class Event extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
-	EventCategory category;
+	Category category;
 
 	@Column(nullable = false)
-	int confirmedRequests;
+	Long confirmedRequests;
 
 	@Column(nullable = false)
 	LocalDateTime createdOn;
@@ -43,9 +47,10 @@ public class Event extends BaseEntity {
 	@JoinColumn(name = "initiator_id")
 	User initiator;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "location_id", referencedColumnName = "id")
-	EventLocation location;
+	@Type(JsonBinaryType.class)
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "jsonb")
+	Location location;
 
 	@Column(nullable = false)
 	boolean paid;

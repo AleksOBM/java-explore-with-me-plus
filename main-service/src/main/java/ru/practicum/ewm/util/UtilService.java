@@ -7,7 +7,7 @@ import ru.practicum.ewm.dao.CategoryRepository;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dao.UserRepository;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.EventCategory;
+import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 
@@ -32,7 +32,7 @@ public class UtilService {
 		);
 	}
 
-	public EventCategory getCategoryById(long category) {
+	public Category getCategoryById(long category) {
 		return categoryRepository.findById(category).orElseThrow(
 				() -> new NotFoundException("Category not found")
 		);

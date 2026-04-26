@@ -2,11 +2,11 @@ package ru.practicum.ewm.mapper;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.NonNull;
-import ru.practicum.ewm.dto.EventBigDto;
-import ru.practicum.ewm.dto.EventDto;
-import ru.practicum.ewm.dto.EventLowDto;
+import ru.practicum.ewm.dto.EventFullDto;
+import ru.practicum.ewm.dto.EventShortDto;
+import ru.practicum.ewm.dto.NewEventDto;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.EventCategory;
+import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.User;
 
@@ -15,29 +15,27 @@ import java.time.LocalDateTime;
 @UtilityClass
 public class EventMapper {
 
-	public EventDto toEventDto(@NonNull Event event) {
-		return EventDto.builder()
-				.id(event.getId())
+	public EventShortDto toEventShortDto(@NonNull Event event) {
+		return EventShortDto.builder()
 				.annotation(event.getAnnotation())
 				.category(CategoryMapper.toDto(event.getCategory()))
-				.description(event.getDescription())
+				.confirmedRequests(event.getConfirmedRequests())
 				.eventDate(event.getEventDate())
-				.location(LocationMapper.toDto(event.getLocation()))
+				.id(event.getId())
+				.initiator(UserMapper.toUserShortDto(event.getInitiator()))
 				.paid(event.isPaid())
-				.participantLimit(event.getParticipantLimit())
-				.requestModeration(event.isRequestModeration())
 				.title(event.getTitle())
+				.views(event.getViews())
 				.build();
 	}
 
-	public EventLowDto toEventLowDto(@NonNull Event event) {
-		return EventLowDto.builder()
-				.id(event.getId())
+	public NewEventDto toNewEventDto(@NonNull Event event) {
+		return NewEventDto.builder()
 				.annotation(event.getAnnotation())
 				.category(event.getCategory().getId())
 				.description(event.getDescription())
 				.eventDate(event.getEventDate())
-				.location(LocationMapper.toDto(event.getLocation()))
+				.location(event.getLocation())
 				.paid(event.isPaid())
 				.participantLimit(event.getParticipantLimit())
 				.requestModeration(event.isRequestModeration())
@@ -45,8 +43,8 @@ public class EventMapper {
 				.build();
 	}
 
-	public EventBigDto toEventBigDto(@NonNull Event event) {
-		return EventBigDto.builder()
+	public EventFullDto toEventFullDto(@NonNull Event event) {
+		return EventFullDto.builder()
 				.id(event.getId())
 				.annotation(event.getAnnotation())
 				.category(CategoryMapper.toDto(event.getCategory()))
@@ -54,8 +52,8 @@ public class EventMapper {
 				.createdOn(event.getCreatedOn())
 				.description(event.getDescription())
 				.eventDate(event.getEventDate())
-				.initiator(UserMapper.toUserDto(event.getInitiator()))
-				.location(LocationMapper.toDto(event.getLocation()))
+				.initiator(UserMapper.toUserShortDto(event.getInitiator()))
+				.location(event.getLocation())
 				.paid(event.isPaid())
 				.participantLimit(event.getParticipantLimit())
 				.publishedOn(event.getPublishedOn())
@@ -66,58 +64,51 @@ public class EventMapper {
 				.build();
 	}
 
-	public Event fromEventDto(@NonNull EventDto eventDto,
-	                          int confirmedRequests,
-	                          LocalDateTime createdOn,
-	                          User initiator,
-	                          LocalDateTime publishedOn,
-	                          EventState state,
-	                          long views) {
+	public Event fromNewEventDto(@NonNull NewEventDto newEventDto,
+	                             Category category,
+	                             long confirmedRequests,
+	                             LocalDateTime createdOn,
+	                             User initiator,
+	                             LocalDateTime publishedOn,
+	                             EventState state,
+	                             long views) {
 		return Event.builder()
-				.id(eventDto.id())
-				.annotation(eventDto.annotation())
-				.category(CategoryMapper.toEntity(eventDto.category()))
+				.annotation(newEventDto.annotation())
+				.category(category)
 				.confirmedRequests(confirmedRequests)
 				.createdOn(createdOn)
-				.description(eventDto.description())
-				.eventDate(eventDto.eventDate())
+				.description(newEventDto.description())
+				.eventDate(newEventDto.eventDate())
 				.initiator(initiator)
-				.location(LocationMapper.fromDto(eventDto.location()))
-				.paid(eventDto.paid())
-				.participantLimit(eventDto.participantLimit())
+				.location(newEventDto.location())
+				.paid(newEventDto.paid())
+				.participantLimit(newEventDto.participantLimit())
 				.publishedOn(publishedOn)
-				.requestModeration(eventDto.requestModeration())
+				.requestModeration(newEventDto.requestModeration())
 				.state(state)
-				.title(eventDto.title())
+				.title(newEventDto.title())
 				.views(views)
 				.build();
 	}
 
-	public Event fromEventLowDto(@NonNull EventLowDto eventLowDto,
-							  EventCategory category,
-	                          int confirmedRequests,
-	                          LocalDateTime createdOn,
-	                          User initiator,
-	                          LocalDateTime publishedOn,
-	                          EventState state,
-	                          long views) {
+	public Event fromEventFullDto(@NonNull EventFullDto eventFullDto, LocalDateTime createdOn) {
 		return Event.builder()
-				.id(eventLowDto.id())
-				.annotation(eventLowDto.annotation())
-				.category(category)
-				.confirmedRequests(confirmedRequests)
+				.id(eventFullDto.id())
+				.annotation(eventFullDto.annotation())
+				.category(CategoryMapper.toEntity(eventFullDto.category()))
+				.confirmedRequests(eventFullDto.confirmedRequests())
 				.createdOn(createdOn)
-				.description(eventLowDto.description())
-				.eventDate(eventLowDto.eventDate())
-				.initiator(initiator)
-				.location(LocationMapper.fromDto(eventLowDto.location()))
-				.paid(eventLowDto.paid())
-				.participantLimit(eventLowDto.participantLimit())
-				.publishedOn(publishedOn)
-				.requestModeration(eventLowDto.requestModeration())
-				.state(state)
-				.title(eventLowDto.title())
-				.views(views)
+				.description(eventFullDto.description())
+				.eventDate(eventFullDto.eventDate())
+				.initiator(UserMapper.toUser(eventFullDto.initiator()))
+				.location(eventFullDto.location())
+				.paid(eventFullDto.paid())
+				.participantLimit(eventFullDto.participantLimit())
+				.publishedOn(eventFullDto.publishedOn())
+				.requestModeration(eventFullDto.requestModeration())
+				.state(eventFullDto.state())
+				.title(eventFullDto.title())
+				.views(eventFullDto.views())
 				.build();
 	}
 }
