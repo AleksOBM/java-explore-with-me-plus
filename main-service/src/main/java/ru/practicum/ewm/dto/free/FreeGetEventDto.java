@@ -12,8 +12,12 @@ public record FreeGetEventDto(
 		String rangeStart,
 		String rangeEnd,
 		Boolean onlyAvailable,
-		String sort,
+		FreeEventSort sort,
 		Integer from,
 		Integer size
 ) {
+
+	public enum FreeEventSort {
+		EVENT_DATE, VIEWS
+	}
 }

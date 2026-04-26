@@ -1,7 +1,9 @@
 package ru.practicum.ewm.controller.free;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.free.FreeEventDto;
 import ru.practicum.ewm.dto.free.FreeGetEventBody;
@@ -28,14 +30,14 @@ public class FreeEventController {
 	 * size=1000
 	 */
 	@GetMapping
-	public List<FreeEventDto> getFreeEvents(@RequestBody FreeGetEventBody body,
+	public List<FreeEventDto> getFreeEvents(@Valid @RequestBody FreeGetEventBody body,
 	                                        @RequestParam Boolean paid,
 	                                        @RequestParam String rangeStart,
 	                                        @RequestParam String rangeEnd,
-	                                        @RequestParam Boolean onlyAvailable,
-	                                        @RequestParam String sort,
-	                                        @RequestParam Integer from,
-	                                        @RequestParam Integer size) {
+	                                        @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+	                                        @RequestParam FreeGetEventDto.FreeEventSort sort,
+	                                        @RequestParam(defaultValue = "0") Integer from,
+	                                        @RequestParam(defaultValue = "10") Integer size) {
 
 		FreeGetEventDto freeGetEventDto = FreeGetEventDto.builder()
 				.text(body.text())

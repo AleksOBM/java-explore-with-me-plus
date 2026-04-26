@@ -41,7 +41,8 @@ public class Event extends BaseEntity {
 	@JoinColumn(name = "initiator_id")
 	User initiator;
 
-	@Column(nullable = false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "location_id", referencedColumnName = "id")
 	EventLocation location;
 
 	@Column(nullable = false)
