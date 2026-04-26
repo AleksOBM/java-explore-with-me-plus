@@ -3,6 +3,11 @@ package ru.practicum.ewm.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dto.EventBigDto;
@@ -16,6 +21,8 @@ import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.error.exception.HitRequestException;
+import ru.practicum.ewm.util.specification.EventSpecifications;
+import ru.practicum.ewm.util.specification.SpecBuilder;
 import ru.practicum.stat.client.StatClient;
 import ru.practicum.stat.dto.EndpointHitDto;
 
@@ -34,8 +41,41 @@ public class EventServiceImpl implements EventService {
 	private String appName;
 
 	@Override
-	public List<EventDto> getFreeEvents(FreeGetDto freeGetDto) {
-		return List.of();
+	public List<EventDto> getFreeEvents(@NonNull FreeGetDto dto) {
+		Specification<Event> spec = SpecBuilder.<Event>builder()
+				.andIf(dto.text() != null && !dto.text().isBlank(),
+						() -> EventSpecifications.textContains(dto.text()))
+				.andIf(dto.categories() != null && !dto.categories().isEmpty(),
+						() -> EventSpecifications.hasCategories(dto.categories()))
+				.andIf(dto.paid() != null,
+						() -> EventSpecifications.isPaid(dto.paid()))
+				.andIf(dto.rangeStart() != null,
+						() -> EventSpecifications.dateAfter(dto.rangeStart()))
+				.andIf(dto.rangeEnd() != null,
+						() -> EventSpecifications.dateBefore(dto.rangeEnd()))
+				.andIf(Boolean.TRUE.equals(dto.onlyAvailable()),
+						() -> EventSpecifications.onlyAvailable(true))
+				.build();
+
+		Sort sort = Sort.unsorted();
+
+		if (dto.sort() != null) {
+			switch (dto.sort()) {
+				case EVENT_DATE -> sort = Sort.by("eventDate").ascending();
+				case VIEWS -> sort = Sort.by("views").descending();
+			}
+		}
+
+		Pageable pageable = PageRequest.of(
+				dto.from() / dto.size(),
+				dto.size(),
+				sort
+		);
+
+		return eventRepository.findAll(spec, pageable)
+				.stream()
+				.map(EventMapper::toEventDto)
+				.toList();
 	}
 
 	@Override
