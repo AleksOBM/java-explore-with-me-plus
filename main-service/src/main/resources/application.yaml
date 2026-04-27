@@ -1,6 +1,13 @@
 server.port: 8080
 
+app.name: ewm-main-service
+
 spring:
+  sql:
+    init:
+      mode: ALWAYS
+      schema-locations: classpath:schema-postgres.sql
+  main.banner-mode: OFF
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/ewm-main
@@ -8,7 +15,7 @@ spring:
     password: 12345
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true

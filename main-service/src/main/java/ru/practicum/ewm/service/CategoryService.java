@@ -1,4 +1,11 @@
 package ru.practicum.ewm.service;
 
-public class CategoryService {
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.dto.CategoryDto;
+import ru.practicum.ewm.dto.NewCategoryDto;
+
+public interface CategoryService {
+
+	@Transactional
+	CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
 }

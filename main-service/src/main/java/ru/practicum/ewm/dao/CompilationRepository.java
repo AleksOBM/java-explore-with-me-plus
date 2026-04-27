@@ -1,4 +1,7 @@
 package ru.practicum.ewm.dao;
 
-public class CompilationRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.ewm.model.Compilation;
+
+public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 }
