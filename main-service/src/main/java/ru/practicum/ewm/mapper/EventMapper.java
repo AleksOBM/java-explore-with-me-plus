@@ -29,20 +29,6 @@ public class EventMapper {
 				.build();
 	}
 
-	public NewEventDto toNewEventDto(@NonNull Event event) {
-		return NewEventDto.builder()
-				.annotation(event.getAnnotation())
-				.category(event.getCategory().getId())
-				.description(event.getDescription())
-				.eventDate(event.getEventDate())
-				.location(event.getLocation())
-				.paid(event.isPaid())
-				.participantLimit(event.getParticipantLimit())
-				.requestModeration(event.isRequestModeration())
-				.title(event.getTitle())
-				.build();
-	}
-
 	public EventFullDto toEventFullDto(@NonNull Event event) {
 		return EventFullDto.builder()
 				.id(event.getId())
@@ -64,14 +50,14 @@ public class EventMapper {
 				.build();
 	}
 
-	public Event fromNewEventDto(@NonNull NewEventDto newEventDto,
-	                             Category category,
-	                             long confirmedRequests,
-	                             LocalDateTime createdOn,
-	                             User initiator,
-	                             LocalDateTime publishedOn,
-	                             EventState state,
-	                             long views) {
+	public Event toEntity(@NonNull NewEventDto newEventDto,
+	                      Category category,
+	                      long confirmedRequests,
+	                      LocalDateTime createdOn,
+	                      User initiator,
+	                      LocalDateTime publishedOn,
+	                      EventState state,
+	                      long views) {
 		return Event.builder()
 				.annotation(newEventDto.annotation())
 				.category(category)
@@ -91,7 +77,7 @@ public class EventMapper {
 				.build();
 	}
 
-	public Event fromEventFullDto(@NonNull EventFullDto eventFullDto, LocalDateTime createdOn) {
+	public Event toEntity(@NonNull EventFullDto eventFullDto, LocalDateTime createdOn) {
 		return Event.builder()
 				.id(eventFullDto.id())
 				.annotation(eventFullDto.annotation())
@@ -100,7 +86,7 @@ public class EventMapper {
 				.createdOn(createdOn)
 				.description(eventFullDto.description())
 				.eventDate(eventFullDto.eventDate())
-				.initiator(UserMapper.toUser(eventFullDto.initiator()))
+				.initiator(UserMapper.toEntity(eventFullDto.initiator()))
 				.location(eventFullDto.location())
 				.paid(eventFullDto.paid())
 				.participantLimit(eventFullDto.participantLimit())

@@ -14,6 +14,7 @@ import org.hibernate.type.SqlTypes;
 import ru.practicum.ewm.util.entity.BaseEntity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -73,4 +74,7 @@ public class Event extends BaseEntity {
 
 	@Column(nullable = false)
 	long views;
+
+	@ManyToMany(mappedBy = "events")
+	List<Compilation> compilations;
 }

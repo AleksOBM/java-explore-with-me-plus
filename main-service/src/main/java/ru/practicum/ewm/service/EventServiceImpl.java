@@ -106,7 +106,7 @@ public class EventServiceImpl implements EventService {
 		Category category = utilService.getCategoryById(newEventDto.category());
 
 		// todo: это заглушка
-		Event event = EventMapper.fromNewEventDto(
+		Event event = EventMapper.toEntity(
 				newEventDto,
 				category,
 				0,

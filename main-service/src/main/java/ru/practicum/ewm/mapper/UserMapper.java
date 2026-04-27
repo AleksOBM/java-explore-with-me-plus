@@ -26,14 +26,14 @@ public class UserMapper {
 				.build();
 	}
 
-	public User toUser(@NonNull UserShortDto userShortDto) {
+	public User toEntity(@NonNull UserShortDto userShortDto) {
 		return User.builder()
 				.name(userShortDto.name())
 				.email(userShortDto.email())
 				.build();
 	}
 
-	public User toUser(@NonNull NewUserRequest newUserRequest) {
+	public User toEntity(@NonNull NewUserRequest newUserRequest) {
 		return User.builder()
 				.name(newUserRequest.name())
 				.email(newUserRequest.email())
