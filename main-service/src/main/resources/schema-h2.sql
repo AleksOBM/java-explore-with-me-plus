@@ -77,9 +77,11 @@ CREATE TABLE IF NOT EXISTS compilation_events (
 
     CONSTRAINT fk_events_compilations
         FOREIGN KEY (compilations_id)
-        REFERENCES compilations(id),
+        REFERENCES compilations(id)
+        ON DELETE CASCADE,
 
     CONSTRAINT fk_compilations_events
         FOREIGN KEY (events_id)
         REFERENCES events(id)
+        ON DELETE CASCADE
 );

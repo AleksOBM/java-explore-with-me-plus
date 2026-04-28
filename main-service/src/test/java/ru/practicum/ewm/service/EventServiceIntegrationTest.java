@@ -3,6 +3,8 @@ package ru.practicum.ewm.service;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,14 +27,15 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @Transactional
-@ContextConfiguration(classes = MainServiceApp.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@ContextConfiguration(classes = {MainServiceApp.class, EntityManager.class})
 class EventServiceIntegrationTest {
 
 	@MockitoBean
 	StatService statService;
 
 	@Autowired
-	private EventService eventService;
+	EventService eventService;
 
 	@Autowired
 	UserRepository userRepository;

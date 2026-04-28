@@ -68,10 +68,8 @@ CREATE TABLE IF NOT EXISTS public.compilation_events (
     events_id bigint NOT NULL,
     CONSTRAINT fk_events_compilations FOREIGN KEY (compilations_id)
         REFERENCES public.compilations (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE CASCADE,
     CONSTRAINT fk_compilations_events FOREIGN KEY (events_id)
         REFERENCES public.events (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
 );
