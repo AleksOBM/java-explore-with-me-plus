@@ -13,6 +13,7 @@ import ru.practicum.ewm.dao.CategoryRepository;
 import ru.practicum.ewm.dao.UserRepository;
 import ru.practicum.ewm.dto.EventShortDto;
 import ru.practicum.ewm.dto.FreeGetDto;
+import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.util.statistic.StatService;
 
@@ -90,6 +91,7 @@ class EventServiceIntegrationTest {
 				eventService.getFreeEvents(dto, mock(HttpServletRequest.class));
 
 		assertThat(result).hasSize(1);
+		assertThat(result).contains(EventMapper.toEventShortDto(publishedFuture.toBuilder().id(1L).build()));
 		verify(statService).sendHitRequest(any(HttpServletRequest.class));
 	}
 }

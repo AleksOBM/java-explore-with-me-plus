@@ -9,15 +9,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
-import ru.practicum.ewm.dto.EventFullDto;
-import ru.practicum.ewm.dto.EventShortDto;
-import ru.practicum.ewm.dto.NewEventDto;
-import ru.practicum.ewm.dto.FreeGetDto;
+import ru.practicum.ewm.dto.*;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.Category;
-import ru.practicum.ewm.model.EventState;
-import ru.practicum.ewm.model.User;
+import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.specification.EventSpecifications;
 import ru.practicum.ewm.util.specification.SpecBuilder;
@@ -25,6 +19,7 @@ import ru.practicum.ewm.util.statistic.StatService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -97,18 +92,40 @@ public class EventServiceImpl implements EventService {
 		User initiator = utilService.getUserById(userId);
 		Category category = utilService.getCategoryById(newEventDto.category());
 
-		// это заглушка
 		Event event = EventMapper.toEntity(
 				newEventDto,
 				category,
 				0,
-				LocalDateTime.now().minusHours(1),
+				LocalDateTime.now(),
 				initiator,
-				LocalDateTime.now().minusMinutes(1),
-				EventState.PUBLISHED,
-				10L
+				null,
+				EventState.PENDING,
+				0L
 		);
 
 		return EventMapper.toEventFullDto(eventRepository.save(event));
+	}
+
+	@Override
+	public List<EventFullDto> adminGetEvents(AdminGetDto adminGetDto) {
+		return List.of();
+	}
+
+	@Override
+	public EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request) {
+		Event oldEvent = utilService.getEventById(eventId);
+
+		Event newEvent = EventMapper.update(
+				oldEvent,
+				request,
+				request.stateAction().equals(StateAction.REJECT_EVENT) ?
+						EventState.CANCELED : EventState.PUBLISHED,
+				request.stateAction().equals(StateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
+				request.category() == null ?
+						Optional.empty() :
+						Optional.of(utilService.getCategoryById(request.category()))
+		);
+
+		return EventMapper.toEventFullDto(newEvent);
 	}
 }

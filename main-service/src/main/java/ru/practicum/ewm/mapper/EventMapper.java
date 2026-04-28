@@ -5,12 +5,14 @@ import org.springframework.lang.NonNull;
 import ru.practicum.ewm.dto.EventFullDto;
 import ru.practicum.ewm.dto.EventShortDto;
 import ru.practicum.ewm.dto.NewEventDto;
-import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.model.Category;
+import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @UtilityClass
 public class EventMapper {
@@ -95,6 +97,43 @@ public class EventMapper {
 				.state(eventFullDto.state())
 				.title(eventFullDto.title())
 				.views(eventFullDto.views())
+				.build();
+	}
+
+	public static Event update(Event oldEvent,
+	                           UpdateEventAdminRequest request,
+	                           EventState state,
+	                           LocalDateTime publishedOn,
+	                           Optional<Category> category) {
+
+		return oldEvent.toBuilder()
+				.annotation(request.annotation() != null ?
+						request.annotation() : oldEvent.getAnnotation()
+				)
+				.category(category.orElse(oldEvent.getCategory()))
+				.description(request.description() != null ?
+						request.description() : oldEvent.getDescription()
+				)
+				.eventDate(request.eventDate() != null ?
+						request.eventDate() : oldEvent.getEventDate()
+				)
+				.location(request.location() != null ?
+						request.location() : oldEvent.getLocation()
+				)
+				.paid(request.paid() != null ?
+						request.paid() : oldEvent.isPaid()
+				)
+				.participantLimit(request.participantLimit() != null ?
+						request.participantLimit() : oldEvent.getParticipantLimit()
+				)
+				.requestModeration(request.requestModeration() != null ?
+						request.requestModeration() : oldEvent.isRequestModeration()
+				)
+				.state(state)
+				.title(request.title() != null ?
+						request.title() : oldEvent.getTitle()
+				)
+				.publishedOn(publishedOn)
 				.build();
 	}
 }

@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public.events (
     location jsonb,
     paid boolean NOT NULL,
     participant_limit integer NOT NULL,
-    published_on timestamp(3) without time zone NOT NULL,
+    published_on timestamp(3) without time zone,
     request_moderation boolean NOT NULL,
     state varchar(255) check (state in ('PENDING','PUBLISHED','CANCELED')) NOT NULL,
     title varchar(120) NOT NULL,
