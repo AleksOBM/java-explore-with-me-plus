@@ -1,6 +1,5 @@
 package ru.practicum.ewm.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +12,11 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateCompilationDto {
+public class CompilationUpdateDto {
 
     private Set<Long> events;
 
-    private boolean pinned;
+    private Boolean pinned;
 
     @Size(min = 1, max = 255)
     private String title;
