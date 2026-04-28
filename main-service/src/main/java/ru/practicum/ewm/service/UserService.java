@@ -8,4 +8,6 @@ public interface UserService {
 
 	@Transactional
 	UserDto adminAddNewUser(NewUserRequest newUserRequest);
+
+    void throwIfUserNotFound(Long userId);
 }

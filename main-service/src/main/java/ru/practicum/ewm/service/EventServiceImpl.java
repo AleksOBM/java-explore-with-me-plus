@@ -33,6 +33,8 @@ public class EventServiceImpl implements EventService {
 	private final EventRepository eventRepository;
 	private final UtilService utilService;
 	private final StatService statService;
+	private final UserService userService;
+	private final EventMapper eventMapper;
 
 	@Override
 	public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
@@ -110,5 +112,24 @@ public class EventServiceImpl implements EventService {
 		);
 
 		return EventMapper.toEventFullDto(eventRepository.save(event));
+	}
+
+	@Override
+	public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
+		userService.throwIfUserNotFound(userId);
+
+		return eventRepository.findByInitiatorId(userId, PageRequest.of(from / size, size)).stream()
+				.map(EventMapper::toEventShortDto)
+				.toList();
+	}
+
+	@Override
+	public EventFullDto findEventById(Long userId, Long eventId) {
+		return null;
+	}
+
+	@Override
+	public EventFullDto patchEvent(Long userId, Long eventId, EventShortDto request) {
+		return null;
 	}
 }
