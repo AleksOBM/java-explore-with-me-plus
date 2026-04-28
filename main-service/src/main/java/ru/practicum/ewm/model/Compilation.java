@@ -1,15 +1,13 @@
 package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.ewm.util.entity.BaseEntity;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,12 +18,16 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation extends BaseEntity {
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 255)
 	String title;
 
 	@ManyToMany
-	@JoinTable(name = "compilation_events")
-	List<Event> events;
+	@JoinTable(name = "compilation_events",
+			joinColumns = @JoinColumn(name = "compilations_id"),
+			inverseJoinColumns = @JoinColumn(name = "events_id"))
+	@Builder.Default
+	Set<Event> events = new HashSet<>();
 
+	@Column(nullable = false)
 	boolean pinned;
 }
