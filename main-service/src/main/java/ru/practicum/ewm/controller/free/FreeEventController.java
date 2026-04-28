@@ -19,15 +19,15 @@ public class FreeEventController {
 	private final EventService eventService;
 
 	@GetMapping
-	public List<EventShortDto> getFreeEvents(@RequestParam String text,
-	                                         @RequestParam List<Integer> categories,
-	                                         @RequestParam Boolean paid,
-	                                         @RequestParam String rangeStart,
-	                                         @RequestParam String rangeEnd,
-	                                         @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-	                                         @RequestParam FreeGetDto.FreeEventSort sort,
-	                                         @RequestParam(defaultValue = "0") Integer from,
-	                                         @RequestParam(defaultValue = "10") Integer size,
+	public List<EventShortDto> getFreeEvents(@RequestParam(required = false) String text,
+	                                         @RequestParam(required = false) List<Integer> categories,
+	                                         @RequestParam(required = false) Boolean paid,
+	                                         @RequestParam(required = false) String rangeStart,
+	                                         @RequestParam(required = false) String rangeEnd,
+	                                         @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
+	                                         @RequestParam(required = false) FreeGetDto.FreeEventSort sort,
+	                                         @RequestParam(required = false, defaultValue = "0") Integer from,
+	                                         @RequestParam(required = false, defaultValue = "10") Integer size,
 	                                         HttpServletRequest request) {
 
 		FreeGetDto freeGetDto = FreeGetDto.builder()

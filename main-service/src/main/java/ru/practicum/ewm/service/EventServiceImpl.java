@@ -2,7 +2,6 @@ package ru.practicum.ewm.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,11 +19,9 @@ import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.util.UtilService;
-import ru.practicum.ewm.util.error.exception.HitRequestException;
 import ru.practicum.ewm.util.specification.EventSpecifications;
 import ru.practicum.ewm.util.specification.SpecBuilder;
-import ru.practicum.stat.client.StatClient;
-import ru.practicum.stat.dto.EndpointHitDto;
+import ru.practicum.ewm.util.statistic.StatService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,16 +32,11 @@ public class EventServiceImpl implements EventService {
 
 	private final EventRepository eventRepository;
 	private final UtilService utilService;
-	private final StatClient statClient;
-
-	@Value("${app.name}")
-	private String appName;
+	private final StatService statService;
 
 	@Override
 	public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
-		sendHitRequest(request);
-
-		LocalDateTime now = LocalDateTime.now();
+		statService.sendHitRequest(request);
 
 		SpecBuilder<Event> builder = SpecBuilder.<Event>builder()
 				.and(EventSpecifications.isPublished())
@@ -61,7 +53,7 @@ public class EventServiceImpl implements EventService {
 		boolean hasEnd = dto.rangeEnd() != null;
 
 		if (!hasStart && !hasEnd) {
-			builder.and(EventSpecifications.eventDateAfterNow(now));
+			builder.and(EventSpecifications.eventDateAfterNow(LocalDateTime.now()));
 		} else {
 			builder
 					.andIf(hasStart,
@@ -95,7 +87,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public EventFullDto getFreeEventById(Long eventId, HttpServletRequest request) {
-		sendHitRequest(request);
+		statService.sendHitRequest(request);
 		Event event = utilService.getEventById(eventId);
 		return EventMapper.toEventFullDto(event);
 	}
@@ -105,7 +97,7 @@ public class EventServiceImpl implements EventService {
 		User initiator = utilService.getUserById(userId);
 		Category category = utilService.getCategoryById(newEventDto.category());
 
-		// todo: это заглушка
+		// это заглушка
 		Event event = EventMapper.toEntity(
 				newEventDto,
 				category,
@@ -118,19 +110,5 @@ public class EventServiceImpl implements EventService {
 		);
 
 		return EventMapper.toEventFullDto(eventRepository.save(event));
-	}
-
-	private void sendHitRequest(HttpServletRequest request) {
-		try {
-			statClient.hit(EndpointHitDto.builder()
-					.ip(request.getRemoteAddr())
-					.uri(request.getRequestURI())
-					.app(appName)
-					.timestamp(LocalDateTime.now())
-					.build()
-			);
-		} catch (Exception ex) {
-			throw new HitRequestException(ex);
-		}
 	}
 }
