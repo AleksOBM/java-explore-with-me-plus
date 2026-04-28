@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.CategoryRepository;
+import ru.practicum.ewm.dao.CompilationRepository;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dao.UserRepository;
+import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.User;
@@ -18,6 +20,7 @@ public class UtilService {
 	private final UserRepository userRepository;
 	private final EventRepository eventRepository;
 	private final CategoryRepository categoryRepository;
+	private final CompilationRepository compilationRepository;
 
 	@NonNull
 	public User getUserById(long userId) {
@@ -35,6 +38,12 @@ public class UtilService {
 	public Category getCategoryById(long categoryId) {
 		return categoryRepository.findById(categoryId).orElseThrow(
 				() -> new NotFoundException("Категория с id=" + categoryId + " не найдена")
+		);
+	}
+
+	public Compilation getCompilationById(long compilationId) {
+		return compilationRepository.findById(compilationId).orElseThrow(
+				() -> new NotFoundException("Подборка с id=" + compilationId + " не найдена")
 		);
 	}
 }

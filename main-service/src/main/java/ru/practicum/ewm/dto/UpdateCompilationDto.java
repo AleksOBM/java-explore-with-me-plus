@@ -1,23 +1,24 @@
 package ru.practicum.ewm.dto;
 
-import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.Set;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewCompilationDto {
+public class UpdateCompilationDto {
 
     private Set<Long> events;
 
-    private boolean pinned = false;
+    private boolean pinned;
 
-    @NotBlank
     @Size(min = 1, max = 255)
     private String title;
 }
