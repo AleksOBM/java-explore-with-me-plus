@@ -20,21 +20,21 @@ public class UtilService {
 	private final CategoryRepository categoryRepository;
 
 	@NonNull
-	public User getUserById(Long userId) {
+	public User getUserById(long userId) {
 		return userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException("User not found"));
+				.orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
 	}
 
 	@NonNull
-	public Event getEventById(Long eventId) {
+	public Event getEventById(long eventId) {
 		return eventRepository.findById(eventId).orElseThrow(
 				() -> new NotFoundException("Событие с id=" + eventId + " не найдено")
 		);
 	}
 
-	public Category getCategoryById(long category) {
-		return categoryRepository.findById(category).orElseThrow(
-				() -> new NotFoundException("Category not found")
+	public Category getCategoryById(long categoryId) {
+		return categoryRepository.findById(categoryId).orElseThrow(
+				() -> new NotFoundException("Категория с id=" + categoryId + " не найдена")
 		);
 	}
 }
