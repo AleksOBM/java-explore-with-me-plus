@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 import ru.practicum.ewm.dto.EventFullDto;
 import ru.practicum.ewm.dto.EventShortDto;
 import ru.practicum.ewm.dto.NewEventDto;
+import ru.practicum.ewm.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.EventState;
@@ -96,5 +97,37 @@ public class EventMapper {
 				.title(eventFullDto.title())
 				.views(eventFullDto.views())
 				.build();
+	}
+
+	public void merge(Event event, UpdateEventUserRequest dto) {
+		if (dto == null) return;
+
+		if (dto.annotation() != null) {
+			event.setAnnotation(dto.annotation());
+		}
+
+		if (dto.description() != null) {
+			event.setDescription(dto.description());
+		}
+
+		if (dto.title() != null) {
+			event.setTitle(dto.title());
+		}
+
+		if (dto.eventDate() != null) {
+			event.setEventDate(dto.eventDate());
+		}
+
+		if (dto.paid() != null) {
+			event.setPaid(dto.paid());
+		}
+
+		if (dto.participantLimit() != null) {
+			event.setParticipantLimit(dto.participantLimit());
+		}
+
+		if (dto.requestModeration() != null) {
+			event.setRequestModeration(dto.requestModeration());
+		}
 	}
 }
