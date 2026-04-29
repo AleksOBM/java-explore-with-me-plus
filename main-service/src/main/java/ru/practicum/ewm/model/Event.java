@@ -59,7 +59,6 @@ public class Event extends BaseEntity {
 	@Column(nullable = false)
 	int participantLimit;
 
-	@Column(nullable = false)
 	LocalDateTime publishedOn;
 
 	@Column(nullable = false)

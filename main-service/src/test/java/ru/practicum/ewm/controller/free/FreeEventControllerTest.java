@@ -12,6 +12,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import ru.practicum.ewm.MainServiceApp;
+import ru.practicum.ewm.dao.CompilationRepository;
+import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dto.*;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.*;
@@ -59,6 +61,12 @@ class FreeEventControllerTest {
 
 	@MockitoBean
 	private StatClient statClient;
+
+	@MockitoBean
+	CompilationRepository compilationRepository;
+
+	@MockitoBean
+	EventRepository eventRepository;
 
 	private static Event event;
 
