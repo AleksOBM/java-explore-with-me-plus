@@ -9,10 +9,9 @@ import ru.practicum.ewm.model.UserStateAction;
 import java.time.LocalDateTime;
 
 public record UpdateEventUserRequest(
-
-		@NotBlank
-		@Size(min = 20, max = 2000)
-		String annotation,
+        @NotBlank
+        @Size(min = 20, max = 2000)
+        String annotation,
 
 		@NotNull
 		Long category,
