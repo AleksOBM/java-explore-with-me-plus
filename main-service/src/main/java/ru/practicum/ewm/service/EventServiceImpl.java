@@ -16,7 +16,6 @@ import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.StateMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.util.UtilService;
-import ru.practicum.ewm.util.error.exception.BadRequestException;
 import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.ewm.util.specification.EventSpecifications;
