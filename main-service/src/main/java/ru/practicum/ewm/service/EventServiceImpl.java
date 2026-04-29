@@ -26,173 +26,193 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
-    private final EventRepository eventRepository;
-    private final UtilService utilService;
-    private final StatService statService;
-    private final UserService userService;
-    private final CategoryService categoryService;
+	private final EventRepository eventRepository;
+	private final UtilService utilService;
+	private final StatService statService;
+	private final UserService userService;
+	private final CategoryService categoryService;
 
-    @Override
-    public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
-        statService.sendHitRequest(request);
+	@Override
+	public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
+		statService.sendHitRequest(request);
 
-        SpecBuilder<Event> builder = SpecBuilder.<Event>builder()
-                .and(EventSpecifications.isPublished())
-                .andIf(dto.text() != null && !dto.text().isBlank(),
-                        () -> EventSpecifications.textContains(dto.text()))
-                .andIf(dto.categories() != null && !dto.categories().isEmpty(),
-                        () -> EventSpecifications.hasCategories(dto.categories()))
-                .andIf(dto.paid() != null,
-                        () -> EventSpecifications.isPaid(dto.paid()))
-                .andIf(Boolean.TRUE.equals(dto.onlyAvailable()),
-                        () -> EventSpecifications.onlyAvailable(true));
+		SpecBuilder<Event> builder = SpecBuilder.<Event>builder()
+				.and(EventSpecifications.isPublished())
+				.andIf(dto.text() != null && !dto.text().isBlank(),
+						() -> EventSpecifications.textContains(dto.text()))
+				.andIf(dto.categories() != null && !dto.categories().isEmpty(),
+						() -> EventSpecifications.hasCategories(dto.categories()))
+				.andIf(dto.paid() != null,
+						() -> EventSpecifications.isPaid(dto.paid()))
+				.andIf(Boolean.TRUE.equals(dto.onlyAvailable()),
+						() -> EventSpecifications.onlyAvailable(true));
 
-        boolean hasStart = dto.rangeStart() != null;
-        boolean hasEnd = dto.rangeEnd() != null;
+		boolean hasStart = dto.rangeStart() != null;
+		boolean hasEnd = dto.rangeEnd() != null;
 
-        if (!hasStart && !hasEnd) {
-            builder.and(EventSpecifications.eventDateAfterNow(LocalDateTime.now()));
-        } else {
-            builder
-                    .andIf(hasStart,
-                            () -> EventSpecifications.dateAfter(dto.rangeStart()))
-                    .andIf(hasEnd,
-                            () -> EventSpecifications.dateBefore(dto.rangeEnd()));
-        }
+		if (!hasStart && !hasEnd) {
+			builder.and(EventSpecifications.eventDateAfterNow(LocalDateTime.now()));
+		} else {
+			builder
+					.andIf(hasStart,
+							() -> EventSpecifications.dateAfter(dto.rangeStart()))
+					.andIf(hasEnd,
+							() -> EventSpecifications.dateBefore(dto.rangeEnd()));
+		}
 
-        Specification<Event> spec = builder.build();
+		Specification<Event> spec = builder.build();
 
-        Sort sort = Sort.unsorted();
+		Sort sort = Sort.unsorted();
 
-        if (dto.sort() != null) {
-            switch (dto.sort()) {
-                case EVENT_DATE -> sort = Sort.by("eventDate").ascending();
-                case VIEWS -> sort = Sort.by("views").descending();
-            }
-        }
+		if (dto.sort() != null) {
+			switch (dto.sort()) {
+				case EVENT_DATE -> sort = Sort.by("eventDate").ascending();
+				case VIEWS -> sort = Sort.by("views").descending();
+			}
+		}
 
-        Pageable pageable = PageRequest.of(
-                dto.from() / dto.size(),
-                dto.size(),
-                sort
-        );
+		Pageable pageable = PageRequest.of(
+				dto.from() / dto.size(),
+				dto.size(),
+				sort
+		);
 
-        return eventRepository.findAll(spec, pageable)
-                .stream()
-                .map(EventMapper::toEventShortDto)
-                .toList();
-    }
+		return eventRepository.findAll(spec, pageable)
+				.stream()
+				.map(EventMapper::toEventShortDto)
+				.toList();
+	}
 
-    @Override
-    public EventFullDto getFreeEventById(Long eventId, HttpServletRequest request) {
-        statService.sendHitRequest(request);
-        Event event = utilService.getEventById(eventId);
-        return EventMapper.toEventFullDto(event);
-    }
+	@Override
+	public EventFullDto getFreeEventById(Long eventId, HttpServletRequest request) {
+		statService.sendHitRequest(request);
+		Event event = utilService.getEventById(eventId);
+		return EventMapper.toEventFullDto(event);
+	}
 
-    @Override
-    public EventFullDto userAddNewEvent(Long userId, @NonNull NewEventDto newEventDto) {
-        User initiator = utilService.getUserById(userId);
-        Category category = utilService.getCategoryById(newEventDto.category());
+	@Override
+	public EventFullDto userAddNewEvent(Long userId, @NonNull NewEventDto newEventDto) {
+		User initiator = utilService.getUserById(userId);
+		Category category = utilService.getCategoryById(newEventDto.category());
 
-        // это заглушка
-        Event event = EventMapper.toEntity(
-                newEventDto,
-                category,
-                0,
-                LocalDateTime.now().minusHours(1),
-                initiator,
-                LocalDateTime.now().minusMinutes(1),
-                EventState.PUBLISHED,
-                10L
-        );
+		Event event = EventMapper.toEntity(
+				newEventDto,
+				category,
+				0,
+				LocalDateTime.now(),
+				initiator,
+				null,
+				EventState.PENDING,
+				0L
+		);
 
-        return EventMapper.toEventFullDto(eventRepository.save(event));
-    }
+		return EventMapper.toEventFullDto(eventRepository.save(event));
+	}
 
-    @Override
-    public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
-        userService.throwIfUserNotFound(userId);
+	@Override
+	public List<EventFullDto> adminGetEvents(AdminGetDto adminGetDto) {
+		return List.of();
+	}
 
-        return eventRepository.findByInitiatorId(userId, PageRequest.of(from / size, size)).stream()
-                .map(EventMapper::toEventShortDto)
-                .toList();
-    }
+	@Override
+	public EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request) {
+		Event oldEvent = utilService.getEventById(eventId);
 
-    @Override
-    public EventFullDto findEventById(Long userId, Long eventId) {
-        userService.throwIfUserNotFound(userId);
+		Event newEvent = EventMapper.update(
+				oldEvent,
+				request,
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ?
+						EventState.CANCELED : EventState.PUBLISHED,
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
+				request.category() == null ?
+						Optional.empty() :
+						Optional.of(utilService.getCategoryById(request.category()))
+		);
 
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Ивент с id = " + eventId + " не найден"));
+		return EventMapper.toEventFullDto(newEvent);
+	}
 
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new BadRequestException("Пользователь должен быть инициатором");
-        }
+	@Override
+	public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
+		userService.throwIfUserNotFound(userId);
 
-        return EventMapper.toEventFullDto(event);
-    }
+		return eventRepository.findByInitiatorId(userId, PageRequest.of(from / size, size)).stream()
+				.map(EventMapper::toEventShortDto)
+				.toList();
+	}
 
-    @Override
-    public EventFullDto patchEvent(Long userId, Long eventId, UpdateEventUserRequest request) {
-        userService.throwIfUserNotFound(userId);
-        return patchEvent(eventId, request, 2, false);
-    }
+	@Override
+	public EventFullDto findEventById(Long userId, Long eventId) {
+		userService.throwIfUserNotFound(userId);
 
-    private EventFullDto patchEvent(Long eventId, UpdateEventUserRequest request, long hoursBeforeStart,
-                                    boolean isAdmin) {
-        try {
-            if (request.eventDate() != null) {
-                Instant deadline = Instant.now().plus(hoursBeforeStart, ChronoUnit.HOURS);
-                Instant eventDate = Instant.from(request.eventDate());
+		Event event = eventRepository.findById(eventId)
+				.orElseThrow(() -> new NotFoundException("Ивент с id = " + eventId + " не найден"));
 
-                if (!eventDate.isAfter(deadline)) {
-                    throw new BadRequestException("Дата ивента не может быть раньше " + hoursBeforeStart + " часов назад");
+		if (!event.getInitiator().getId().equals(userId)) {
+			throw new BadRequestException("Пользователь должен быть инициатором");
+		}
 
-                }
-            }
+		return EventMapper.toEventFullDto(event);
+	}
 
-            Event event = eventRepository.findById(eventId)
-                    .orElseThrow(() -> new NotFoundException("Ивент с id = " + eventId + " не найден"));
-            StateAction action = request.stateAction();
+	@Override
+	public EventFullDto patchEvent(Long userId, Long eventId, UpdateEventUserRequest request) {
+		userService.throwIfUserNotFound(userId);
+		return patchEvent(eventId, request, 2, false);
+	}
 
-            if (action != null) {
-                EventState newState = isAdmin
-                        ? StateMapper.mapAdminEventAction(action)
-                        : StateMapper.mapUserEventAction(action);
+	private EventFullDto patchEvent(Long eventId, UpdateEventUserRequest request, long hoursBeforeStart,
+	                                boolean isAdmin) {
+		try {
+			if (request.eventDate() != null) {
+				Instant deadline = Instant.now().plus(hoursBeforeStart, ChronoUnit.HOURS);
+				Instant eventDate = Instant.from(request.eventDate());
 
-                if (EventState.PUBLISHED.equals(newState)) {
-                    event.setPublishedOn(LocalDateTime.from(Instant.now()));
-                }
-                if (newState != null) {
-                    event.setState(newState);
-                }
-            }
+				if (!eventDate.isAfter(deadline)) {
+					throw new BadRequestException("Дата ивента не может быть раньше " + hoursBeforeStart + " часов назад");
 
-            if (request.category() != null) {
-                Category category = categoryService.findEntityById(request.category());
-                event.setCategory(category);
-            }
+				}
+			}
 
-            EventMapper.merge(event, request);
+			Event event = eventRepository.findById(eventId)
+					.orElseThrow(() -> new NotFoundException("Ивент с id = " + eventId + " не найден"));
+			UserStateAction action = request.stateAction();
 
-            Event patched = eventRepository.save(event);
+			if (action != null) {
+				EventState newState = isAdmin
+						? StateMapper.mapAdminEventAction(action)
+						: StateMapper.mapUserEventAction(action);
 
-            log.info("Ивент обновлен: {}", patched.getId());
-            return EventMapper.toEventFullDto(patched);
+				if (EventState.PUBLISHED.equals(newState)) {
+					event.setPublishedOn(LocalDateTime.from(Instant.now()));
+				}
+				if (newState != null) {
+					event.setState(newState);
+				}
+			}
 
-        } catch (DataIntegrityViolationException e) {
-            log.debug("Конфликт вовремя обновления ивента {}", request, e);
-            throw new DataIntegrityViolationException("Конфликт с другим ивентом");
-        }
-    }
+			if (request.category() != null) {
+				Category category = categoryService.findEntityById(request.category());
+				event.setCategory(category);
+			}
 
+			EventMapper.merge(event, request);
 
+			Event patched = eventRepository.save(event);
+
+			log.info("Ивент обновлен: {}", patched.getId());
+			return EventMapper.toEventFullDto(patched);
+
+		} catch (DataIntegrityViolationException e) {
+			log.debug("Конфликт вовремя обновления ивента {}", request, e);
+			throw new DataIntegrityViolationException("Конфликт с другим ивентом");
+		}
+	}
 }

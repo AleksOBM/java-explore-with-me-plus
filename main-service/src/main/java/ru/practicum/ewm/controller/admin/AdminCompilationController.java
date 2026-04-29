@@ -13,23 +13,23 @@ import ru.practicum.ewm.service.CompilationService;
 @RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
 public class AdminCompilationController {
-    private final CompilationService compilationService;
+	private final CompilationService compilationService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CompilationDto createCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
-        return compilationService.addCompilation(newCompilationDto);
-    }
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public CompilationDto createCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
+		return compilationService.addCompilation(newCompilationDto);
+	}
 
-    @DeleteMapping("/{compilationId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delById(@PathVariable Long compilationId) {
-        compilationService.delById(compilationId);
-    }
+	@DeleteMapping("/{compilationId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delById(@PathVariable Long compilationId) {
+		compilationService.delById(compilationId);
+	}
 
-    @PatchMapping("/{compilationId}")
-    public CompilationDto updateCompilation(@RequestBody @Valid CompilationUpdateDto compilationUpdateDto,
-                                            @PathVariable Long compilationId) {
-        return compilationService.updateCompilation(compilationId, compilationUpdateDto);
-    }
+	@PatchMapping("/{compilationId}")
+	public CompilationDto updateCompilation(@RequestBody @Valid CompilationUpdateDto compilationUpdateDto,
+	                                        @PathVariable Long compilationId) {
+		return compilationService.updateCompilation(compilationId, compilationUpdateDto);
+	}
 }

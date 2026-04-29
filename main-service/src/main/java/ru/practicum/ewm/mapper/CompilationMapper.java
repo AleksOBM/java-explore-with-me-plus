@@ -25,7 +25,6 @@ public class CompilationMapper {
                 .build();
     }
 
-
     public Compilation toEntity(@NonNull NewCompilationDto dto, Set<Event> events) {
         return Compilation.builder()
                 .title(dto.getTitle())
