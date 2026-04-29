@@ -28,6 +28,6 @@ public class AdminCompilationController {
     @PatchMapping("/{compilationId}")
     public CompilationDto updateCompilation(@RequestBody @Valid CompilationUpdateDto compilationUpdateDto,
                                             @PathVariable Long compilationId) {
-        return compilationService.updateCompilation(compilationId ,compilationUpdateDto);
+        return compilationService.updateCompilation(compilationId, compilationUpdateDto);
     }
 }

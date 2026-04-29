@@ -76,10 +76,10 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto updateCompilation(Long compilationId, CompilationUpdateDto compilationUpdateDto) {
         Compilation compilationInDb = utilService.getCompilationById(compilationId);
 
-        if(compilationUpdateDto.getEvents() != null) {
+        if (compilationUpdateDto.getEvents() != null) {
             List<Event> eventsUpdate = new ArrayList<>();
 
-            if(!compilationUpdateDto.getEvents().isEmpty()) {
+            if (!compilationUpdateDto.getEvents().isEmpty()) {
                 eventsUpdate = eventRepository.findAllById(compilationUpdateDto.getEvents());
                 if (eventsUpdate.size() < compilationUpdateDto.getEvents().size()) {
                     throw new NotFoundException("Одно или несколько событий не найдены");
@@ -89,11 +89,11 @@ public class CompilationServiceImpl implements CompilationService {
 
         }
 
-        if(compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank()) {
+        if (compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank()) {
             compilationInDb.setTitle(compilationUpdateDto.getTitle());
         }
 
-        if(compilationUpdateDto.getPinned() != null) {
+        if (compilationUpdateDto.getPinned() != null) {
             compilationInDb.setPinned(compilationUpdateDto.getPinned());
         }
 

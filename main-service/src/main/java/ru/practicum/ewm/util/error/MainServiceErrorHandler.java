@@ -2,16 +2,15 @@ package ru.practicum.ewm.util.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.ewm.util.error.exception.HitRequestException;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class MainServiceErrorHandler {
 
 	@ExceptionHandler
@@ -27,5 +26,17 @@ public class MainServiceErrorHandler {
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		return sw.toString();
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ApiError handleNotFoundException(final ru.practicum.ewm.util.error.exception.NotFoundException e) {
+		log.info("404 {}", e.getMessage());
+		return new ApiError(
+				HttpStatus.NOT_FOUND,
+				"Запрашиваемый объект не найден",
+				e.getMessage(),
+				getStackTrace(e)
+		);
 	}
 }
