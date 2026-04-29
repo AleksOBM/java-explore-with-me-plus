@@ -11,6 +11,9 @@ import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class UtilService {
@@ -36,5 +39,18 @@ public class UtilService {
 		return categoryRepository.findById(categoryId).orElseThrow(
 				() -> new NotFoundException("Категория с id=" + categoryId + " не найдена")
 		);
+	}
+
+	public static String formatDateTime(LocalDateTime dateTime) {
+		if (dateTime == null) return null;
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		return dateTime.format(formatter);
+	}
+
+	public static LocalDateTime parseDateTime(String dateTimeStr) {
+		if (dateTimeStr == null || dateTimeStr.isBlank()) return null;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		return LocalDateTime.parse(dateTimeStr, formatter);
 	}
 }

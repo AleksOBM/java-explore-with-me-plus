@@ -1,6 +1,7 @@
 package ru.practicum.ewm.dto;
 
 import lombok.Builder;
+import ru.practicum.ewm.model.EventState;
 
 @Builder
 public record ParticipationRequestDto(
@@ -8,6 +9,6 @@ public record ParticipationRequestDto(
 		String created,
 		Long event,
 		Long requester,
-		String status
+		EventState status
 ) {
 }

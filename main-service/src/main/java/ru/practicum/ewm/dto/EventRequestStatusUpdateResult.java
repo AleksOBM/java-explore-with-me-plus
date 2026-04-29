@@ -1,4 +1,12 @@
 package ru.practicum.ewm.dto;
 
-public class EventRequestStatusUpdateResult {
+import lombok.Builder;
+
+import java.util.List;
+
+@Builder
+public record EventRequestStatusUpdateResult(
+        List<ParticipationRequestDto> confirmedRequests,
+        List<ParticipationRequestDto> rejectedRequests
+) {
 }
