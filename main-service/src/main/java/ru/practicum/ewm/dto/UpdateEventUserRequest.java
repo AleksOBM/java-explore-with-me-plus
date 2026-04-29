@@ -4,40 +4,40 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import ru.practicum.ewm.model.Location;
-import ru.practicum.ewm.model.StateAction;
+import ru.practicum.ewm.model.UserStateAction;
 
 import java.time.LocalDateTime;
 
-public record UpdateEventUserRequest (
-        @NotBlank
-        @Size(min = 20, max = 2000)
-        String annotation,
+public record UpdateEventUserRequest(
 
-        @NotNull
-        Long category,
+		@NotBlank
+		@Size(min = 20, max = 2000)
+		String annotation,
 
-        @NotBlank
-        @Size(min = 20, max = 7000)
-        String description,
+		@NotNull
+		Long category,
 
-        @NotNull
-        LocalDateTime eventDate,
+		@NotBlank
+		@Size(min = 20, max = 7000)
+		String description,
 
-        @NotNull
-        Location location,
+		@NotNull
+		LocalDateTime eventDate,
 
-        Boolean paid,
+		@NotNull
+		Location location,
 
-        Integer participantLimit,
+		Boolean paid,
 
-        Boolean requestModeration,
+		Integer participantLimit,
 
-        @NotBlank
-        @Size(min = 3, max = 120)
-        String title,
+		Boolean requestModeration,
 
-        @NotNull
-        StateAction stateAction
+		@NotBlank
+		@Size(min = 3, max = 120)
+		String title,
+
+		@NotNull
+		UserStateAction stateAction
 ) {
-
 }

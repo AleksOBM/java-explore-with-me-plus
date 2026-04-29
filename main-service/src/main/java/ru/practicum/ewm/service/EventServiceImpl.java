@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dto.*;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.mapper.StateMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.util.UtilService;
@@ -28,7 +27,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-
 
 @Slf4j
 @Service
@@ -171,7 +169,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	private EventFullDto patchEvent(Long eventId, UpdateEventUserRequest request, long hoursBeforeStart,
-									boolean isAdmin) {
+	                                boolean isAdmin) {
 		try {
 			if (request.eventDate() != null) {
 				Instant deadline = Instant.now().plus(hoursBeforeStart, ChronoUnit.HOURS);
@@ -185,7 +183,7 @@ public class EventServiceImpl implements EventService {
 
 			Event event = eventRepository.findById(eventId)
 					.orElseThrow(() -> new NotFoundException("Ивент с id = " + eventId + " не найден"));
-			StateAction action = request.stateAction();
+			UserStateAction action = request.stateAction();
 
 			if (action != null) {
 				EventState newState = isAdmin
@@ -214,9 +212,7 @@ public class EventServiceImpl implements EventService {
 
 		} catch (DataIntegrityViolationException e) {
 			log.debug("Конфликт вовремя обновления ивента {}", request, e);
-			throw new DataIntegrityViolationException ("Конфликт с другим ивентом");
+			throw new DataIntegrityViolationException("Конфликт с другим ивентом");
 		}
 	}
-
-
 }
