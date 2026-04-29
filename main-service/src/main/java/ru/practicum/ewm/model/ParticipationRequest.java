@@ -34,5 +34,5 @@ public class ParticipationRequest extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	EventState status;
+	ParticipationStatus status;
 }

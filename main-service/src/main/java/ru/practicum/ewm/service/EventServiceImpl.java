@@ -17,6 +17,7 @@ import ru.practicum.ewm.mapper.StateMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.error.exception.BadRequestException;
+import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.ewm.util.specification.EventSpecifications;
 import ru.practicum.ewm.util.specification.SpecBuilder;
@@ -134,7 +135,7 @@ public class EventServiceImpl implements EventService {
 				.orElseThrow(() -> new NotFoundException("Ивент с id = " + eventId + " не найден"));
 
 		if (!event.getInitiator().getId().equals(userId)) {
-			throw new BadRequestException("Пользователь должен быть инициатором");
+			throw new ConflictException("Пользователь должен быть инициатором");
 		}
 
 		return EventMapper.toEventFullDto(event);
@@ -154,7 +155,7 @@ public class EventServiceImpl implements EventService {
 				Instant eventDate = Instant.from(request.eventDate());
 
 				if (!eventDate.isAfter(deadline)) {
-					throw new BadRequestException("Дата ивента не может быть раньше " + hoursBeforeStart + " часов назад");
+					throw new ConflictException("Дата ивента не может быть раньше " + hoursBeforeStart + " часов назад");
 
 				}
 			}
@@ -190,7 +191,7 @@ public class EventServiceImpl implements EventService {
 
 		} catch (DataIntegrityViolationException e) {
 			log.debug("Конфликт вовремя обновления ивента {}", request, e);
-			throw new DataIntegrityViolationException ("Конфликт с другим ивентом");
+			throw new ConflictException("Конфликт с другим ивентом");
 		}
 	}
 
