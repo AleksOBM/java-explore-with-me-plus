@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dto.*;
 import ru.practicum.ewm.mapper.EventMapper;
+import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.mapper.StateMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.util.UtilService;
@@ -26,6 +27,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -102,19 +104,41 @@ public class EventServiceImpl implements EventService {
 		User initiator = utilService.getUserById(userId);
 		Category category = utilService.getCategoryById(newEventDto.category());
 
-		// это заглушка
 		Event event = EventMapper.toEntity(
 				newEventDto,
 				category,
 				0,
-				LocalDateTime.now().minusHours(1),
+				LocalDateTime.now(),
 				initiator,
-				LocalDateTime.now().minusMinutes(1),
-				EventState.PUBLISHED,
-				10L
+				null,
+				EventState.PENDING,
+				0L
 		);
 
 		return EventMapper.toEventFullDto(eventRepository.save(event));
+	}
+
+	@Override
+	public List<EventFullDto> adminGetEvents(AdminGetDto adminGetDto) {
+		return List.of();
+	}
+
+	@Override
+	public EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request) {
+		Event oldEvent = utilService.getEventById(eventId);
+
+		Event newEvent = EventMapper.update(
+				oldEvent,
+				request,
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ?
+						EventState.CANCELED : EventState.PUBLISHED,
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
+				request.category() == null ?
+						Optional.empty() :
+						Optional.of(utilService.getCategoryById(request.category()))
+		);
+
+		return EventMapper.toEventFullDto(newEvent);
 	}
 
 	@Override

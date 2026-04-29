@@ -2,6 +2,7 @@ package ru.practicum.ewm.controller.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,5 +51,3 @@ public class UserEventController {
 		return eventService.patchEvent(userId, eventId, request);
 	}
 }
-
-
