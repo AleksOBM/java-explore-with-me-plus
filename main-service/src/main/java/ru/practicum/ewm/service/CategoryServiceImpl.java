@@ -13,17 +13,17 @@ import ru.practicum.ewm.util.error.exception.NotFoundException;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-	private final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-	@Override
-	public CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto) {
-		Category category = CategoryMapper.toEntity(newCategoryDto);
-		return CategoryMapper.toDto(categoryRepository.save(category));
-	}
+    @Override
+    public CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto) {
+        Category category = CategoryMapper.toEntity(newCategoryDto);
+        return CategoryMapper.toDto(categoryRepository.save(category));
+    }
 
-	@Override
-	public Category findEntityById(Long category) {
-		return categoryRepository.findById(category)
-				.orElseThrow(() -> new NotFoundException("Категория с id = " + category + " не найдена"));
-	}
+    @Override
+    public Category findEntityById(Long category) {
+        return categoryRepository.findById(category)
+                .orElseThrow(() -> new NotFoundException("Категория с id = " + category + " не найдена"));
+    }
 }

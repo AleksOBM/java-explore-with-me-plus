@@ -26,7 +26,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -102,19 +102,41 @@ public class EventServiceImpl implements EventService {
 		User initiator = utilService.getUserById(userId);
 		Category category = utilService.getCategoryById(newEventDto.category());
 
-		// это заглушка
 		Event event = EventMapper.toEntity(
 				newEventDto,
 				category,
 				0,
-				LocalDateTime.now().minusHours(1),
+				LocalDateTime.now(),
 				initiator,
-				LocalDateTime.now().minusMinutes(1),
-				EventState.PUBLISHED,
-				10L
+				null,
+				EventState.PENDING,
+				0L
 		);
 
 		return EventMapper.toEventFullDto(eventRepository.save(event));
+	}
+
+	@Override
+	public List<EventFullDto> adminGetEvents(AdminGetDto adminGetDto) {
+		return List.of();
+	}
+
+	@Override
+	public EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request) {
+		Event oldEvent = utilService.getEventById(eventId);
+
+		Event newEvent = EventMapper.update(
+				oldEvent,
+				request,
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ?
+						EventState.CANCELED : EventState.PUBLISHED,
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
+				request.category() == null ?
+						Optional.empty() :
+						Optional.of(utilService.getCategoryById(request.category()))
+		);
+
+		return EventMapper.toEventFullDto(newEvent);
 	}
 
 	@Override
@@ -147,7 +169,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	private EventFullDto patchEvent(Long eventId, UpdateEventUserRequest request, long hoursBeforeStart,
-									boolean isAdmin) {
+	                                boolean isAdmin) {
 		try {
 			if (request.eventDate() != null) {
 				Instant deadline = Instant.now().plus(hoursBeforeStart, ChronoUnit.HOURS);
@@ -161,7 +183,7 @@ public class EventServiceImpl implements EventService {
 
 			Event event = eventRepository.findById(eventId)
 					.orElseThrow(() -> new NotFoundException("Ивент с id = " + eventId + " не найден"));
-			StateAction action = request.stateAction();
+			UserStateAction action = request.stateAction();
 
 			if (action != null) {
 				EventState newState = isAdmin
@@ -193,6 +215,4 @@ public class EventServiceImpl implements EventService {
 			throw new ConflictException("Конфликт с другим ивентом");
 		}
 	}
-
-
 }

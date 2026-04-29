@@ -11,31 +11,31 @@ import java.time.LocalDateTime;
 @Builder
 public record NewEventDto(
 
-		@NotBlank
-		@Size(min = 20, max = 2000)
-		String annotation,
+        @NotBlank
+        @Size(min = 20, max = 2000)
+        String annotation,
 
-		@NotNull
-		Long category,
+        @NotNull
+        Long category,
 
-		@NotBlank
-		@Size(min = 20, max = 7000)
-		String description,
+        @NotBlank
+        @Size(min = 20, max = 7000)
+        String description,
 
-		@NotNull
-		LocalDateTime eventDate,
+        @NotNull
+        LocalDateTime eventDate,
 
-		@NotNull
-		Location location,
+        @NotNull
+        Location location,
 
-		Boolean paid,
+        Boolean paid,
 
-		Integer participantLimit,
+        Integer participantLimit,
 
-		Boolean requestModeration,
+        Boolean requestModeration,
 
-		@NotBlank
-		@Size(min = 3, max = 120)
-		String title
+        @NotBlank
+        @Size(min = 3, max = 120)
+        String title
 ) {
 }

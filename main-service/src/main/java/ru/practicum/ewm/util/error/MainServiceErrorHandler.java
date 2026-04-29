@@ -16,13 +16,13 @@ import java.io.StringWriter;
 @ControllerAdvice
 public class MainServiceErrorHandler {
 
-	@ExceptionHandler
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ApiError handleHitRequestException(HitRequestException e) {
-		log.info("500 {}", e.getMessage(), e);
-		String stackTrace = getStackTrace(e);
-		return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error ....", e.getMessage(), stackTrace);
-	}
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleHitRequestException(HitRequestException e) {
+        log.info("500 {}", e.getMessage(), e);
+        String stackTrace = getStackTrace(e);
+        return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error ....", e.getMessage(), stackTrace);
+    }
 
 	@ExceptionHandler(ConflictException.class)
 	public ApiError handleConflictException(ConflictException ex, HttpServletRequest request) {

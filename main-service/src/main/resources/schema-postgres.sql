@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public.events (
     location jsonb,
     paid boolean NOT NULL,
     participant_limit integer NOT NULL,
-    published_on timestamp(3) without time zone NOT NULL,
+    published_on timestamp(3) without time zone,
     request_moderation boolean NOT NULL,
     state varchar(255) check (state in ('PENDING','PUBLISHED','CANCELED')) NOT NULL,
     title varchar(120) NOT NULL,
@@ -68,10 +68,8 @@ CREATE TABLE IF NOT EXISTS public.compilation_events (
     events_id bigint NOT NULL,
     CONSTRAINT fk_events_compilations FOREIGN KEY (compilations_id)
         REFERENCES public.compilations (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE CASCADE,
     CONSTRAINT fk_compilations_events FOREIGN KEY (events_id)
         REFERENCES public.events (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
 );

@@ -14,22 +14,22 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class StatService {
 
-	@Value("${app.name}")
-	String appName;
+    @Value("${app.name}")
+    String appName;
 
-	private final StatClient statClient;
+    private final StatClient statClient;
 
-	public void sendHitRequest(HttpServletRequest request) {
-		try {
-			statClient.hit(EndpointHitDto.builder()
-					.ip(request.getRemoteAddr())
-					.uri(request.getRequestURI())
-					.app(appName)
-					.timestamp(LocalDateTime.now())
-					.build()
-			);
-		} catch (Exception ex) {
-			throw new HitRequestException(ex);
-		}
-	}
+    public void sendHitRequest(HttpServletRequest request) {
+        try {
+            statClient.hit(EndpointHitDto.builder()
+                    .ip(request.getRemoteAddr())
+                    .uri(request.getRequestURI())
+                    .app(appName)
+                    .timestamp(LocalDateTime.now())
+                    .build()
+            );
+        } catch (Exception ex) {
+            throw new HitRequestException(ex);
+        }
+    }
 }

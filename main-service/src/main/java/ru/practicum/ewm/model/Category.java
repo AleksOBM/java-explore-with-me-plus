@@ -20,6 +20,6 @@ import ru.practicum.ewm.util.entity.BaseEntity;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category extends BaseEntity {
 
-	@Column(nullable = false, length = 50)
-	String name;
+    @Column(nullable = false, length = 50)
+    String name;
 }

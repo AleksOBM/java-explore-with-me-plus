@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS events (
 
     paid BOOLEAN NOT NULL,
     participant_limit INT NOT NULL,
-    published_on TIMESTAMP NOT NULL,
+    published_on TIMESTAMP,
     request_moderation BOOLEAN NOT NULL,
 
     state VARCHAR(255) NOT NULL,
@@ -77,9 +77,11 @@ CREATE TABLE IF NOT EXISTS compilation_events (
 
     CONSTRAINT fk_events_compilations
         FOREIGN KEY (compilations_id)
-        REFERENCES compilations(id),
+        REFERENCES compilations(id)
+        ON DELETE CASCADE,
 
     CONSTRAINT fk_compilations_events
         FOREIGN KEY (events_id)
         REFERENCES events(id)
+        ON DELETE CASCADE
 );
