@@ -20,16 +20,16 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ParticipationRequest extends BaseEntity {
 
-	LocalDateTime created;
+    LocalDateTime created;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "event_id")
-	Event event;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    Event event;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "requester_id")
-	User requester;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requester_id")
+    User requester;
 
-	@Enumerated(EnumType.STRING)
-	EventState status;
+    @Enumerated(EnumType.STRING)
+    EventState status;
 }
