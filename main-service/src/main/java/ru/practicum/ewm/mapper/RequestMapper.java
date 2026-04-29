@@ -1,13 +1,10 @@
 package ru.practicum.ewm.mapper;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.dto.ParticipationRequestDto;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.ParticipationRequest;
 import ru.practicum.ewm.model.User;
-
-import java.time.LocalDateTime;
 
 import static ru.practicum.ewm.util.UtilService.formatDateTime;
 import static ru.practicum.ewm.util.UtilService.parseDateTime;

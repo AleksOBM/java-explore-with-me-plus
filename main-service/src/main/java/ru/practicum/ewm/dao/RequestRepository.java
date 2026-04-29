@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.ParticipationRequest;
 import ru.practicum.ewm.model.ParticipationStatus;
 import ru.practicum.ewm.service.EventRequestCount;

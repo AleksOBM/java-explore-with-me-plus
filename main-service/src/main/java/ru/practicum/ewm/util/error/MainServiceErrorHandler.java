@@ -11,7 +11,6 @@ import ru.practicum.ewm.util.error.exception.HitRequestException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
 
 @Slf4j
 @ControllerAdvice
