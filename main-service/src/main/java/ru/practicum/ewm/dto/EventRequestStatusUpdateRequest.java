@@ -2,7 +2,7 @@ package ru.practicum.ewm.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import ru.practicum.ewm.model.EventState;
+import ru.practicum.ewm.model.RequestUpdateStatus;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ import java.util.List;
 public record EventRequestStatusUpdateRequest(
         List<Long> requestIds,
         @NotNull
-        EventState status
+        RequestUpdateStatus status
 ) {
 }
