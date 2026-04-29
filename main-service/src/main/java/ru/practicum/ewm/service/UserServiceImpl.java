@@ -26,6 +26,12 @@ public class UserServiceImpl implements UserService {
 		return UserMapper.toUserDto(userRepository.save(user));
 	}
 
+	public void throwIfUserNotFound(Long userId) {
+		if (!userRepository.existsById(userId)) {
+			throw new NotFoundException("User with id " + userId + " not found");
+		}
+	}
+
 	@Override
 	public List<UserDto> getUsers(List<Long> ids, int from, int size) {
 		PageRequest page = PageRequest.of(from / size, size);
