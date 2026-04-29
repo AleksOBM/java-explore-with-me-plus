@@ -118,9 +118,9 @@ public class EventServiceImpl implements EventService {
 		Event newEvent = EventMapper.update(
 				oldEvent,
 				request,
-				request.stateAction().equals(StateAction.REJECT_EVENT) ?
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ?
 						EventState.CANCELED : EventState.PUBLISHED,
-				request.stateAction().equals(StateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
+				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
 				request.category() == null ?
 						Optional.empty() :
 						Optional.of(utilService.getCategoryById(request.category()))
