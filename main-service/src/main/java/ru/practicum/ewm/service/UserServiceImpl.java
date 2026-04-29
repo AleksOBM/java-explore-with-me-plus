@@ -18,40 +18,40 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-	@Override
-	public UserDto adminAddNewUser(NewUserRequest newUserRequest) {
-		User user = UserMapper.toEntity(newUserRequest);
-		return UserMapper.toUserDto(userRepository.save(user));
-	}
+    @Override
+    public UserDto adminAddNewUser(NewUserRequest newUserRequest) {
+        User user = UserMapper.toEntity(newUserRequest);
+        return UserMapper.toUserDto(userRepository.save(user));
+    }
 
-	public void throwIfUserNotFound(Long userId) {
-		if (!userRepository.existsById(userId)) {
-			throw new NotFoundException("User with id " + userId + " not found");
-		}
-	}
+    public void throwIfUserNotFound(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with id " + userId + " not found");
+        }
+    }
 
-	@Override
-	public List<UserDto> getUsers(List<Long> ids, int from, int size) {
-		PageRequest page = PageRequest.of(from / size, size);
-		List<User> users;
-		if (ids == null || ids.isEmpty()) {
-			users = userRepository.findAll(page).getContent();
-		} else {
-			users = userRepository.findAllByIdIn(ids, page);
-		}
-		return users.stream()
-				.map(UserMapper::toUserDto)
-				.collect(Collectors.toList());
-	}
+    @Override
+    public List<UserDto> getUsers(List<Long> ids, int from, int size) {
+        PageRequest page = PageRequest.of(from / size, size);
+        List<User> users;
+        if (ids == null || ids.isEmpty()) {
+            users = userRepository.findAll(page).getContent();
+        } else {
+            users = userRepository.findAllByIdIn(ids, page);
+        }
+        return users.stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	@Transactional
-	public void deleteUser(Long userId) {
-		if (!userRepository.existsById(userId)) {
-			throw new NotFoundException("User with id=" + userId + " not found");
-		}
-		userRepository.deleteById(userId);
-	}
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with id=" + userId + " not found");
+        }
+        userRepository.deleteById(userId);
+    }
 }

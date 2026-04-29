@@ -11,15 +11,15 @@ import java.util.List;
 @Transactional
 public interface EventService {
 
-	List<EventShortDto> getFreeEvents(FreeGetDto freeGetDto, HttpServletRequest request);
+    List<EventShortDto> getFreeEvents(FreeGetDto freeGetDto, HttpServletRequest request);
 
-	EventFullDto getFreeEventById(Long eventId, HttpServletRequest request);
+    EventFullDto getFreeEventById(Long eventId, HttpServletRequest request);
 
-	EventFullDto userAddNewEvent(Long userId, NewEventDto newEventDto);
+    EventFullDto userAddNewEvent(Long userId, NewEventDto newEventDto);
 
-	List<EventShortDto> findByUserId(@Positive Long userId, @PositiveOrZero Integer from, @Positive Integer size);
+    List<EventShortDto> findByUserId(@Positive Long userId, @PositiveOrZero Integer from, @Positive Integer size);
 
-	EventFullDto findEventById(@Positive Long userId, @Positive Long eventId);
+    EventFullDto findEventById(@Positive Long userId, @Positive Long eventId);
 
-	EventFullDto patchEvent(@Positive Long userId, @Positive Long eventId, UpdateEventUserRequest request);
+    EventFullDto patchEvent(@Positive Long userId, @Positive Long eventId, UpdateEventUserRequest request);
 }

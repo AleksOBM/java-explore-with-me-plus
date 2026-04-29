@@ -9,13 +9,13 @@ import lombok.Builder;
 @Builder
 public record UserShortDto(
 
-		Long id,
+        Long id,
 
-		@NotBlank
-		String name,
+        @NotBlank
+        String name,
 
-		@Email
-		@NotBlank
-		String email
+        @Email
+        @NotBlank
+        String email
 ) {
 }

@@ -8,8 +8,8 @@ import ru.practicum.ewm.model.Category;
 
 public interface CategoryService {
 
-	@Transactional
-	CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
+    @Transactional
+    CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
 
-	Category findEntityById(@NotNull Long category);
+    Category findEntityById(@NotNull Long category);
 }

@@ -8,7 +8,6 @@ import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

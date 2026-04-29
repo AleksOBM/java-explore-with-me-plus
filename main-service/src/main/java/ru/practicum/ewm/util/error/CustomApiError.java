@@ -1,6 +1,7 @@
 package ru.practicum.ewm.util.error;
 
 import lombok.Getter;
+
 import java.time.LocalDateTime;
 
 @Getter

@@ -3,8 +3,9 @@ package ru.practicum.ewm.service;
 import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.ewm.dto.CompilationDto;
 import ru.practicum.ewm.dto.CompilationSearchFilter;
-import ru.practicum.ewm.dto.NewCompilationDto;
 import ru.practicum.ewm.dto.CompilationUpdateDto;
+import ru.practicum.ewm.dto.NewCompilationDto;
+
 import java.util.List;
 
 public interface CompilationService {

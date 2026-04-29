@@ -15,10 +15,10 @@ import ru.practicum.ewm.service.CategoryService;
 @RequiredArgsConstructor
 public class AdminCategoryController {
 
-	private final CategoryService categoryService;
+    private final CategoryService categoryService;
 
-	@PostMapping
-	public CategoryDto addNewCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
-		return categoryService.adminAddNewCategory(newCategoryDto);
-	}
+    @PostMapping
+    public CategoryDto addNewCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
+        return categoryService.adminAddNewCategory(newCategoryDto);
+    }
 }

@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.*;
+import ru.practicum.ewm.dto.CompilationDto;
+import ru.practicum.ewm.dto.CompilationUpdateDto;
+import ru.practicum.ewm.dto.NewCompilationDto;
 import ru.practicum.ewm.service.CompilationService;
 
 @RestController
@@ -28,6 +30,6 @@ public class AdminCompilationController {
     @PatchMapping("/{compilationId}")
     public CompilationDto updateCompilation(@RequestBody @Valid CompilationUpdateDto compilationUpdateDto,
                                             @PathVariable Long compilationId) {
-        return compilationService.updateCompilation(compilationId ,compilationUpdateDto);
+        return compilationService.updateCompilation(compilationId, compilationUpdateDto);
     }
 }

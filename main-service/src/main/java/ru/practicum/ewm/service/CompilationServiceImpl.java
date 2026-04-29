@@ -11,8 +11,8 @@ import ru.practicum.ewm.dao.CompilationRepository;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dto.CompilationDto;
 import ru.practicum.ewm.dto.CompilationSearchFilter;
-import ru.practicum.ewm.dto.NewCompilationDto;
 import ru.practicum.ewm.dto.CompilationUpdateDto;
+import ru.practicum.ewm.dto.NewCompilationDto;
 import ru.practicum.ewm.mapper.CompilationMapper;
 import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
@@ -76,10 +76,10 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto updateCompilation(Long compilationId, CompilationUpdateDto compilationUpdateDto) {
         Compilation compilationInDb = utilService.getCompilationById(compilationId);
 
-        if(compilationUpdateDto.getEvents() != null) {
+        if (compilationUpdateDto.getEvents() != null) {
             List<Event> eventsUpdate = new ArrayList<>();
 
-            if(!compilationUpdateDto.getEvents().isEmpty()) {
+            if (!compilationUpdateDto.getEvents().isEmpty()) {
                 eventsUpdate = eventRepository.findAllById(compilationUpdateDto.getEvents());
                 if (eventsUpdate.size() < compilationUpdateDto.getEvents().size()) {
                     throw new NotFoundException("Одно или несколько событий не найдены");
@@ -89,11 +89,11 @@ public class CompilationServiceImpl implements CompilationService {
 
         }
 
-        if(compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank()) {
+        if (compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank()) {
             compilationInDb.setTitle(compilationUpdateDto.getTitle());
         }
 
-        if(compilationUpdateDto.getPinned() != null) {
+        if (compilationUpdateDto.getPinned() != null) {
             compilationInDb.setPinned(compilationUpdateDto.getPinned());
         }
 
