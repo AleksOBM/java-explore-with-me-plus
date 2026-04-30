@@ -9,6 +9,8 @@ import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -25,5 +27,15 @@ public class CategoryServiceImpl implements CategoryService {
     public Category findEntityById(Long category) {
         return categoryRepository.findById(category)
                 .orElseThrow(() -> new NotFoundException("Категория с id = " + category + " не найдена"));
+    }
+
+    @Override
+    public List<CategoryDto> findAll(Integer from, Integer size) {
+        return List.of();
+    }
+
+    @Override
+    public CategoryDto findById(Long catId) {
+        return null;
     }
 }
