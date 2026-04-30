@@ -15,9 +15,9 @@ public interface CategoryService {
     @Transactional
     CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
 
-    Category findEntityById(@NotNull Long category);
+    Category findEntityById(Long category);
 
-    List<CategoryDto> findAll(@PositiveOrZero Integer from, Integer size);
+    List<CategoryDto> findAll(Integer from, Integer size);
 
-    CategoryDto findById(@Positive Long catId);
+    CategoryDto findById(Long catId);
 }
