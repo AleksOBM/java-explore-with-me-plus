@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 
 import java.io.PrintWriter;
@@ -41,6 +42,19 @@ public class ValidationErrorHandler {
 				getStackTrace(ex)
 		);
 		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+	}
+
+	// 409
+	@ExceptionHandler(ConflictException.class)
+	public ResponseEntity<CustomApiError> handleConflict(@NonNull ConflictException ex) {
+		log.warn("409 Conflict: {}", ex.getMessage());
+		CustomApiError error = new CustomApiError(
+				HttpStatus.CONFLICT.name(),
+				"For the requested operation the conditions are not met.",
+				ex.getMessage(),
+				getStackTrace(ex)
+		);
+		return new ResponseEntity<>(error, HttpStatus.CONFLICT);
 	}
 
 	// 400

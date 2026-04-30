@@ -1,12 +1,10 @@
 package ru.practicum.ewm.util.error;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.HitRequestException;
 
 import java.io.PrintWriter;
@@ -22,19 +20,6 @@ public class MainServiceErrorHandler {
 		log.info("500 {}", e.getMessage(), e);
 		String stackTrace = getStackTrace(e);
 		return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error ....", e.getMessage(), stackTrace);
-	}
-
-	@ExceptionHandler(ConflictException.class)
-	public ApiError handleConflictException(ConflictException ex, HttpServletRequest request) {
-		log.warn("409: {} - {}", request.getRequestURI(), ex.getMessage(), ex);
-
-		ApiError apiError = ApiError.builder()
-				.status(HttpStatus.CONFLICT)
-				.reason("Data conflict")
-				.message(ex.getMessage())
-				.build();
-
-		return apiError;
 	}
 
 	private String getStackTrace(Exception e) {

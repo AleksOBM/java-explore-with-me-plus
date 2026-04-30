@@ -17,4 +17,10 @@ public interface CategoryService {
     List<CategoryDto> findAll(Integer from, Integer size);
 
     CategoryDto findById(Long catId);
+
+    @Transactional
+    CategoryDto updateCategory(Long catId, CategoryDto categoryDto);
+
+    @Transactional
+    void deleteCategory(Long catId);
 }
