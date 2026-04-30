@@ -12,4 +12,10 @@ public interface CategoryService {
     CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
 
     Category findEntityById(@NotNull Long category);
+
+    @Transactional
+    CategoryDto updateCategory(Long catId, CategoryDto categoryDto);
+
+    @Transactional
+    void deleteCategory(Long catId);
 }

@@ -1,12 +1,62 @@
 {
   "info": {
-    "name": "Admin Users Tests",
-    "description": "Тесты для эндпоинтов администрирования пользователей (ExploreWithMe)",
+    "name": "Admin Categories – Final Fixed",
+    "description": "Полный набор тестов Admin: Категории. Запускать последовательно.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "1. POST /admin/users - создание пользователя (успех)",
+      "name": "0. Подготовка: создать первую категорию (для удаления)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "pm.collectionVariables.set('createdCategoryId', body.id);",
+              "pm.collectionVariables.set('categoryName', body.name);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Initial Category\"\n}" },
+        "url": {
+          "raw": "{{baseUrl}}/admin/categories",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories"]
+        }
+      }
+    },
+    {
+      "name": "0b. Подготовка: создать вторую категорию (для конфликта имени)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const body = pm.response.json();",
+              "pm.collectionVariables.set('secondCategoryId', body.id);",
+              "pm.collectionVariables.set('secondCategoryName', body.name);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Second Category\"\n}" },
+        "url": {
+          "raw": "{{baseUrl}}/admin/categories",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories"]
+        }
+      }
+    },
+    {
+      "name": "1. POST /admin/categories - создание категории (успех)",
       "event": [
         {
           "listen": "test",
@@ -15,45 +65,28 @@
               "pm.test('Статус код 201 Created', function () {",
               "    pm.response.to.have.status(201);",
               "});",
-              "pm.test('Ответ содержит корректный UserDto', function () {",
+              "pm.test('Ответ содержит корректный CategoryDto', function () {",
               "    const body = pm.response.json();",
               "    pm.expect(body).to.have.property('id');",
-              "    pm.expect(body).to.have.property('name', pm.variables.get('userName'));",
-              "    pm.expect(body).to.have.property('email', pm.variables.get('userEmail'));",
-              "});",
-              "// Сохраняем id созданного пользователя для следующих тестов",
-              "const userId = pm.response.json().id;",
-              "pm.collectionVariables.set('createdUserId', userId);"
+              "    pm.expect(body).to.have.property('name', 'Temporary Category');",
+              "});"
             ]
           }
         }
       ],
       "request": {
         "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"{{userName}}\",\n  \"email\": \"{{userEmail}}\"\n}"
-        },
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Temporary Category\"\n}" },
         "url": {
-          "raw": "{{baseUrl}}/admin/users",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users"
-          ]
+          "raw": "{{baseUrl}}/admin/categories",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories"]
         }
       }
     },
     {
-      "name": "2. POST /admin/users - ошибка 400 (пустое имя)",
+      "name": "2. POST /admin/categories - ошибка 400 (пустое имя)",
       "event": [
         {
           "listen": "test",
@@ -62,7 +95,7 @@
               "pm.test('Статус код 400 Bad Request', function () {",
               "    pm.response.to.have.status(400);",
               "});",
-              "pm.test('Ответ содержит ApiError', function () {",
+              "pm.test('Ответ содержит поле reason', function () {",
               "    const body = pm.response.json();",
               "    pm.expect(body).to.have.property('status');",
               "    pm.expect(body).to.have.property('reason');",
@@ -74,30 +107,48 @@
       ],
       "request": {
         "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"\",\n  \"email\": \"invalid@example.com\"\n}"
-        },
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"\"\n}" },
         "url": {
-          "raw": "{{baseUrl}}/admin/users",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users"
-          ]
+          "raw": "{{baseUrl}}/admin/categories",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories"]
         }
       }
     },
     {
-      "name": "3. GET /admin/users - получение всех пользователей",
+      "name": "3. POST /admin/categories - дубликат имени (409)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Статус код 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "pm.test('Ответ содержит поле reason', function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.have.property('status');",
+              "    pm.expect(body).to.have.property('reason');",
+              "    pm.expect(body).to.have.property('message');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{categoryName}}\"\n}" },
+        "url": {
+          "raw": "{{baseUrl}}/admin/categories",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories"]
+        }
+      }
+    },
+    {
+      "name": "4. PATCH /admin/categories/{catId} - успешное обновление",
       "event": [
         {
           "listen": "test",
@@ -106,92 +157,52 @@
               "pm.test('Статус код 200 OK', function () {",
               "    pm.response.to.have.status(200);",
               "});",
-              "pm.test('Ответ - массив пользователей', function () {",
+              "pm.test('Имя изменилось на Updated Name', function () {",
               "    const body = pm.response.json();",
-              "    pm.expect(body).to.be.an('array');",
-              "});",
-              "pm.test('Массив содержит созданного пользователя', function () {",
-              "    const body = pm.response.json();",
-              "    const userIds = body.map(user => user.id);",
-              "    pm.expect(userIds).to.include(pm.collectionVariables.get('createdUserId'));",
+              "    pm.expect(body.name).to.equal('Updated Name');",
               "});"
             ]
           }
         }
       ],
       "request": {
-        "method": "GET",
+        "method": "PATCH",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Name\"\n}" },
         "url": {
-          "raw": "{{baseUrl}}/admin/users?from=0&size=10",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users"
-          ],
-          "query": [
-            {
-              "key": "from",
-              "value": "0"
-            },
-            {
-              "key": "size",
-              "value": "10"
-            }
-          ]
+          "raw": "{{baseUrl}}/admin/categories/{{secondCategoryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories", "{{secondCategoryId}}"]
         }
       }
     },
     {
-      "name": "4. GET /admin/users - фильтр по ids",
+      "name": "5. PATCH /admin/categories/{catId} - конфликт имени (409)",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Статус код 200 OK', function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "pm.test('Возвращен только запрошенный пользователь', function () {",
-              "    const body = pm.response.json();",
-              "    pm.expect(body).to.have.lengthOf(1);",
-              "    pm.expect(body[0].id).to.eql(pm.collectionVariables.get('createdUserId'));",
+              "pm.test('Статус код 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
               "});"
             ]
           }
         }
       ],
       "request": {
-        "method": "GET",
+        "method": "PATCH",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{categoryName}}\"\n}" },
         "url": {
-          "raw": "{{baseUrl}}/admin/users?ids={{createdUserId}}&from=0&size=10",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users"
-          ],
-          "query": [
-            {
-              "key": "ids",
-              "value": "{{createdUserId}}"
-            },
-            {
-              "key": "from",
-              "value": "0"
-            },
-            {
-              "key": "size",
-              "value": "10"
-            }
-          ]
+          "raw": "{{baseUrl}}/admin/categories/{{secondCategoryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories", "{{secondCategoryId}}"]
         }
       }
     },
     {
-      "name": "5. DELETE /admin/users/{userId} - удаление существующего пользователя",
+      "name": "6. DELETE /admin/categories/{catId} - успешное удаление",
       "event": [
         {
           "listen": "test",
@@ -207,20 +218,14 @@
       "request": {
         "method": "DELETE",
         "url": {
-          "raw": "{{baseUrl}}/admin/users/{{createdUserId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users",
-            "{{createdUserId}}"
-          ]
+          "raw": "{{baseUrl}}/admin/categories/{{createdCategoryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories", "{{createdCategoryId}}"]
         }
       }
     },
     {
-      "name": "6. DELETE /admin/users/{userId} - повторное удаление (404)",
+      "name": "7. DELETE /admin/categories/{catId} - повторное удаление (404)",
       "event": [
         {
           "listen": "test",
@@ -229,7 +234,7 @@
               "pm.test('Статус код 404 Not Found', function () {",
               "    pm.response.to.have.status(404);",
               "});",
-              "pm.test('Ответ содержит ApiError', function () {",
+              "pm.test('Ответ содержит поле reason', function () {",
               "    const body = pm.response.json();",
               "    pm.expect(body).to.have.property('status');",
               "    pm.expect(body).to.have.property('reason');",
@@ -242,35 +247,19 @@
       "request": {
         "method": "DELETE",
         "url": {
-          "raw": "{{baseUrl}}/admin/users/{{createdUserId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "admin",
-            "users",
-            "{{createdUserId}}"
-          ]
+          "raw": "{{baseUrl}}/admin/categories/{{createdCategoryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "categories", "{{createdCategoryId}}"]
         }
       }
     }
   ],
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:8080"
-    },
-    {
-      "key": "userName",
-      "value": "Test User"
-    },
-    {
-      "key": "userEmail",
-      "value": "testuser@example.com"
-    },
-    {
-      "key": "createdUserId",
-      "value": ""
-    }
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "categoryName", "value": "" },
+    { "key": "createdCategoryId", "value": "" },
+    { "key": "secondCategoryId", "value": "" },
+    { "key": "secondCategoryName", "value": "" },
+    { "key": "updatedName", "value": "Updated Name" }
   ]
 }
