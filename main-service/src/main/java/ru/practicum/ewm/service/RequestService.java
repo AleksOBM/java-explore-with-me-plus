@@ -10,14 +10,14 @@ import java.util.List;
 @Transactional
 public interface RequestService {
 
-    List<ParticipationRequestDto> findByEventId(Long userId, Long eventId);
+	List<ParticipationRequestDto> findByEventId(Long userId, Long eventId);
 
-    EventRequestStatusUpdateResult updateStatusRequest(Long userId, Long eventId,
-                                                       EventRequestStatusUpdateRequest request);
+	EventRequestStatusUpdateResult updateStatusRequest(Long userId, Long eventId,
+	                                                   EventRequestStatusUpdateRequest request);
 
-    List<ParticipationRequestDto> findByRequesterId(Long userId);
+	List<ParticipationRequestDto> findByRequesterId(Long userId);
 
-    ParticipationRequestDto addParticipationRequest(Long userId, Long eventId);
+	ParticipationRequestDto addParticipationRequest(Long userId, Long eventId);
 
-    ParticipationRequestDto cancelParticipationRequest(Long userId, Long requestId);
+	ParticipationRequestDto cancelParticipationRequest(Long userId, Long requestId);
 }

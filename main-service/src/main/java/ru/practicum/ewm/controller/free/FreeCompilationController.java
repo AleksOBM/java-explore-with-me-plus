@@ -13,27 +13,27 @@ import java.util.List;
 @RequestMapping(path = "/compilations")
 @RequiredArgsConstructor
 public class FreeCompilationController {
-    private final CompilationService compilationService;
+	private final CompilationService compilationService;
 
-    @GetMapping
-    public List<CompilationDto> getCompilations(
-            @RequestParam(required = false) Boolean pinned,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size,
-            HttpServletRequest request) {
+	@GetMapping
+	public List<CompilationDto> getCompilations(
+			@RequestParam(required = false) Boolean pinned,
+			@RequestParam(defaultValue = "0") Integer from,
+			@RequestParam(defaultValue = "10") Integer size,
+			HttpServletRequest request) {
 
-        CompilationSearchFilter filter = CompilationSearchFilter.builder()
-                .pinned(pinned)
-                .from(from)
-                .size(size)
-                .build();
+		CompilationSearchFilter filter = CompilationSearchFilter.builder()
+				.pinned(pinned)
+				.from(from)
+				.size(size)
+				.build();
 
-        return compilationService.getByFilter(filter, request);
-    }
+		return compilationService.getByFilter(filter, request);
+	}
 
-    @GetMapping("/{compilationId}")
-    public CompilationDto getCompilationById(@PathVariable Long compilationId,
-                                             HttpServletRequest request) {
-        return compilationService.getById(compilationId, request);
-    }
+	@GetMapping("/{compilationId}")
+	public CompilationDto getCompilationById(@PathVariable Long compilationId,
+	                                         HttpServletRequest request) {
+		return compilationService.getById(compilationId, request);
+	}
 }

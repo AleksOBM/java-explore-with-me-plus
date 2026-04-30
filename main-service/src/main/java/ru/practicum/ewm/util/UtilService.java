@@ -20,35 +20,35 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class UtilService {
 
-    private final UserRepository userRepository;
-    private final EventRepository eventRepository;
-    private final CategoryRepository categoryRepository;
-    private final CompilationRepository compilationRepository;
+	private final UserRepository userRepository;
+	private final EventRepository eventRepository;
+	private final CategoryRepository categoryRepository;
+	private final CompilationRepository compilationRepository;
 
-    @NonNull
-    public User getUserById(long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
-    }
+	@NonNull
+	public User getUserById(long userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
+	}
 
-    @NonNull
-    public Event getEventById(long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("Событие с id=" + eventId + " не найдено")
-        );
-    }
+	@NonNull
+	public Event getEventById(long eventId) {
+		return eventRepository.findById(eventId).orElseThrow(
+				() -> new NotFoundException("Событие с id=" + eventId + " не найдено")
+		);
+	}
 
-    public Category getCategoryById(long categoryId) {
-        return categoryRepository.findById(categoryId).orElseThrow(
-                () -> new NotFoundException("Категория с id=" + categoryId + " не найдена")
-        );
-    }
+	public Category getCategoryById(long categoryId) {
+		return categoryRepository.findById(categoryId).orElseThrow(
+				() -> new NotFoundException("Категория с id=" + categoryId + " не найдена")
+		);
+	}
 
-    public Compilation getCompilationById(long compilationId) {
-        return compilationRepository.findById(compilationId).orElseThrow(
-                () -> new NotFoundException("Подборка с id=" + compilationId + " не найдена")
-        );
-    }
+	public Compilation getCompilationById(long compilationId) {
+		return compilationRepository.findById(compilationId).orElseThrow(
+				() -> new NotFoundException("Подборка с id=" + compilationId + " не найдена")
+		);
+	}
 
 	public static String formatDateTime(LocalDateTime dateTime) {
 		if (dateTime == null) return null;

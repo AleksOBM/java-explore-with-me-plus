@@ -1,21 +1,24 @@
 package ru.practicum.ewm.util.error;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 @Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomApiError {
-    private final String status;
-    private final String reason;
-    private final String message;
-    private final String errors;
-    private final LocalDateTime timestamp = LocalDateTime.now();
+	String status;
+	String reason;
+	String message;
+	String errors;
+	LocalDateTime timestamp = LocalDateTime.now();
 
-    public CustomApiError(String status, String reason, String message, String stackTrace) {
-        this.status = status;
-        this.reason = reason;
-        this.message = message;
-        this.errors = stackTrace;
-    }
+	public CustomApiError(String status, String reason, String message, String stackTrace) {
+		this.status = status;
+		this.reason = reason;
+		this.message = message;
+		this.errors = stackTrace;
+	}
 }

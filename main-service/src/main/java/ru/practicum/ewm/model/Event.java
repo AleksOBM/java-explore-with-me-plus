@@ -32,8 +32,8 @@ public class Event extends BaseEntity {
 	@JoinColumn(name = "category_id")
 	Category category;
 
-	@Column(nullable = false)
-	Long confirmedRequests;
+	@Transient
+	long confirmedRequests;
 
 	@Column(nullable = false)
 	LocalDateTime createdOn;
@@ -71,7 +71,7 @@ public class Event extends BaseEntity {
 	@Column(nullable = false, length = 120)
 	String title;
 
-	@Column(nullable = false)
+	@Transient
 	long views;
 
 	@ManyToMany(mappedBy = "events")

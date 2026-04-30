@@ -1,6 +1,7 @@
 package ru.practicum.ewm.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -43,7 +44,7 @@ class EventServiceIntegrationTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
-	@Autowired
+	@PersistenceContext
 	EntityManager em;
 
 	@Test
@@ -54,7 +55,7 @@ class EventServiceIntegrationTest {
 		Event event = Event.builder()
 				.annotation("annotation".repeat(10))
 				.category(category)
-				.confirmedRequests(10L)
+				.confirmedRequests(0L)
 				.createdOn(LocalDateTime.parse("2026-11-10T19:00:00"))
 				.description("description".repeat(10))
 				.eventDate(LocalDateTime.parse("2027-01-01T00:00:01"))
@@ -66,7 +67,7 @@ class EventServiceIntegrationTest {
 				.requestModeration(true)
 				.state(EventState.PUBLISHED)
 				.title("title")
-				.views(1000L)
+				.views(0L)
 				.build();
 
 		Event publishedFuture = event.toBuilder().state(EventState.PUBLISHED).build();
