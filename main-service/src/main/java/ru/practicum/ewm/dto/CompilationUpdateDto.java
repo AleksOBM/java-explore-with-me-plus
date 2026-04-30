@@ -18,6 +18,6 @@ public class CompilationUpdateDto {
 
     private Boolean pinned;
 
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 50)
     private String title;
 }

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.CompilationDto;
 import ru.practicum.ewm.dto.CompilationSearchFilter;
 import ru.practicum.ewm.service.CompilationService;
-
 import java.util.List;
 
 @RestController
