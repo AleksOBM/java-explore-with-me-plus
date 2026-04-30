@@ -18,7 +18,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     String title;
 
     @ManyToMany
