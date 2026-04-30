@@ -17,5 +17,4 @@ public record AdminGetDto(
 		Integer from,
 		Integer size
 ) {
-
 }

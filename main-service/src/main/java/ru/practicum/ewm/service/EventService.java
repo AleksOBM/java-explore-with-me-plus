@@ -2,8 +2,6 @@ package ru.practicum.ewm.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Propagation;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.*;
 
@@ -24,9 +22,9 @@ public interface EventService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request);
 
-	List<EventShortDto> findByUserId(@Positive Long userId, @PositiveOrZero Integer from, @Positive Integer size);
+	List<EventShortDto> findByUserId(Long userId, Integer from, Integer size);
 
-	EventFullDto findEventById(@Positive Long userId, @Positive Long eventId);
+	EventFullDto findEventById(Long userId, Long eventId);
 
-	EventFullDto patchEvent(@Positive Long userId, @Positive Long eventId, UpdateEventUserRequest request);
+	EventFullDto patchEvent(Long userId, Long eventId, UpdateEventUserRequest request);
 }

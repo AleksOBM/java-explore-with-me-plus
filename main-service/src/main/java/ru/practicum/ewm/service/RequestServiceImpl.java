@@ -75,7 +75,9 @@ public class RequestServiceImpl implements RequestService {
 
 		// если в процессе лимит превышен - отклоняем все оставшиеся заявки
 		if (request.status().name().equals(ParticipationStatus.CONFIRMED.name()) && countConfirmed >= limit) {
-			repository.rejectPendingRequests(eventId, ParticipationStatus.PENDING);
+			if (repository.rejectPendingRequests(eventId, ParticipationStatus.PENDING) < 0) {
+				throw new RuntimeException("Не удалось отклонить заявку");
+			}
 		}
 
 		return EventRequestStatusUpdateResult.builder()
@@ -107,7 +109,7 @@ public class RequestServiceImpl implements RequestService {
 			throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии");
 		}
 
-		Integer limit = event.getParticipantLimit();
+		int limit = event.getParticipantLimit();
 
 		if (limit != 0 && repository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED) >= limit) {
 			throw new ConflictException("Достигнут лимит запросов на участие");

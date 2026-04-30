@@ -13,23 +13,16 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS events (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     annotation VARCHAR(2000) NOT NULL,
-    confirmed_requests BIGINT NOT NULL,
     created_on TIMESTAMP NOT NULL,
     description VARCHAR(7000) NOT NULL,
     event_date TIMESTAMP NOT NULL,
-
-    -- jsonb заменили
     location CLOB,
-
     paid BOOLEAN NOT NULL,
     participant_limit INT NOT NULL,
     published_on TIMESTAMP,
     request_moderation BOOLEAN NOT NULL,
-
     state VARCHAR(255) NOT NULL,
     title VARCHAR(120) NOT NULL,
-    views BIGINT NOT NULL,
-
     category_id BIGINT,
     initiator_id BIGINT,
 

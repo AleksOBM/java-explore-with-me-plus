@@ -15,23 +15,23 @@ import java.util.List;
 @RequestMapping(path = "/users/{userId}/requests")
 @RequiredArgsConstructor
 public class UserRequestController {
-    private final RequestService service;
+	private final RequestService service;
 
-    @GetMapping
-    public List<ParticipationRequestDto> findByRequesterId(@PathVariable @Positive Long userId) {
-        return service.findByRequesterId(userId);
-    }
+	@GetMapping
+	public List<ParticipationRequestDto> findByRequesterId(@PathVariable @Positive Long userId) {
+		return service.findByRequesterId(userId);
+	}
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ParticipationRequestDto addParticipationRequest(@PathVariable @Positive Long userId,
-                                                           @RequestParam @Positive Long eventId) {
-        return service.addParticipationRequest(userId, eventId);
-    }
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public ParticipationRequestDto addParticipationRequest(@PathVariable @Positive Long userId,
+	                                                       @RequestParam @Positive Long eventId) {
+		return service.addParticipationRequest(userId, eventId);
+	}
 
-    @PatchMapping("/{requestId}/cancel")
-    public ParticipationRequestDto cancelParticipationRequest(@PathVariable @Positive Long userId,
-                                                              @PathVariable @Positive Long requestId) {
-        return service.cancelParticipationRequest(userId, requestId);
-    }
+	@PatchMapping("/{requestId}/cancel")
+	public ParticipationRequestDto cancelParticipationRequest(@PathVariable @Positive Long userId,
+	                                                          @PathVariable @Positive Long requestId) {
+		return service.cancelParticipationRequest(userId, requestId);
+	}
 }
