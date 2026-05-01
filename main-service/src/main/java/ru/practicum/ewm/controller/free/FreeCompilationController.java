@@ -3,9 +3,9 @@ package ru.practicum.ewm.controller.free;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.CompilationDto;
-import ru.practicum.ewm.dto.CompilationSearchFilter;
-import ru.practicum.ewm.service.CompilationService;
+import ru.practicum.ewm.dto.compilation.CompilationDto;
+import ru.practicum.ewm.dto.compilation.CompilationSearchFilter;
+import ru.practicum.ewm.service.compilation.CompilationService;
 import java.util.List;
 
 @RestController

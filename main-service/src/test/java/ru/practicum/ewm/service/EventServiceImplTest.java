@@ -15,11 +15,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import ru.practicum.ewm.dao.EventRepository;
-import ru.practicum.ewm.dto.EventFullDto;
-import ru.practicum.ewm.dto.EventShortDto;
-import ru.practicum.ewm.dto.FreeGetDto;
+import ru.practicum.ewm.dto.event.EventFullDto;
+import ru.practicum.ewm.dto.event.EventShortDto;
+import ru.practicum.ewm.dto.event.FreeGetDto;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.*;
+import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.service.event.EventServiceImpl;
 import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.statistic.StatService;
 

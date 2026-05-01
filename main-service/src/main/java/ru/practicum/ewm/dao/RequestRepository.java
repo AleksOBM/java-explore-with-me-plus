@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.model.ParticipationRequest;
-import ru.practicum.ewm.model.ParticipationStatus;
-import ru.practicum.ewm.service.EventRequestCount;
+import ru.practicum.ewm.model.enums.ParticipationStatus;
+import ru.practicum.ewm.service.request.EventRequestCount;
 
 import java.util.List;
 
 public interface RequestRepository extends JpaRepository<ParticipationRequest, Long> {
+
     List<ParticipationRequest> findByRequesterId(Long requesterId);
 
     List<ParticipationRequest> findAllByIdIn(List<Long> requestIds);

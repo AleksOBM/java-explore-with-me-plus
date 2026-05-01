@@ -2,14 +2,14 @@ package ru.practicum.ewm.mapper;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.NonNull;
-import ru.practicum.ewm.dto.EventFullDto;
-import ru.practicum.ewm.dto.EventShortDto;
-import ru.practicum.ewm.dto.NewEventDto;
-import ru.practicum.ewm.dto.UpdateEventAdminRequest;
-import ru.practicum.ewm.dto.UpdateEventUserRequest;
+import ru.practicum.ewm.dto.event.EventFullDto;
+import ru.practicum.ewm.dto.event.EventShortDto;
+import ru.practicum.ewm.dto.event.NewEventDto;
+import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
+import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.Category;
-import ru.practicum.ewm.model.EventState;
+import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.model.User;
 
 import java.time.LocalDateTime;

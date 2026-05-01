@@ -2,11 +2,11 @@ package ru.practicum.ewm.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.AdminGetDto;
-import ru.practicum.ewm.dto.EventFullDto;
-import ru.practicum.ewm.dto.UpdateEventAdminRequest;
-import ru.practicum.ewm.model.EventState;
-import ru.practicum.ewm.service.EventService;
+import ru.practicum.ewm.dto.event.AdminGetDto;
+import ru.practicum.ewm.dto.event.EventFullDto;
+import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
+import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.service.event.EventService;
 
 import java.util.List;
 

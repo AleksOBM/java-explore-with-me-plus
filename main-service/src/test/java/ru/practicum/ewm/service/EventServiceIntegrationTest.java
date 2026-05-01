@@ -14,10 +14,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.practicum.ewm.MainServiceApp;
 import ru.practicum.ewm.dao.CategoryRepository;
 import ru.practicum.ewm.dao.UserRepository;
-import ru.practicum.ewm.dto.EventShortDto;
-import ru.practicum.ewm.dto.FreeGetDto;
+import ru.practicum.ewm.dto.event.EventShortDto;
+import ru.practicum.ewm.dto.event.FreeGetDto;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.*;
+import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.util.statistic.StatService;
 
 import java.time.LocalDateTime;

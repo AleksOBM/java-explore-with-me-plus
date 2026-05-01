@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
+import ru.practicum.ewm.model.enums.ParticipationStatus;
 import ru.practicum.ewm.util.entity.BaseEntity;
 
 import java.time.LocalDateTime;

@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.CompilationDto;
-import ru.practicum.ewm.dto.CompilationUpdateDto;
-import ru.practicum.ewm.dto.NewCompilationDto;
-import ru.practicum.ewm.service.CompilationService;
+import ru.practicum.ewm.dto.compilation.CompilationDto;
+import ru.practicum.ewm.dto.compilation.CompilationUpdateDto;
+import ru.practicum.ewm.dto.compilation.NewCompilationDto;
+import ru.practicum.ewm.service.compilation.CompilationService;
 
 @RestController
 @RequestMapping(path = "/admin/compilations")

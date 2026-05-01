@@ -1,8 +1,8 @@
 package ru.practicum.ewm.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.model.EventState;
-import ru.practicum.ewm.model.UserStateAction;
+import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.model.enums.UserStateAction;
 
 @Component
 public class StateMapper {

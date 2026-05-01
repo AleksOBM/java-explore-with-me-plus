@@ -8,9 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.ewm.dao.UserRepository;
-import ru.practicum.ewm.dto.NewUserRequest;
-import ru.practicum.ewm.dto.UserDto;
+import ru.practicum.ewm.dto.user.NewUserRequest;
+import ru.practicum.ewm.dto.user.UserDto;
 import ru.practicum.ewm.model.User;
+import ru.practicum.ewm.service.user.UserServiceImpl;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 import java.util.List;
 
@@ -92,7 +93,7 @@ class AdminUserServiceTest {
 
         assertThatThrownBy(() -> userService.deleteUser(999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("User with id=999 not found");
+                .hasMessageContaining("Пользователь с id=999 не найден");
         verify(userRepository, never()).deleteById(any());
     }
 }

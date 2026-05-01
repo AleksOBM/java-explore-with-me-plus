@@ -3,10 +3,10 @@ package ru.practicum.ewm.controller.free;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.EventFullDto;
-import ru.practicum.ewm.dto.EventShortDto;
-import ru.practicum.ewm.dto.FreeGetDto;
-import ru.practicum.ewm.service.EventService;
+import ru.practicum.ewm.dto.event.EventFullDto;
+import ru.practicum.ewm.dto.event.EventShortDto;
+import ru.practicum.ewm.dto.event.FreeGetDto;
+import ru.practicum.ewm.service.event.EventService;
 
 import java.util.List;
 
