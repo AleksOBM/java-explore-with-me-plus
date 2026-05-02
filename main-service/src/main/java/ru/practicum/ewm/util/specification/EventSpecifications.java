@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.model.enums.EventState;
 
 import java.time.LocalDateTime;
@@ -109,5 +110,28 @@ public class EventSpecifications {
     public Specification<Event> eventDateAfterNow(LocalDateTime now) {
         return (root, query, cb) ->
                 cb.greaterThan(root.get("eventDate"), now);
+    }
+
+    /// initiator
+    public static Specification<Event> hasUsers(List<Integer> userIds) {
+        return (root, query, cb) -> {
+            if (userIds == null || userIds.isEmpty()) {
+                return null;
+            }
+
+            Join<Event, User> userJoin = root.join("initiator");
+            return userJoin.get("id").in(userIds);
+        };
+    }
+
+    /// По статусам
+    public static Specification<Event> hasStates(List<EventState> states) {
+        return (root, query, cb) -> {
+            if (states == null || states.isEmpty()) {
+                return null;
+            }
+
+            return root.get("state").in(states);
+        };
     }
 }

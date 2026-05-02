@@ -12,16 +12,16 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dto.event.*;
-import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
-import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.StateMapper;
-import ru.practicum.ewm.model.*;
+import ru.practicum.ewm.model.Category;
+import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.model.enums.AdminStateAction;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.model.enums.UserStateAction;
-import ru.practicum.ewm.service.user.UserService;
 import ru.practicum.ewm.service.category.CategoryService;
+import ru.practicum.ewm.service.user.UserService;
 import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.specification.EventSpecifications;
@@ -123,8 +123,29 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public List<EventFullDto> adminGetEvents(AdminGetDto adminGetDto) {
-		return List.of();
+	public List<EventFullDto> adminGetEvents(AdminGetDto dto) {
+		Specification<Event> spec = SpecBuilder.<Event>builder()
+				.andIf(dto.users() != null && !dto.users().isEmpty(),
+						() -> EventSpecifications.hasUsers(dto.users()))
+				.andIf(dto.states() != null && !dto.states().isEmpty(),
+						() -> EventSpecifications.hasStates(dto.states()))
+				.andIf(dto.categories() != null && !dto.categories().isEmpty(),
+						() -> EventSpecifications.hasCategories(dto.categories()))
+				.andIf(dto.rangeStart() != null,
+						() -> EventSpecifications.dateAfter(dto.rangeStart()))
+				.andIf(dto.rangeEnd() != null,
+						() -> EventSpecifications.dateBefore(dto.rangeEnd()))
+				.build();
+
+		Pageable pageable = PageRequest.of(
+				dto.from() / dto.size(),
+				dto.size()
+		);
+
+		return eventRepository.findAll(spec, pageable)
+				.stream()
+				.map(EventMapper::toEventFullDto)
+				.toList();
 	}
 
 	@Override
