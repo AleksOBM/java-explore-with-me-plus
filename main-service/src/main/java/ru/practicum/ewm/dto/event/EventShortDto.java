@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 
 @Builder
 public record EventShortDto(
-        String annotation,
+		long id,
+		String annotation,
         CategoryDto category,
         long confirmedRequests,
         LocalDateTime eventDate,
-        long id,
         UserShortDto initiator,
         boolean paid,
         String title,

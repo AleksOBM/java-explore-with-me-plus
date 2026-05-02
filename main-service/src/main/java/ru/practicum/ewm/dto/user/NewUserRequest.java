@@ -7,10 +7,10 @@ import lombok.Builder;
 @Builder
 public record NewUserRequest(
 
-		@NotBlank @Email
-		String email,
-
 		@NotBlank
-		String name
+		String name,
+
+		@NotBlank @Email
+		String email
 ) {
 }

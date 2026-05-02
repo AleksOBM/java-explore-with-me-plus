@@ -15,21 +15,36 @@ import ru.practicum.ewm.service.compilation.CompilationService;
 public class AdminCompilationController {
 	private final CompilationService compilationService;
 
+	/** Добавление новой подборки (подборка может не содержать событий)
+	 *
+	 * @param newCompilationDto данные новой подборки
+	 * @return {@link CompilationDto}
+	 */
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public CompilationDto createCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {
 		return compilationService.addCompilation(newCompilationDto);
 	}
 
-	@DeleteMapping("/{compilationId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delById(@PathVariable Long compilationId) {
-		compilationService.delById(compilationId);
+	/**
+	 *
+	 * @param compilationUpdateDto данные для обновления подборки
+	 * @param compId id подборки
+	 * @return {@link CompilationDto}
+	 */
+	@PatchMapping("/{compId}")
+	public CompilationDto updateCompilation(@RequestBody @Valid CompilationUpdateDto compilationUpdateDto,
+	                                        @PathVariable Long compId) {
+		return compilationService.updateCompilation(compId, compilationUpdateDto);
 	}
 
-	@PatchMapping("/{compilationId}")
-	public CompilationDto updateCompilation(@RequestBody @Valid CompilationUpdateDto compilationUpdateDto,
-	                                        @PathVariable Long compilationId) {
-		return compilationService.updateCompilation(compilationId, compilationUpdateDto);
+	/** Удаление подборки
+	 *
+	 * @param compId id подборки
+	 */
+	@DeleteMapping("/{compId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delById(@PathVariable Long compId) {
+		compilationService.delById(compId);
 	}
 }

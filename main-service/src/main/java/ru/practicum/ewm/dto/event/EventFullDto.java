@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Builder
 public record EventFullDto(
 
+        Long id,
+
         @NotBlank
         String annotation,
 
@@ -27,8 +29,6 @@ public record EventFullDto(
 
         @NotNull
         LocalDateTime eventDate,
-
-        Long id,
 
         @NotNull
         UserShortDto initiator,

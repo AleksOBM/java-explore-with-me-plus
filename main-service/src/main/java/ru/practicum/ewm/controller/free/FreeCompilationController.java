@@ -12,8 +12,22 @@ import java.util.List;
 @RequestMapping(path = "/compilations")
 @RequiredArgsConstructor
 public class FreeCompilationController {
+
 	private final CompilationService compilationService;
 
+	/**
+	 * Получение подборок событий
+	 * <p>
+	 * В случае, если по заданным фильтрам не найдено ни одной подборки, возвращает пустой список
+	 *
+	 * @param pinned искать только закрепленные/не закрепленные подборки
+	 * @param from количество элементов, которые нужно пропустить для формирования текущего набора
+	 * Default value : 0
+	 * @param size количество элементов в наборе
+	 * Default value : 10
+	 * @param request Данные HTTP-запроса
+	 * @return List<{@link CompilationDto}>
+	 */
 	@GetMapping
 	public List<CompilationDto> getCompilations(
 			@RequestParam(required = false) Boolean pinned,
@@ -30,9 +44,18 @@ public class FreeCompilationController {
 		return compilationService.getByFilter(filter, request);
 	}
 
-	@GetMapping("/{compilationId}")
-	public CompilationDto getCompilationById(@PathVariable Long compilationId,
+	/**
+	 * Получение подборки событий по его id
+	 *
+	 *
+	 *
+	 * @param compId id подборки
+	 * @param request Данные HTTP-запроса
+	 * @return {@link CompilationDto}
+	 */
+	@GetMapping("/{compId}")
+	public CompilationDto getCompilationById(@PathVariable Long compId,
 	                                         HttpServletRequest request) {
-		return compilationService.getById(compilationId, request);
+		return compilationService.getById(compId, request);
 	}
 }

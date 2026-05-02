@@ -9,6 +9,7 @@ import ru.practicum.ewm.model.enums.UserStateAction;
 import java.time.LocalDateTime;
 
 public record UpdateEventUserRequest(
+
 		@NotBlank
 		@Size(min = 20, max = 2000)
 		String annotation,

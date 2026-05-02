@@ -41,8 +41,8 @@ class AdminUserControllerTest {
 
     @Test
     void createUser_validRequest_shouldReturn201() throws Exception {
-        NewUserRequest request = new NewUserRequest("user@example.com", "Test User");
-        UserDto userDto = new UserDto("user@example.com", 1L, "Test User");
+        NewUserRequest request = new NewUserRequest("Test User", "user@example.com");
+        UserDto userDto = new UserDto(1L, "Test User", "user@example.com");
         when(userService.adminAddNewUser(any(NewUserRequest.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/admin/users")
@@ -56,7 +56,7 @@ class AdminUserControllerTest {
 
     @Test
     void createUser_blankName_shouldReturn400() throws Exception {
-        NewUserRequest request = new NewUserRequest("user@example.com", "");
+        NewUserRequest request = new NewUserRequest("", "user@example.com");
 
         mockMvc.perform(post("/admin/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -66,7 +66,7 @@ class AdminUserControllerTest {
 
     @Test
     void getUsers_shouldReturnList() throws Exception {
-        UserDto user = new UserDto("user@example.com", 1L, "Test User");
+        UserDto user = new UserDto(1L, "Test User", "user@example.com");
         when(userService.getUsers(any(), anyInt(), anyInt())).thenReturn(List.of(user));
 
         mockMvc.perform(get("/admin/users")

@@ -13,21 +13,39 @@ import ru.practicum.ewm.service.category.CategoryService;
 @RequiredArgsConstructor
 public class AdminCategoryController {
 
-    private final CategoryService categoryService;
+	private final CategoryService categoryService;
 
-    @SuppressWarnings("checkstyle:AnnotationLocation")
-    @PostMapping
+	/** Добавление новой категории. Обратите внимание: имя категории должно быть уникальным
+	 *
+	 * @param newCategoryDto данные добавляемой категории
+	 * @return CategoryDto
+	 */
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto addNewCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
-        return categoryService.adminAddNewCategory(newCategoryDto);
-    }
+	public CategoryDto addNewCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
+		return categoryService.adminAddNewCategory(newCategoryDto);
+	}
 
+	/** Изменение категории
+	 * <p>
+	 * Обратите внимание: имя категории должно быть уникальным
+	 *
+	 * @param catId id категории
+	 * @param categoryDto Данные категории для изменения
+	 * @return CategoryDto
+	 */
 	@PatchMapping("/{catId}")
 	public CategoryDto updateCategory(@PathVariable Long catId,
-									  @Valid @RequestBody CategoryDto categoryDto) {
+	                                  @Valid @RequestBody CategoryDto categoryDto) {
 		return categoryService.updateCategory(catId, categoryDto);
 	}
 
+	/** Удаление категории
+	 * <p>
+	 * Обратите внимание: с категорией не должно быть связано ни одного события.
+	 *
+	 * @param catId id категории
+	 */
 	@DeleteMapping("/{catId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteCategory(@PathVariable Long catId) {
