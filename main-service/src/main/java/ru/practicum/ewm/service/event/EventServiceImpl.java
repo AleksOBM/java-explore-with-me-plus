@@ -1,7 +1,9 @@
 package ru.practicum.ewm.service.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
@@ -10,7 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.dao.CategoryRepository;
 import ru.practicum.ewm.dao.EventRepository;
+import ru.practicum.ewm.dao.UserRepository;
 import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.StateMapper;
@@ -20,13 +24,11 @@ import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.model.enums.AdminStateAction;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.model.enums.UserStateAction;
-import ru.practicum.ewm.service.category.CategoryService;
-import ru.practicum.ewm.service.user.UserService;
-import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.error.exception.ConflictException;
+import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.ewm.util.specification.EventSpecifications;
 import ru.practicum.ewm.util.specification.SpecBuilder;
-import ru.practicum.ewm.util.statistic.StatService;
+import ru.practicum.ewm.util.statistic.StatRepository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -37,17 +39,17 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EventServiceImpl implements EventService {
 
-	private final EventRepository eventRepository;
-	private final UtilService utilService;
-	private final StatService statService;
-	private final UserService userService;
-	private final CategoryService categoryService;
+	StatRepository statRepository;
+	EventRepository eventRepository;
+	UserRepository userRepository;
+	CategoryRepository categoryRepository;
 
 	@Override
 	public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
-		statService.sendHitRequest(request);
+		statRepository.sendHitRequest(request);
 
 		SpecBuilder<Event> builder = SpecBuilder.<Event>builder()
 				.and(EventSpecifications.isPublished())
@@ -98,15 +100,15 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public EventFullDto getFreeEventById(Long eventId, HttpServletRequest request) {
-		statService.sendHitRequest(request);
-		Event event = utilService.getEventById(eventId);
+		statRepository.sendHitRequest(request);
+		Event event = getEventById(eventId);
 		return EventMapper.toEventFullDto(event);
 	}
 
 	@Override
 	public EventFullDto userAddNewEvent(Long userId, @NonNull NewEventDto newEventDto) {
-		User initiator = utilService.getUserById(userId);
-		Category category = utilService.getCategoryById(newEventDto.category());
+		User initiator = getUserById(userId);
+		Category category = getCategoryById(newEventDto.category());
 
 		Event event = EventMapper.toEntity(
 				newEventDto,
@@ -150,7 +152,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request) {
-		Event oldEvent = utilService.getEventById(eventId);
+		Event oldEvent = getEventById(eventId);
 
 		Event newEvent = EventMapper.update(
 				oldEvent,
@@ -160,7 +162,7 @@ public class EventServiceImpl implements EventService {
 				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
 				request.category() == null ?
 						Optional.empty() :
-						Optional.of(utilService.getCategoryById(request.category()))
+						Optional.of(getCategoryById(request.category()))
 		);
 
 		return EventMapper.toEventFullDto(newEvent);
@@ -168,7 +170,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
-		userService.throwIfUserNotFound(userId);
+		checkUser(userId);
 
 		return eventRepository.findByInitiatorId(userId, PageRequest.of(from / size, size)).stream()
 				.map(EventMapper::toEventShortDto)
@@ -177,9 +179,9 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public EventFullDto findEventById(Long userId, Long eventId) {
-		userService.throwIfUserNotFound(userId);
+		checkUser(userId);
 
-		Event event = utilService.getEventById(eventId);
+		Event event = getEventById(eventId);
 
 		if (!event.getInitiator().getId().equals(userId)) {
 			throw new ConflictException("Пользователь должен быть инициатором");
@@ -190,7 +192,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public EventFullDto patchEvent(Long userId, Long eventId, UpdateEventUserRequest request) {
-		userService.throwIfUserNotFound(userId);
+		checkUser(userId);
 		return patchEvent(eventId, request, 2, false);
 	}
 
@@ -208,7 +210,7 @@ public class EventServiceImpl implements EventService {
 				}
 			}
 
-			Event event = utilService.getEventById(eventId);
+			Event event = getEventById(eventId);
 			UserStateAction action = request.stateAction();
 
 			if (action != null) {
@@ -225,7 +227,7 @@ public class EventServiceImpl implements EventService {
 			}
 
 			if (request.category() != null) {
-				Category category = categoryService.findEntityById(request.category());
+				Category category = getCategoryById(request.category());
 				event.setCategory(category);
 			}
 
@@ -240,5 +242,31 @@ public class EventServiceImpl implements EventService {
 			log.debug("Конфликт вовремя обновления ивента {}", request, e);
 			throw new ConflictException("Конфликт с другим ивентом");
 		}
+	}
+
+	private void checkUser(Long userId) {
+		if (!userRepository.existsById(userId)) {
+			throw new NotFoundException("Пользователь с id=" + userId + " не найден");
+		}
+	}
+
+	@NonNull
+	private User getUserById(long userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
+	}
+
+	@NonNull
+	private Event getEventById(long eventId) {
+		return eventRepository.findById(eventId).orElseThrow(
+				() -> new NotFoundException("Событие с id=" + eventId + " не найдено")
+		);
+	}
+
+	@NonNull
+	private Category getCategoryById(long categoryId) {
+		return categoryRepository.findById(categoryId).orElseThrow(
+				() -> new NotFoundException("Категория с id=" + categoryId + " не найдена")
+		);
 	}
 }

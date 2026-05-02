@@ -1,10 +1,13 @@
 package ru.practicum.ewm.service.compilation;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dao.CompilationRepository;
@@ -16,9 +19,8 @@ import ru.practicum.ewm.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.mapper.CompilationMapper;
 import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.util.UtilService;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
-import ru.practicum.ewm.util.statistic.StatService;
+import ru.practicum.ewm.util.statistic.StatRepository;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,21 +28,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CompilationServiceImpl implements CompilationService {
 
-	private final CompilationRepository compilationRepository;
-	private final EventRepository eventRepository;
-	private final UtilService utilService;
-	private final StatService statService;
+	CompilationRepository compilationRepository;
+	EventRepository eventRepository;
+	StatRepository statRepository;
 
 	@Override
 	public CompilationDto getById(Long compilationId, HttpServletRequest request) {
-		statService.sendHitRequest(request);
+		statRepository.sendHitRequest(request);
 
-		Compilation compilation = utilService.getCompilationById(compilationId);
+		Compilation compilation = getCompilationById(compilationId);
 
 		return CompilationMapper.toCompilationDto(compilation);
 	}
@@ -48,13 +50,13 @@ public class CompilationServiceImpl implements CompilationService {
 	@Override
 	@Transactional
 	public void delById(Long compilationId) {
-		utilService.getCompilationById(compilationId);
+		getCompilationById(compilationId);
 		compilationRepository.deleteById(compilationId);
 	}
 
 	@Override
 	@Transactional
-	public CompilationDto addCompilation(NewCompilationDto compilationDto) {
+	public CompilationDto addCompilation(@NonNull NewCompilationDto compilationDto) {
 		Set<Event> events = new HashSet<>();
 
 		if (compilationDto.getEvents() != null && !compilationDto.getEvents().isEmpty()) {
@@ -73,8 +75,8 @@ public class CompilationServiceImpl implements CompilationService {
 
 	@Override
 	@Transactional
-	public CompilationDto updateCompilation(Long compilationId, CompilationUpdateDto compilationUpdateDto) {
-		Compilation compilationInDb = utilService.getCompilationById(compilationId);
+	public CompilationDto updateCompilation(Long compilationId, @NonNull CompilationUpdateDto compilationUpdateDto) {
+		Compilation compilationInDb = getCompilationById(compilationId);
 
 		if (compilationUpdateDto.getEvents() != null) {
 			List<Event> eventsUpdate = new ArrayList<>();
@@ -101,7 +103,7 @@ public class CompilationServiceImpl implements CompilationService {
 	}
 
 	@Override
-	public List<CompilationDto> getByFilter(CompilationSearchFilter filter, HttpServletRequest request) {
+	public List<CompilationDto> getByFilter(@NonNull CompilationSearchFilter filter, HttpServletRequest request) {
 		Pageable pageable = PageRequest.of(filter.getFrom() / filter.getSize(), filter.getSize());
 		Page<Compilation> compilations;
 
@@ -114,5 +116,12 @@ public class CompilationServiceImpl implements CompilationService {
 		return compilations.getContent().stream()
 				.map(CompilationMapper::toCompilationDto)
 				.collect(Collectors.toList());
+	}
+
+	@NonNull
+	private Compilation getCompilationById(long compilationId) {
+		return compilationRepository.findById(compilationId).orElseThrow(
+				() -> new NotFoundException("Подборка с id=" + compilationId + " не найдена")
+		);
 	}
 }

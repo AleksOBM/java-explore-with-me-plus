@@ -15,6 +15,7 @@ import ru.practicum.ewm.MainServiceApp;
 import ru.practicum.ewm.dao.CompilationRepository;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dao.RequestRepository;
+import ru.practicum.ewm.dao.UserRepository;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.FreeGetDto;
@@ -24,8 +25,7 @@ import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.category.CategoryService;
 import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.service.user.UserService;
-import ru.practicum.ewm.util.UtilService;
-import ru.practicum.ewm.util.statistic.StatService;
+import ru.practicum.ewm.util.statistic.StatRepository;
 import ru.practicum.stat.client.StatClient;
 
 import java.time.LocalDateTime;
@@ -52,10 +52,7 @@ class FreeEventControllerTest {
 	private EventService eventService;
 
 	@MockitoBean
-	private UtilService utilService;
-
-	@MockitoBean
-	private StatService statService;
+	private StatRepository statRepository;
 
 	@MockitoBean
 	private CategoryService categoryService;
@@ -68,6 +65,9 @@ class FreeEventControllerTest {
 
 	@MockitoBean
 	CompilationRepository compilationRepository;
+
+	@MockitoBean
+	UserRepository userRepository;
 
 	@MockitoBean
 	RequestRepository requestRepository;
@@ -116,7 +116,7 @@ class FreeEventControllerTest {
 
 		List<EventShortDto> shortEvents = List.of(EventMapper.toEventShortDto(event));
 
-		doNothing().when(statService).sendHitRequest(any(HttpServletRequest.class));
+		doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
 		when(eventService.getFreeEvents(eq(getDto), any(HttpServletRequest.class)))
 				.thenReturn(shortEvents);
 
@@ -148,7 +148,7 @@ class FreeEventControllerTest {
 	void getFreeEventById() {
 		EventFullDto dto = EventMapper.toEventFullDto(event);
 
-		doNothing().when(statService).sendHitRequest(any(HttpServletRequest.class));
+		doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
 		when(eventService.getFreeEventById(eq(1L), any(HttpServletRequest.class)))
 				.thenReturn(dto);
 

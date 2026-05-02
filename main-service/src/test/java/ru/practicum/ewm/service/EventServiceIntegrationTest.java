@@ -20,7 +20,7 @@ import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.event.EventService;
-import ru.practicum.ewm.util.statistic.StatService;
+import ru.practicum.ewm.util.statistic.StatRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
 class EventServiceIntegrationTest {
 
 	@MockitoBean
-	StatService statService;
+	StatRepository statRepository;
 
 	@Autowired
 	EventService eventService;
@@ -91,13 +91,13 @@ class EventServiceIntegrationTest {
 		em.merge(publishedPast);
 		// endregion setup
 
-		doNothing().when(statService).sendHitRequest(any(HttpServletRequest.class));
+		doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
 
 		List<EventShortDto> result =
 				eventService.getFreeEvents(dto, mock(HttpServletRequest.class));
 
 		assertThat(result).hasSize(1);
 		assertThat(result).contains(EventMapper.toEventShortDto(publishedFuture.toBuilder().id(1L).build()));
-		verify(statService).sendHitRequest(any(HttpServletRequest.class));
+		verify(statRepository).sendHitRequest(any(HttpServletRequest.class));
 	}
 }

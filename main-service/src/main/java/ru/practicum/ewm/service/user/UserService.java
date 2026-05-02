@@ -11,8 +11,6 @@ public interface UserService {
     @Transactional
     UserDto adminAddNewUser(NewUserRequest newUserRequest);
 
-    void throwIfUserNotFound(Long userId);
-
     List<UserDto> getUsers(List<Long> ids, int from, int size);
 
     @Transactional

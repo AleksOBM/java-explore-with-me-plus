@@ -26,12 +26,6 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUserDto(userRepository.save(user));
     }
 
-    public void throwIfUserNotFound(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь с id=" + userId + " не найден");
-        }
-    }
-
     @Override
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
         PageRequest page = PageRequest.of(from / size, size);
@@ -49,7 +43,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(Long userId) {
-        throwIfUserNotFound(userId);
+        checkUser(userId);
         userRepository.deleteById(userId);
+    }
+
+    private void checkUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь с id=" + userId + " не найден");
+        }
     }
 }

@@ -6,7 +6,7 @@ import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.ParticipationRequest;
 import ru.practicum.ewm.model.User;
 
-import static ru.practicum.ewm.util.UtilService.*;
+import static ru.practicum.ewm.util.Utils.*;
 
 @Component
 public class RequestMapper {

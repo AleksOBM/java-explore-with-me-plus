@@ -3,16 +3,16 @@ package ru.practicum.ewm.util.statistic;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.practicum.ewm.util.error.exception.HitRequestException;
 import ru.practicum.stat.client.StatClient;
 import ru.practicum.stat.dto.EndpointHitDto;
 
 import java.time.LocalDateTime;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class StatService {
+public class StatRepository {
 
     @Value("${app.name}")
     String appName;

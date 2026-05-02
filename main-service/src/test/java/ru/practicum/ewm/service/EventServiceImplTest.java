@@ -22,11 +22,11 @@ import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.event.EventServiceImpl;
-import ru.practicum.ewm.util.UtilService;
-import ru.practicum.ewm.util.statistic.StatService;
+import ru.practicum.ewm.util.statistic.StatRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -38,10 +38,7 @@ import static org.mockito.Mockito.*;
 class EventServiceImplTest {
 
     @Mock
-    UtilService utilService;
-
-    @Mock
-    StatService statService;
+    StatRepository statRepository;
 
     @Mock
     EventRepository eventRepository;
@@ -98,7 +95,7 @@ class EventServiceImplTest {
             Page<Event> page = new PageImpl<>(List.of(event));
             // endregion setup
 
-            doNothing().when(statService).sendHitRequest(httpServletRequest);
+            doNothing().when(statRepository).sendHitRequest(httpServletRequest);
             when(eventRepository.findAll(
                     ArgumentMatchers.<Specification<Event>>any(),
                     ArgumentMatchers.any(Pageable.class)
@@ -107,7 +104,7 @@ class EventServiceImplTest {
             List<EventShortDto> result = eventService.getFreeEvents(getDto, httpServletRequest);
 
             assertThat(result, contains(EventMapper.toEventShortDto(event)));
-            verify(statService).sendHitRequest(httpServletRequest);
+            verify(statRepository).sendHitRequest(httpServletRequest);
         }
 
         @Test
@@ -137,13 +134,13 @@ class EventServiceImplTest {
 
         @Test
         void basicFlow() {
-            doNothing().when(statService).sendHitRequest(any(HttpServletRequest.class));
-            when(utilService.getEventById(event.getId())).thenReturn(event);
+            doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
+            when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
 
             EventFullDto result = eventService.getFreeEventById(event.getId(), httpServletRequest);
 
             assertThat(result, is(EventMapper.toEventFullDto(event)));
-            verify(statService).sendHitRequest(httpServletRequest);
+            verify(statRepository).sendHitRequest(httpServletRequest);
         }
     }
 }

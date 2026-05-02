@@ -3,7 +3,6 @@ package ru.practicum.ewm.service.category;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.dto.category.NewCategoryDto;
-import ru.practicum.ewm.model.Category;
 
 import java.util.List;
 
@@ -11,8 +10,6 @@ public interface CategoryService {
 
     @Transactional
     CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
-
-    Category findEntityById(Long category);
 
     List<CategoryDto> findAll(Integer from, Integer size);
 
