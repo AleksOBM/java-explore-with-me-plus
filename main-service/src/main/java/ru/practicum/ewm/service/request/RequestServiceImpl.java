@@ -21,6 +21,8 @@ import ru.practicum.ewm.model.enums.ParticipationStatus;
 import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +68,7 @@ public class RequestServiceImpl implements RequestService {
 		}
 
 		for (ParticipationRequest pr : requests) {
-			if (!ParticipationStatus.PENDING.equals(pr.getStatus())) {
+			if (!pr.getStatus().equals(ParticipationStatus.PENDING)) {
 				throw new ConflictException("Статус можно изменить только у заявок в состоянии рассмотрения");
 			}
 
@@ -128,6 +130,7 @@ public class RequestServiceImpl implements RequestService {
 				.requester(requester)
 				.event(event)
 				.status(ParticipationStatus.PENDING)
+				.created(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
 				.build();
         /* заглушка на проход модерации
         if (!event.getRequestModeration() || limit == 0) {

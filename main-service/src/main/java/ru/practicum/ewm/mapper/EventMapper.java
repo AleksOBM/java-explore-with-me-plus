@@ -70,10 +70,10 @@ public class EventMapper {
 				.eventDate(newEventDto.eventDate())
 				.initiator(initiator)
 				.location(newEventDto.location())
-				.paid(newEventDto.paid())
-				.participantLimit(newEventDto.participantLimit())
+				.paid(newEventDto.paid() != null && newEventDto.paid())
+				.participantLimit(newEventDto.participantLimit() == null ? 0 : newEventDto.participantLimit())
 				.publishedOn(publishedOn)
-				.requestModeration(newEventDto.requestModeration())
+				.requestModeration(newEventDto.requestModeration() == null || newEventDto.requestModeration())
 				.state(state)
 				.title(newEventDto.title())
 				.views(views)
@@ -101,11 +101,11 @@ public class EventMapper {
 				.build();
 	}
 
-	public static Event update(Event oldEvent,
-	                           UpdateEventAdminRequest request,
+	public static Event update(@NonNull Event oldEvent,
+	                           @NonNull UpdateEventAdminRequest request,
 	                           EventState state,
 	                           LocalDateTime publishedOn,
-	                           Optional<Category> category) {
+	                           @NonNull Optional<Category> category) {
 
 		return oldEvent.toBuilder()
 				.annotation(request.annotation() != null ?

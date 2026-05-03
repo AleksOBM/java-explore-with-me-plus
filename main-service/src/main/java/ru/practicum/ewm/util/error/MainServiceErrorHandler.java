@@ -1,85 +1,147 @@
 package ru.practicum.ewm.util.error;
 
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.HitRequestException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class MainServiceErrorHandler {
 
-	/// 500
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ResponseStatus(INTERNAL_SERVER_ERROR)
+	public ApiError handleSomeError(final Exception ex) {
+		String stackTrace = getStackTrace(ex);
+		return new ApiError(
+				INTERNAL_SERVER_ERROR,
+				"Непредвиденная ошибка",
+				ex.getMessage(),
+				stackTrace,
+				LocalDateTime.now()
+		);
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(INTERNAL_SERVER_ERROR)
 	public ApiError handleHitRequestException(HitRequestException e) {
 		log.info("500 {}", e.getMessage(), e);
 		String stackTrace = getStackTrace(e);
-		return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error ....", e.getMessage(), stackTrace);
+		return new ApiError(
+				INTERNAL_SERVER_ERROR,
+				"Error ....",
+				e.getMessage(),
+				stackTrace,
+				LocalDateTime.now()
+		);
 	}
 
-	/// 400
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ApiError> handleValidation(@NonNull MethodArgumentNotValidException ex) {
-		log.warn("400 Bad Request (validation): {}", ex.getMessage());
-		ApiError error = new ApiError(
-				HttpStatus.BAD_REQUEST,
+	@ExceptionHandler
+	@ResponseStatus(BAD_REQUEST)
+	public ApiError handleMissingServletRequestParameter(@NonNull final MissingServletRequestParameterException ex) {
+		log.warn("400 Bad Request (MissingServletRequestParameter): {}", ex.getMessage());
+		String stackTrace = getStackTrace(ex);
+		return new ApiError(
+				BAD_REQUEST,
+				"MissingServletRequestParameter",
+				ex.getMessage(),
+				stackTrace,
+				LocalDateTime.now()
+		);
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(BAD_REQUEST)
+	public ApiError handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex) {
+		log.warn("400 Bad Request (ArgumentNotValid): {}", ex.getMessage());
+		return new ApiError(
+				BAD_REQUEST,
 				"Incorrectly made request.",
 				"Field: " + Objects.requireNonNull(ex.getBindingResult().getFieldError()).getField()
 						+ ". Error: " + ex.getBindingResult().getFieldError().getDefaultMessage(),
-				getStackTrace(ex)
+				getStackTrace(ex),
+				LocalDateTime.now()
 		);
-		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 
-	/// 400
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ApiError> handleBadRequest(@NonNull IllegalArgumentException ex) {
-		log.warn("400 Bad Request: {}", ex.getMessage());
-		ApiError error = new ApiError(
-				HttpStatus.BAD_REQUEST,
+	@ExceptionHandler
+	@ResponseStatus(BAD_REQUEST)
+	public ApiError handleHandlerMethodValidationException(@NonNull HandlerMethodValidationException ex) {
+		log.warn("400 Bad Request (HandlerMethodValidationException): {}", ex.getMessage());
+		return new ApiError(
+				BAD_REQUEST,
+				"HandlerMethodValidationException",
+				ex.getMessage(),
+				getStackTrace(ex),
+				LocalDateTime.now()
+		);
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(BAD_REQUEST)
+	public ApiError handleIllegalArgumentException(@NonNull IllegalArgumentException ex) {
+		log.warn("400 Bad Request (IllegalArgument): {}", ex.getMessage());
+		return new ApiError(
+				BAD_REQUEST,
 				"Incorrectly made request.",
 				ex.getMessage(),
-				getStackTrace(ex)
+				getStackTrace(ex),
+				LocalDateTime.now()
 		);
-		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 
-	/// 404
-	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<ApiError> handleNotFound(@NonNull NotFoundException ex) {
+	@ExceptionHandler
+	@ResponseStatus(BAD_REQUEST)
+	public ApiError handleValidationException(@NonNull ValidationException ex) {
+		log.warn("400 Bad Request (ValidationException): {}", ex.getMessage());
+		return new ApiError(
+				BAD_REQUEST,
+				"Incorrectly made request.",
+				ex.getMessage(),
+				getStackTrace(ex),
+				LocalDateTime.now()
+		);
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(NOT_FOUND)
+	public ApiError handleNotFound(@NonNull NotFoundException ex) {
 		log.warn("404 Not Found: {}", ex.getMessage());
-		ApiError error = new ApiError(
-				HttpStatus.NOT_FOUND,
+		return new ApiError(
+				NOT_FOUND,
 				"The required object was not found.",
 				ex.getMessage(),
-				getStackTrace(ex)
+				getStackTrace(ex),
+				LocalDateTime.now()
 		);
-		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 	}
 
-	/// 409
-	@ExceptionHandler(ConflictException.class)
-	public ResponseEntity<ApiError> handleConflict(@NonNull ConflictException ex) {
+	@ExceptionHandler
+	@ResponseStatus(CONFLICT)
+	public ApiError handleConflict(@NonNull ConflictException ex) {
 		log.warn("409 Conflict: {}", ex.getMessage());
-		ApiError error = new ApiError(
-				HttpStatus.CONFLICT,
+		return new ApiError(
+				CONFLICT,
 				"For the requested operation the conditions are not met.",
 				ex.getMessage(),
-				getStackTrace(ex)
+				getStackTrace(ex),
+				LocalDateTime.now()
 		);
-		return new ResponseEntity<>(error, HttpStatus.CONFLICT);
 	}
 
 	private String getStackTrace(@NonNull Exception e) {

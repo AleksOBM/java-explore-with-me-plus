@@ -1,7 +1,6 @@
 package ru.practicum.ewm.service.event;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
@@ -21,7 +20,6 @@ public interface EventService {
 	@Transactional(readOnly = true)
 	List<EventFullDto> adminGetEvents(AdminGetDto adminGetDto);
 
-	@Transactional(propagation = Propagation.REQUIRED)
 	EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request);
 
 	List<EventShortDto> findByUserId(Long userId, Integer from, Integer size);

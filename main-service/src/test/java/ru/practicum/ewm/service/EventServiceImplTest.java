@@ -135,6 +135,7 @@ class EventServiceImplTest {
         @Test
         void basicFlow() {
             doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
+            when(eventRepository.existsByIdAndState(event.getId(), EventState.PUBLISHED)).thenReturn(Boolean.TRUE);
             when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
 
             EventFullDto result = eventService.getFreeEventById(event.getId(), httpServletRequest);

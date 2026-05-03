@@ -1,6 +1,5 @@
 package ru.practicum.ewm.dto.event;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import ru.practicum.ewm.model.Location;
@@ -11,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public record UpdateEventAdminRequest(
 
+		@Size(min = 20, max = 2000)
 		String annotation,
 
 		Long category,
@@ -26,10 +26,8 @@ public record UpdateEventAdminRequest(
 
 		Integer participantLimit,
 
-		@NotNull
 		Boolean requestModeration,
 
-		@NotNull
 		AdminStateAction stateAction,
 
 		@Size(min = 3, max = 120)

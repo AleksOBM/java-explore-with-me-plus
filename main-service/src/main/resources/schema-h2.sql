@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS requests (
         REFERENCES events(id),
 
     CONSTRAINT chk_requests_status
-        CHECK (status IN ('PENDING','PUBLISHED','CANCELED'))
+        CHECK (status IN ('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELED'))
 );
 
 CREATE TABLE IF NOT EXISTS compilations (

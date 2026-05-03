@@ -1,6 +1,7 @@
 package ru.practicum.ewm.service.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -100,13 +101,26 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public EventFullDto getFreeEventById(Long eventId, HttpServletRequest request) {
+		if (!eventRepository.existsByIdAndState(eventId, EventState.PUBLISHED)) {
+			throw new NotFoundException("Событие с id=" + eventId + " не существует или не опубликовано.");
+		}
 		statRepository.sendHitRequest(request);
 		Event event = getEventById(eventId);
+
 		return EventMapper.toEventFullDto(event);
 	}
 
 	@Override
 	public EventFullDto userAddNewEvent(Long userId, @NonNull NewEventDto newEventDto) {
+		if (newEventDto.participantLimit() != null && newEventDto.participantLimit() < 0) {
+			throw new ValidationException("Ограничение на количество участников должно быть положительным числом");
+		}
+
+		if (newEventDto.eventDate() != null && newEventDto.eventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+			throw new ValidationException("Начало события не может быть раньше, " +
+					"чем через два часа от текущего момента");
+		}
+
 		User initiator = getUserById(userId);
 		Category category = getCategoryById(newEventDto.category());
 
@@ -125,7 +139,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public List<EventFullDto> adminGetEvents(AdminGetDto dto) {
+	public List<EventFullDto> adminGetEvents(@NonNull AdminGetDto dto) {
 		Specification<Event> spec = SpecBuilder.<Event>builder()
 				.andIf(dto.users() != null && !dto.users().isEmpty(),
 						() -> EventSpecifications.hasUsers(dto.users()))
@@ -151,21 +165,58 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest request) {
+	public EventFullDto adminUpdateEvent(Long eventId, @NonNull UpdateEventAdminRequest request) {
 		Event oldEvent = getEventById(eventId);
+		Event newEvent;
 
-		Event newEvent = EventMapper.update(
-				oldEvent,
-				request,
-				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ?
-						EventState.CANCELED : EventState.PUBLISHED,
-				request.stateAction().equals(AdminStateAction.REJECT_EVENT) ? null : LocalDateTime.now(),
-				request.category() == null ?
-						Optional.empty() :
-						Optional.of(getCategoryById(request.category()))
-		);
+		if (request.eventDate() != null && request.eventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+			throw new ValidationException("Дата события должна быть не может быть раньше, " +
+					"чем через два часа от текущего момента");
+		}
 
-		return EventMapper.toEventFullDto(newEvent);
+		if (request.stateAction() == null) {
+			newEvent = EventMapper.update(
+					oldEvent,
+					request,
+					oldEvent.getState(),
+					oldEvent.getPublishedOn(),
+					request.category() == null ?
+							Optional.empty() :
+							Optional.of(getCategoryById(request.category()))
+			);
+		} else {
+
+			if (request.stateAction().equals(AdminStateAction.PUBLISH_EVENT) &&
+					oldEvent.getState().equals(EventState.PUBLISHED)) {
+				throw new ConflictException("Событие с id=" + oldEvent.getId() + " уже опубликовано");
+			}
+
+			if (request.stateAction().equals(AdminStateAction.PUBLISH_EVENT) &&
+					oldEvent.getState().equals(EventState.CANCELED)) {
+				throw new ConflictException("Публикация события с id=" + oldEvent.getId() +
+						" уже отменена пользователем");
+			}
+
+			if (request.stateAction().equals(AdminStateAction.REJECT_EVENT) &&
+					oldEvent.getState().equals(EventState.PUBLISHED)) {
+				throw new ConflictException("Событие с id=" + oldEvent.getId() +
+						" уже опубликовано, отмена не возможна");
+			}
+
+			newEvent = EventMapper.update(
+					oldEvent,
+					request,
+					request.stateAction().equals(AdminStateAction.REJECT_EVENT) ?
+							EventState.CANCELED : EventState.PUBLISHED,
+					request.stateAction().equals(AdminStateAction.REJECT_EVENT) ?
+							null : LocalDateTime.now(),
+					request.category() == null ?
+							Optional.empty() :
+							Optional.of(getCategoryById(request.category()))
+			);
+		}
+
+		return EventMapper.toEventFullDto(eventRepository.save(newEvent));
 	}
 
 	@Override
@@ -191,12 +242,16 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public EventFullDto patchEvent(Long userId, Long eventId, UpdateEventUserRequest request) {
+	public EventFullDto patchEvent(Long userId, Long eventId, @NonNull UpdateEventUserRequest request) {
+		if (request.participantLimit() != null && request.participantLimit() < 0) {
+			throw new ValidationException("Ограничение на количество участников должно быть положительным числом");
+		}
+
 		checkUser(userId);
 		return patchEvent(eventId, request, 2, false);
 	}
 
-	private EventFullDto patchEvent(Long eventId, UpdateEventUserRequest request, long hoursBeforeStart,
+	private EventFullDto patchEvent(Long eventId, @NonNull UpdateEventUserRequest request, long hoursBeforeStart,
 	                                boolean isAdmin) {
 		try {
 			if (request.eventDate() != null) {

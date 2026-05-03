@@ -7,5 +7,8 @@ import ru.practicum.ewm.model.User;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
     List<User> findAllByIdIn(List<Long> ids, Pageable pageable);
+
+    boolean existsByEmail(String email);
 }

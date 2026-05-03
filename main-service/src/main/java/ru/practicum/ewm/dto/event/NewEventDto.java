@@ -4,38 +4,46 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.model.Location;
 
 import java.time.LocalDateTime;
 
-@Builder
-public record NewEventDto(
+@Data
+@Builder()
+@Accessors(fluent = true)
+@FieldDefaults(makeFinal = true)
+public class NewEventDto {
 
-        @NotBlank
-        @Size(min = 20, max = 2000)
-        String annotation,
+		@NotBlank
+		@Size(min = 20, max = 2000)
+		String annotation;
 
-        @NotNull
-        Long category,
+		@NotNull
+		Long category;
 
-        @NotBlank
-        @Size(min = 20, max = 7000)
-        String description,
+		@NotBlank
+		@Size(min = 20, max = 7000)
+		String description;
 
-        @NotNull
-        LocalDateTime eventDate,
+		@NotNull
+		LocalDateTime eventDate;
 
-        @NotNull
-        Location location,
+		@NotNull
+		Location location;
 
-        Boolean paid,
+		@Builder.Default
+		Boolean paid = false;
 
-        Integer participantLimit,
+		@Builder.Default
+		Integer participantLimit = 0;
 
-        Boolean requestModeration,
+		@Builder.Default
+		Boolean requestModeration = true;
 
-        @NotBlank
-        @Size(min = 3, max = 120)
-        String title
-) {
+		@NotBlank
+		@Size(min = 3, max = 120)
+		String title;
 }
