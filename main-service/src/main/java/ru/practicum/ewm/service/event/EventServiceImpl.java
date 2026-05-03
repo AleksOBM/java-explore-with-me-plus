@@ -254,18 +254,23 @@ public class EventServiceImpl implements EventService {
 	private EventFullDto patchEvent(Long eventId, @NonNull UpdateEventUserRequest request, long hoursBeforeStart,
 	                                boolean isAdmin) {
 		try {
-			if (request.eventDate() != null) {
-				Instant deadline = Instant.now().plus(hoursBeforeStart, ChronoUnit.HOURS);
-				Instant eventDate = Instant.from(request.eventDate());
+			Event event = getEventById(eventId);
 
-				if (!eventDate.isAfter(deadline)) {
+			if (!isAdmin && event.getState() == EventState.PUBLISHED) {
+				throw new ConflictException("Нельзя редактировать опубликованное событие");
+			}
+
+			if (request.eventDate() != null) {
+				LocalDateTime eventDateTime = request.eventDate();
+				LocalDateTime minDateTime = LocalDateTime.now().plusHours(hoursBeforeStart);
+
+				if (!isAdmin && eventDateTime.isBefore(minDateTime)) {
 					throw new ConflictException(
-							"Дата ивента не может быть раньше " + hoursBeforeStart + " часов назад"
+							String.format("Дата события должна быть не ранее чем за %d часа(ов) до начала", hoursBeforeStart)
 					);
 				}
 			}
 
-			Event event = getEventById(eventId);
 			UserStateAction action = request.stateAction();
 
 			if (action != null) {

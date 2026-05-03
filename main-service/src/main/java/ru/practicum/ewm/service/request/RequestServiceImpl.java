@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dao.EventRepository;
 import ru.practicum.ewm.dao.RequestRepository;
 import ru.practicum.ewm.dao.UserRepository;
@@ -24,6 +25,7 @@ import ru.practicum.ewm.util.error.exception.NotFoundException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -59,10 +61,19 @@ public class RequestServiceImpl implements RequestService {
 		List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
 		List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
 
+		boolean isModerationOff = !event.isRequestModeration() || limit == 0;
+		boolean idsEmpty = request.requestIds() == null || request.requestIds().isEmpty();
+
+		if (isModerationOff || idsEmpty) {
+			return EventRequestStatusUpdateResult.builder()
+					.confirmedRequests(Collections.emptyList())
+					.rejectedRequests(Collections.emptyList())
+					.build();
+		}
+
 		int countConfirmed = requestRepository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED);
 		List<ParticipationRequest> requests = requestRepository.findAllByIdIn(request.requestIds());
 
-		// владелец хочет подтвердить, а лимит исчерпан
 		if (request.status().name().equals(ParticipationStatus.CONFIRMED.name()) && countConfirmed >= limit) {
 			throw new ConflictException("Достигнут лимит подтвержденных заявок");
 		}
@@ -104,6 +115,7 @@ public class RequestServiceImpl implements RequestService {
 				.toList();
 	}
 
+	@Transactional
 	public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
 		User requester = getUserById(userId);
 		Event event = getEventById(eventId);
@@ -121,22 +133,35 @@ public class RequestServiceImpl implements RequestService {
 		}
 
 		int limit = event.getParticipantLimit();
+		if (limit != 0) {
+			long confirmedCount = requestRepository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED);
 
-		if (limit != 0 && requestRepository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED) >= limit) {
-			throw new ConflictException("Достигнут лимит запросов на участие");
+			if (event.isRequestModeration()) {
+				long pendingCount = requestRepository.countByEventIdAndStatus(eventId, ParticipationStatus.PENDING);
+				if (confirmedCount + pendingCount >= limit) {
+					throw new ConflictException("Достигнут лимит запросов на участие");
+				}
+			} else {
+				if (confirmedCount >= limit) {
+					throw new ConflictException("Достигнут лимит запросов на участие");
+				}
+			}
+		}
+
+		ParticipationStatus status;
+
+		if (!event.isRequestModeration() || limit == 0) {
+			status = ParticipationStatus.CONFIRMED;
+		} else {
+			status = ParticipationStatus.PENDING;
 		}
 
 		ParticipationRequest request = ParticipationRequest.builder()
 				.requester(requester)
 				.event(event)
-				.status(ParticipationStatus.PENDING)
+				.status(status)
 				.created(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS))
 				.build();
-        /* заглушка на проход модерации
-        if (!event.getRequestModeration() || limit == 0) {
-            request.setStatus(ParticipationStatus.CONFIRMED);
-        }
-        */
 
 		return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
 	}
