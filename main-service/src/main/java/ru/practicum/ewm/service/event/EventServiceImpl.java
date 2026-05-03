@@ -15,6 +15,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dao.CategoryRepository;
 import ru.practicum.ewm.dao.EventRepository;
+import ru.practicum.ewm.dao.RequestRepository;
 import ru.practicum.ewm.dao.UserRepository;
 import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.mapper.EventMapper;
@@ -24,6 +25,7 @@ import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.model.enums.AdminStateAction;
 import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.model.enums.ParticipationStatus;
 import ru.practicum.ewm.model.enums.UserStateAction;
 import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
@@ -33,7 +35,6 @@ import ru.practicum.ewm.util.statistic.StatRepository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,7 @@ public class EventServiceImpl implements EventService {
 	EventRepository eventRepository;
 	UserRepository userRepository;
 	CategoryRepository categoryRepository;
+	RequestRepository requestRepository;
 
 	@Override
 	public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
@@ -106,6 +108,10 @@ public class EventServiceImpl implements EventService {
 		}
 		statRepository.sendHitRequest(request);
 		Event event = getEventById(eventId);
+
+		event.setViews(statRepository.getStat(List.of(request.getRequestURI())).size());
+
+		event.setConfirmedRequests(getConfirmedRequests(eventId));
 
 		return EventMapper.toEventFullDto(event);
 	}
@@ -265,8 +271,9 @@ public class EventServiceImpl implements EventService {
 				LocalDateTime minDateTime = LocalDateTime.now().plusHours(hoursBeforeStart);
 
 				if (!isAdmin && eventDateTime.isBefore(minDateTime)) {
-					throw new ConflictException(
-							String.format("Дата события должна быть не ранее чем за %d часа(ов) до начала", hoursBeforeStart)
+					throw new ValidationException(
+							String.format("Дата события должна быть не ранее чем за %d часа(ов) до начала",
+									hoursBeforeStart)
 					);
 				}
 			}
@@ -328,5 +335,9 @@ public class EventServiceImpl implements EventService {
 		return categoryRepository.findById(categoryId).orElseThrow(
 				() -> new NotFoundException("Категория с id=" + categoryId + " не найдена")
 		);
+	}
+
+	private long getConfirmedRequests(Long eventId) {
+		return requestRepository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED);
 	}
 }

@@ -12,6 +12,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.HitRequestException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
+import ru.practicum.ewm.util.error.exception.StatResponseException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -44,8 +45,22 @@ public class MainServiceErrorHandler {
 		String stackTrace = getStackTrace(e);
 		return new ApiError(
 				INTERNAL_SERVER_ERROR,
-				"Error ....",
+				"Stat-server error ....",
 				e.getMessage(),
+				stackTrace,
+				LocalDateTime.now()
+		);
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(INTERNAL_SERVER_ERROR)
+	public ApiError handleStatResponseException(StatResponseException ex) {
+		log.info("500 {}", ex.getMessage(), ex);
+		String stackTrace = getStackTrace(ex);
+		return new ApiError(
+				INTERNAL_SERVER_ERROR,
+				"Stat-server error ....",
+				ex.getMessage(),
 				stackTrace,
 				LocalDateTime.now()
 		);

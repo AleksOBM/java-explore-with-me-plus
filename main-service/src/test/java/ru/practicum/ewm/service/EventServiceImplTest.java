@@ -15,14 +15,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import ru.practicum.ewm.dao.EventRepository;
+import ru.practicum.ewm.dao.RequestRepository;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.FreeGetDto;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.model.enums.ParticipationStatus;
 import ru.practicum.ewm.service.event.EventServiceImpl;
 import ru.practicum.ewm.util.statistic.StatRepository;
+import ru.practicum.stat.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +34,6 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +44,9 @@ class EventServiceImplTest {
 
     @Mock
     EventRepository eventRepository;
+
+    @Mock
+    RequestRepository requestRepository;
 
     @Mock
     HttpServletRequest httpServletRequest;
@@ -134,9 +139,13 @@ class EventServiceImplTest {
 
         @Test
         void basicFlow() {
-            doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
+            doNothing().when(statRepository).sendHitRequest(httpServletRequest);
             when(eventRepository.existsByIdAndState(event.getId(), EventState.PUBLISHED)).thenReturn(Boolean.TRUE);
             when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
+            when(httpServletRequest.getRequestURI()).thenReturn("/events");
+            when(statRepository.getStat(List.of("/events"))).thenReturn(List.of(ViewStatsDto.builder().build()));
+            when(requestRepository.countByEventIdAndStatus(event.getId(), ParticipationStatus.CONFIRMED))
+                    .thenReturn(0);
 
             EventFullDto result = eventService.getFreeEventById(event.getId(), httpServletRequest);
 
