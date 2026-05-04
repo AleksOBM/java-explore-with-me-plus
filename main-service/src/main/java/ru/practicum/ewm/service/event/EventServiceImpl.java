@@ -27,16 +27,17 @@ import ru.practicum.ewm.model.enums.AdminStateAction;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.model.enums.ParticipationStatus;
 import ru.practicum.ewm.model.enums.UserStateAction;
+import ru.practicum.ewm.service.request.EventRequestCount;
 import ru.practicum.ewm.util.error.exception.ConflictException;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.ewm.util.specification.EventSpecifications;
 import ru.practicum.ewm.util.specification.SpecBuilder;
 import ru.practicum.ewm.util.statistic.StatRepository;
+import ru.practicum.stat.dto.ViewStatsDto;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -52,6 +53,13 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public List<EventShortDto> getFreeEvents(@NonNull FreeGetDto dto, HttpServletRequest request) {
+
+		if (dto.rangeStart() != null && dto.rangeEnd() != null) {
+			if (dto.rangeEnd().isBefore(dto.rangeStart())) {
+				throw new ValidationException("Окончание события не может быть раньше начала");
+			}
+		}
+
 		statRepository.sendHitRequest(request);
 
 		SpecBuilder<Event> builder = SpecBuilder.<Event>builder()
@@ -96,11 +104,34 @@ public class EventServiceImpl implements EventService {
 		);
 
 		List<Event> events = eventRepository.findAll(spec, pageable).getContent();
+		if (events.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-		// todo
+		List<EventRequestCount> eventRequestCountList = requestRepository.countConfirmedRequestsByEventIds(
+				events.stream().map(Event::getId).toList(), ParticipationStatus.CONFIRMED);
+
+		Map<Long, Long> requestCountMap = new HashMap<>();
+		if (!eventRequestCountList.isEmpty()) {
+			eventRequestCountList.forEach(eventRequestCount -> {
+				requestCountMap.put(eventRequestCount.getEventId(), eventRequestCount.getCount());
+			});
+		}
+
+		List<String> uris = events.stream().map(event -> "/events/" + event.getId()).toList();
+		List<ViewStatsDto> stats = statRepository.getStat(
+				uris,
+				dto.rangeStart(),
+				dto.rangeEnd(),
+				false);
+
 		return events.stream()
-				.map(event -> EventMapper.toEventShortDto(event, 0L, 0L))
-				.toList();
+				.map(event -> EventMapper.toEventShortDto(
+								event,
+								requestCountMap.get(event.getId()) == null ? 0L : requestCountMap.get(event.getId()),
+								stats.size()
+						)
+				).toList();
 	}
 
 	@Override
@@ -165,11 +196,34 @@ public class EventServiceImpl implements EventService {
 		);
 
 		List<Event> events = eventRepository.findAll(spec, pageable).getContent();
+		if (events.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-		// todo
+		List<EventRequestCount> eventRequestCountList = requestRepository.countConfirmedRequestsByEventIds(
+				events.stream().map(Event::getId).toList(), ParticipationStatus.CONFIRMED);
+
+		Map<Long, Long> requestCountMap = new HashMap<>();
+		if (!eventRequestCountList.isEmpty()) {
+			eventRequestCountList.forEach(eventRequestCount -> {
+				requestCountMap.put(eventRequestCount.getEventId(), eventRequestCount.getCount());
+			});
+		}
+
+		List<String> uris = events.stream().map(event -> "/events/" + event.getId()).toList();
+		List<ViewStatsDto> stats = statRepository.getStat(
+				uris,
+				dto.rangeStart(),
+				dto.rangeEnd(),
+				false);
+
 		return events.stream()
-				.map(event -> EventMapper.toEventFullDto(event, 0L, 0L))
-				.toList();
+				.map(event -> EventMapper.toEventFullDto(
+								event,
+								requestCountMap.get(event.getId()) == null ? 0L : requestCountMap.get(event.getId()),
+								stats.size()
+						)
+				).toList();
 	}
 
 	@Override

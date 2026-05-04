@@ -3,6 +3,7 @@ package ru.practicum.ewm.dto.event;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NotNull
@@ -11,8 +12,8 @@ public record FreeGetDto(
         String text,
         List<Integer> categories,
         Boolean paid,
-        String rangeStart,
-        String rangeEnd,
+        LocalDateTime rangeStart,
+        LocalDateTime rangeEnd,
         Boolean onlyAvailable,
         FreeEventSort sort,
         Integer from,

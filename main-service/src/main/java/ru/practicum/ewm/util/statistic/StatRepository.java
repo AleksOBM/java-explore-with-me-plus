@@ -20,77 +20,88 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatRepository {
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private final LocalDateTime startUnixEpoch = LocalDateTime.parse("1970-01-01T00:00:00");
 
-    @Value("${app.name}")
-    String appName;
+	@Value("${app.name}")
+	private String appName;
 
-    private final StatClient statClient;
+	private final StatClient statClient;
 
-    public void sendHitRequest(HttpServletRequest request) {
-        try {
-            statClient.hit(EndpointHitDto.builder()
-                    .ip(request.getRemoteAddr())
-                    .uri(request.getRequestURI())
-                    .app(appName)
-                    .timestamp(LocalDateTime.now())
-                    .build()
-            );
-        } catch (Exception ex) {
-            throw new HitRequestException(ex);
-        }
-    }
+	public void sendHitRequest(HttpServletRequest request) {
+		try {
+			statClient.hit(EndpointHitDto.builder()
+					.ip(request.getRemoteAddr())
+					.uri(request.getRequestURI())
+					.app(appName)
+					.timestamp(LocalDateTime.now())
+					.build()
+			);
+		} catch (Exception ex) {
+			throw new HitRequestException(ex);
+		}
+	}
 
-    public List<ViewStatsDto> getStat(List<String> statUris, LocalDateTime start, LocalDateTime end, boolean uniqe) {
-        if (statUris == null || statUris.isEmpty()) {
-            throw new StatResponseException();
-        }
+	public List<ViewStatsDto> getStat(List<String> statUris,
+	                                  LocalDateTime rangeStart,
+	                                  LocalDateTime rangeEnd,
+	                                  boolean uniqe) {
+		if (statUris == null || statUris.isEmpty()) {
+			throw new StatResponseException();
+		}
 
-        StatsRequest request = StatsRequest.builder()
-                .uris(statUris)
-                .start(start.truncatedTo(ChronoUnit.MILLIS).format(formatter))
-                .end(end.truncatedTo(ChronoUnit.MILLIS).format(formatter))
-                .unique(uniqe)
-                .build();
+		if (rangeStart == null) {
+			rangeStart = startUnixEpoch;
+		}
 
-        List<ViewStatsDto> stats;
-        try {
-            stats = statClient.getStat(request);
-        } catch (Exception ex) {
-            throw new StatResponseException(ex);
-        }
+		if (rangeEnd == null) {
+			rangeEnd = LocalDateTime.now();
+		}
 
-        if (stats == null) {
-            throw new StatResponseException();
-        }
+		StatsRequest request = StatsRequest.builder()
+				.uris(statUris)
+				.start(rangeStart.truncatedTo(ChronoUnit.MILLIS).format(formatter))
+				.end(rangeEnd.truncatedTo(ChronoUnit.MILLIS).format(formatter))
+				.unique(uniqe)
+				.build();
 
-        return stats;
-    }
+		List<ViewStatsDto> stats;
+		try {
+			stats = statClient.getStat(request);
+		} catch (Exception ex) {
+			throw new StatResponseException(ex);
+		}
 
-    public List<ViewStatsDto> getStat(List<String> statUris) {
-        if (statUris == null || statUris.isEmpty()) {
-            throw new StatResponseException();
-        }
+		if (stats == null) {
+			throw new StatResponseException();
+		}
 
-        LocalDateTime startUnixEpoch = LocalDateTime.parse("1970-01-01T00:00:00");
-        StatsRequest request = StatsRequest.builder()
-                .uris(statUris)
-                .start(startUnixEpoch.truncatedTo(ChronoUnit.MILLIS).format(formatter))
-                .end(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS).format(formatter))
-                .unique(true)
-                .build();
+		return stats;
+	}
 
-        List<ViewStatsDto> stats;
-        try {
-            stats = statClient.getStat(request);
-        } catch (Exception ex) {
-            throw new StatResponseException(ex);
-        }
+	public List<ViewStatsDto> getStat(List<String> statUris) {
+		if (statUris == null || statUris.isEmpty()) {
+			throw new StatResponseException();
+		}
 
-        if (stats == null) {
-            throw new StatResponseException();
-        }
+		StatsRequest request = StatsRequest.builder()
+				.uris(statUris)
+				.start(startUnixEpoch.truncatedTo(ChronoUnit.MILLIS).format(formatter))
+				.end(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS).format(formatter))
+				.unique(true)
+				.build();
 
-        return stats;
-    }
+		List<ViewStatsDto> stats;
+		try {
+			stats = statClient.getStat(request);
+		} catch (Exception ex) {
+			throw new StatResponseException(ex);
+		}
+
+		if (stats == null) {
+			throw new StatResponseException();
+		}
+
+		return stats;
+	}
 }

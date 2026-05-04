@@ -5,5 +5,5 @@ public interface EventRequestCount {
 
     Long getEventId();
 
-    Integer getCount();
+    Long getCount();
 }

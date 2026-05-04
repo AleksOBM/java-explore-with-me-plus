@@ -58,28 +58,24 @@ public class EventSpecifications {
     }
 
     /// Дата начала
-    public Specification<Event> dateAfter(String rangeStart) {
+    public Specification<Event> dateAfter(LocalDateTime rangeStart) {
         return (root, query, cb) -> {
             if (rangeStart == null) {
                 return null;
             }
 
-            LocalDateTime start = LocalDateTime.parse(rangeStart, formatter);
-
-            return cb.greaterThanOrEqualTo(root.get("eventDate"), start);
+            return cb.greaterThanOrEqualTo(root.get("eventDate"), rangeStart);
         };
     }
 
     /// Дата окончания
-    public Specification<Event> dateBefore(String rangeEnd) {
+    public Specification<Event> dateBefore(LocalDateTime rangeEnd) {
         return (root, query, cb) -> {
             if (rangeEnd == null) {
                 return null;
             }
 
-            LocalDateTime end = LocalDateTime.parse(rangeEnd, formatter);
-
-            return cb.lessThanOrEqualTo(root.get("eventDate"), end);
+            return cb.lessThanOrEqualTo(root.get("eventDate"), rangeEnd);
         };
     }
 

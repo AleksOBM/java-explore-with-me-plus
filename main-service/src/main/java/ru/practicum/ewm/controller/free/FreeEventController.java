@@ -2,12 +2,14 @@ package ru.practicum.ewm.controller.free;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.FreeGetDto;
 import ru.practicum.ewm.service.event.EventService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -31,29 +33,31 @@ public class FreeEventController {
 	 * сохранить в сервисе статистики
 	 * В случае, если по заданным фильтрам не найдено ни одного события, возвращает пустой список
 	 *
-	 * @param text текст для поиска в содержимом аннотации и подробном описании события
-	 * @param categories список идентификаторов категорий в которых будет вестись поиск
-	 * @param paid поиск только платных/бесплатных событий
-	 * @param rangeStart дата и время не раньше которых должно произойти событие
-	 * @param rangeEnd дата и время не позже которых должно произойти событие
+	 * @param text          текст для поиска в содержимом аннотации и подробном описании события
+	 * @param categories    список идентификаторов категорий в которых будет вестись поиск
+	 * @param paid          поиск только платных/бесплатных событий
+	 * @param rangeStart    дата и время не раньше которых должно произойти событие
+	 * @param rangeEnd      дата и время не позже которых должно произойти событие
 	 * @param onlyAvailable только события у которых не исчерпан лимит запросов на участие Default value : false
-	 * @param sort Вариант сортировки: по дате события или по количеству просмотров Available values : EVENT_DATE, VIEWS
-	 * @param from количество событий, которые нужно пропустить для формирования текущего набора Default value : 0
-	 * @param size количество событий в наборе Default value : 10
-	 * @param request Данные HTTP-запроса
+	 * @param sort          Вариант сортировки: по дате события или по количеству просмотров Available values : EVENT_DATE, VIEWS
+	 * @param from          количество событий, которые нужно пропустить для формирования текущего набора Default value : 0
+	 * @param size          количество событий в наборе Default value : 10
+	 * @param request       Данные HTTP-запроса
 	 * @return List<{@link EventShortDto}>
 	 */
 	@GetMapping
-	public List<EventShortDto> getFreeEvents(@RequestParam(required = false) String text,
-	                                         @RequestParam(required = false) List<Integer> categories,
-	                                         @RequestParam(required = false) Boolean paid,
-	                                         @RequestParam(required = false) String rangeStart,
-	                                         @RequestParam(required = false) String rangeEnd,
-	                                         @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
-	                                         @RequestParam(required = false) FreeGetDto.FreeEventSort sort,
-	                                         @RequestParam(required = false, defaultValue = "0") Integer from,
-	                                         @RequestParam(required = false, defaultValue = "10") Integer size,
-	                                         HttpServletRequest request) {
+	public List<EventShortDto> getFreeEvents(
+			@RequestParam(required = false) String text,
+			@RequestParam(required = false) List<Integer> categories,
+			@RequestParam(required = false) Boolean paid,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+			@RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
+			@RequestParam(required = false) FreeGetDto.FreeEventSort sort,
+			@RequestParam(required = false, defaultValue = "0") Integer from,
+			@RequestParam(required = false, defaultValue = "10") Integer size,
+			HttpServletRequest request
+	) {
 
 		FreeGetDto freeGetDto = FreeGetDto.builder()
 				.text(text)

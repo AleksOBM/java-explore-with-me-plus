@@ -29,6 +29,7 @@ import ru.practicum.ewm.util.statistic.StatRepository;
 import ru.practicum.stat.client.StatClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -75,6 +76,8 @@ class FreeEventControllerTest {
 	@MockitoBean
 	EventRepository eventRepository;
 
+	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 	private static Event event;
 
 	@BeforeAll
@@ -105,8 +108,8 @@ class FreeEventControllerTest {
 				.categories(List.of(0))
 				.paid(true)
 				.onlyAvailable(true)
-				.rangeStart("2026-12-31T23:59:00")
-				.rangeEnd("2027-01-01T02:00:00")
+				.rangeStart(LocalDateTime.parse("2026-12-31T23:59:00"))
+				.rangeEnd(LocalDateTime.parse("2027-01-01T02:00:00"))
 				.sort(FreeGetDto.FreeEventSort.EVENT_DATE)
 				.from(0)
 				.size(1)
@@ -125,8 +128,8 @@ class FreeEventControllerTest {
 								.replace("]", "")
 						)
 						.param("paid", getDto.paid().toString())
-						.param("rangeStart", getDto.rangeStart())
-						.param("rangeEnd", getDto.rangeEnd())
+						.param("rangeStart", getDto.rangeStart().format(formatter))
+						.param("rangeEnd", getDto.rangeEnd().format(formatter))
 						.param("onlyAvailable", getDto.onlyAvailable().toString())
 						.param("sort", getDto.sort().name())
 						.param("from", getDto.from().toString())
