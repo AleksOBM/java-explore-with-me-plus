@@ -42,8 +42,8 @@ public class CompilationServiceImpl implements CompilationService {
 
 		return CompilationMapper.toCompilationDto(
 				compilation,
-				getConfirmedRequests(compilationId),
-				getViews(compilationId)
+				getConfirmedRequests(compilation),
+				getViews(compilation)
 		);
 	}
 
@@ -70,10 +70,16 @@ public class CompilationServiceImpl implements CompilationService {
 		Compilation compilation = CompilationMapper.toEntity(compilationDto, events);
 		Compilation savedCompilation = compilationRepository.save(compilation);
 
+		Map<Long, Long> confirmedRequests = new HashMap<>();
+		savedCompilation.getEvents().forEach(event -> confirmedRequests.put(event.getId(), 0L));
+
+		Map<Long, Long> views = new HashMap<>();
+		savedCompilation.getEvents().forEach(event -> views.put(event.getId(), 0L));
+
 		return CompilationMapper.toCompilationDto(
 				savedCompilation,
-				Map.of(savedCompilation.getId(), 0L),
-				Map.of(savedCompilation.getId(), 0L)
+				confirmedRequests,
+				views
 		);
 	}
 
@@ -104,7 +110,7 @@ public class CompilationServiceImpl implements CompilationService {
 		}
 
 		return CompilationMapper.toCompilationDto(
-				compilationInDb, getConfirmedRequests(compilationId), getViews(compilationId));
+				compilationInDb, getConfirmedRequests(compilationInDb), getViews(compilationInDb));
 	}
 
 	@Override
@@ -121,8 +127,8 @@ public class CompilationServiceImpl implements CompilationService {
 		return compilations.getContent().stream()
 				.map(compilation -> CompilationMapper
 						.toCompilationDto(compilation,
-								getConfirmedRequests(compilation.getId()),
-								getViews(compilation.getId())
+								getConfirmedRequests(compilation),
+								getViews(compilation)
 						)
 				).toList();
 	}
@@ -136,15 +142,31 @@ public class CompilationServiceImpl implements CompilationService {
 
 	/// Map<eventId, confirmedRequests>
 	@NonNull
-	private Map<Long, Long> getConfirmedRequests(long compilationId) {
-		// todo
-		return Map.of(compilationId, 0L);
+	private Map<Long, Long> getConfirmedRequests(Compilation compilation) {
+		Set<Event> events = compilation.getEvents();
+		if (events.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		Map<Long, Long> confirmedRequests = new HashMap<>();
+		for (Event event : events) {
+			// todo
+			confirmedRequests.put(event.getId(), 0L); // вместо 0 должно быть значение из базы
+		}
+		return confirmedRequests;
 	}
 
 	/// Map<eventId, views>
 	@NonNull
-	private Map<Long, Long> getViews(long compilationId) {
-		// todo
-		return Map.of(compilationId, 0L);
+	private Map<Long, Long> getViews(Compilation compilation) {
+		Set<Event> events = compilation.getEvents();
+		if (events.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		Map<Long, Long> views = new HashMap<>();
+		for (Event event : events) {
+			// todo
+			views.put(event.getId(), 0L); // вместо 0 должно быть значение из базы
+		}
+		return views;
 	}
 }

@@ -17,17 +17,16 @@ public class CompilationMapper {
 	public CompilationDto toCompilationDto(@NonNull Compilation compilation,
 	                                       @NonNull Map<Long, Long> confirmedRequests,
 	                                       @NonNull Map<Long, Long> views) {
-		long id = compilation.getId();
 		return CompilationDto.builder()
-				.id(id)
+				.id(compilation.getId())
 				.pinned(compilation.isPinned())
 				.title(compilation.getTitle())
 				.events(compilation.getEvents().stream()
-						.map(event ->
-								EventMapper.toEventShortDto(
-										event, confirmedRequests.get(id),
-										views.get(id)
-								))
+						.map(event -> EventMapper.toEventShortDto(
+									event,
+									confirmedRequests.get(event.getId()),
+									views.get(event.getId())
+							))
 						.toList())
 				.build();
 	}
