@@ -35,10 +35,6 @@ public class Event extends BaseEntity {
 	@JoinColumn(name = "category_id")
 	Category category;
 
-	/// Количество одобренных заявок на участие в данном событии
-	@Transient
-	long confirmedRequests;
-
 	/// Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss")
 	@Column(nullable = false)
 	LocalDateTime createdOn;
@@ -85,10 +81,6 @@ public class Event extends BaseEntity {
 	/// Заголовок
 	@Column(nullable = false, length = 120)
 	String title;
-
-	/// Количество просмотрев события
-	@Transient
-	long views;
 
 	/// В каких компиляциях состоит событие
 	@ManyToMany(mappedBy = "events")

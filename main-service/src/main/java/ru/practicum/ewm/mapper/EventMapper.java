@@ -18,26 +18,26 @@ import java.util.Optional;
 @UtilityClass
 public class EventMapper {
 
-	public EventShortDto toEventShortDto(@NonNull Event event) {
+	public EventShortDto toEventShortDto(@NonNull Event event, long confirmedRequests, long views) {
 		return EventShortDto.builder()
 				.annotation(event.getAnnotation())
 				.category(CategoryMapper.toDto(event.getCategory()))
-				.confirmedRequests(event.getConfirmedRequests())
+				.confirmedRequests(confirmedRequests)
 				.eventDate(event.getEventDate())
 				.id(event.getId())
 				.initiator(UserMapper.toUserShortDto(event.getInitiator()))
 				.paid(event.isPaid())
 				.title(event.getTitle())
-				.views(event.getViews())
+				.views(views)
 				.build();
 	}
 
-	public EventFullDto toEventFullDto(@NonNull Event event) {
+	public EventFullDto toEventFullDto(@NonNull Event event, long confirmedRequests, long views) {
 		return EventFullDto.builder()
 				.id(event.getId())
 				.annotation(event.getAnnotation())
 				.category(CategoryMapper.toDto(event.getCategory()))
-				.confirmedRequests(event.getConfirmedRequests())
+				.confirmedRequests(confirmedRequests)
 				.createdOn(event.getCreatedOn())
 				.description(event.getDescription())
 				.eventDate(event.getEventDate())
@@ -49,22 +49,19 @@ public class EventMapper {
 				.requestModeration(event.isRequestModeration())
 				.state(event.getState())
 				.title(event.getTitle())
-				.views(event.getViews())
+				.views(views)
 				.build();
 	}
 
 	public Event toEntity(@NonNull NewEventDto newEventDto,
 	                      Category category,
-	                      long confirmedRequests,
 	                      LocalDateTime createdOn,
 	                      User initiator,
 	                      LocalDateTime publishedOn,
-	                      EventState state,
-	                      long views) {
+	                      EventState state) {
 		return Event.builder()
 				.annotation(newEventDto.annotation())
 				.category(category)
-				.confirmedRequests(confirmedRequests)
 				.createdOn(createdOn)
 				.description(newEventDto.description())
 				.eventDate(newEventDto.eventDate())
@@ -76,7 +73,6 @@ public class EventMapper {
 				.requestModeration(newEventDto.requestModeration() == null || newEventDto.requestModeration())
 				.state(state)
 				.title(newEventDto.title())
-				.views(views)
 				.build();
 	}
 
@@ -85,7 +81,6 @@ public class EventMapper {
 				.id(eventFullDto.id())
 				.annotation(eventFullDto.annotation())
 				.category(CategoryMapper.toEntity(eventFullDto.category()))
-				.confirmedRequests(eventFullDto.confirmedRequests())
 				.createdOn(createdOn)
 				.description(eventFullDto.description())
 				.eventDate(eventFullDto.eventDate())
@@ -97,7 +92,6 @@ public class EventMapper {
 				.requestModeration(eventFullDto.requestModeration())
 				.state(eventFullDto.state())
 				.title(eventFullDto.title())
-				.views(eventFullDto.views())
 				.build();
 	}
 

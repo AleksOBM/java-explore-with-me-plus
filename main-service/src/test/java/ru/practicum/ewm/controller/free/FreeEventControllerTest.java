@@ -83,7 +83,6 @@ class FreeEventControllerTest {
 				.id(1L)
 				.annotation("annotation".repeat(10))
 				.category(Category.builder().id(1L).name("category").build())
-				.confirmedRequests(10L)
 				.createdOn(LocalDateTime.parse("2026-11-10T19:00:00"))
 				.description("description".repeat(10))
 				.eventDate(LocalDateTime.parse("2027-01-01T00:00:01"))
@@ -95,7 +94,6 @@ class FreeEventControllerTest {
 				.requestModeration(true)
 				.state(EventState.PUBLISHED)
 				.title("title")
-				.views(1000L)
 				.build();
 	}
 
@@ -114,7 +112,7 @@ class FreeEventControllerTest {
 				.size(1)
 				.build();
 
-		List<EventShortDto> shortEvents = List.of(EventMapper.toEventShortDto(event));
+		List<EventShortDto> shortEvents = List.of(EventMapper.toEventShortDto(event, 0L, 0L));
 
 		doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
 		when(eventService.getFreeEvents(eq(getDto), any(HttpServletRequest.class)))
@@ -146,7 +144,7 @@ class FreeEventControllerTest {
 	@Test
 	@SneakyThrows
 	void getFreeEventById() {
-		EventFullDto dto = EventMapper.toEventFullDto(event);
+		EventFullDto dto = EventMapper.toEventFullDto(event, 0L, 0L);
 
 		doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
 		when(eventService.getFreeEventById(eq(1L), any(HttpServletRequest.class)))

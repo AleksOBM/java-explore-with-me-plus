@@ -95,9 +95,11 @@ public class EventServiceImpl implements EventService {
 				sort
 		);
 
-		return eventRepository.findAll(spec, pageable)
-				.stream()
-				.map(EventMapper::toEventShortDto)
+		List<Event> events = eventRepository.findAll(spec, pageable).getContent();
+
+		// todo
+		return events.stream()
+				.map(event -> EventMapper.toEventShortDto(event, 0L, 0L))
 				.toList();
 	}
 
@@ -109,11 +111,11 @@ public class EventServiceImpl implements EventService {
 		statRepository.sendHitRequest(request);
 		Event event = getEventById(eventId);
 
-		event.setViews(statRepository.getStat(List.of(request.getRequestURI())).size());
+		long views = statRepository.getStat(List.of(request.getRequestURI())).getFirst().getHits();
 
-		event.setConfirmedRequests(getConfirmedRequests(eventId));
+		long confirmedRequests = getConfirmedRequests(eventId);
 
-		return EventMapper.toEventFullDto(event);
+		return EventMapper.toEventFullDto(event, confirmedRequests, views);
 	}
 
 	@Override
@@ -133,15 +135,13 @@ public class EventServiceImpl implements EventService {
 		Event event = EventMapper.toEntity(
 				newEventDto,
 				category,
-				0,
 				LocalDateTime.now(),
 				initiator,
 				null,
-				EventState.PENDING,
-				0L
+				EventState.PENDING
 		);
 
-		return EventMapper.toEventFullDto(eventRepository.save(event));
+		return EventMapper.toEventFullDto(eventRepository.save(event), 0L, 0L);
 	}
 
 	@Override
@@ -164,9 +164,11 @@ public class EventServiceImpl implements EventService {
 				dto.size()
 		);
 
-		return eventRepository.findAll(spec, pageable)
-				.stream()
-				.map(EventMapper::toEventFullDto)
+		List<Event> events = eventRepository.findAll(spec, pageable).getContent();
+
+		// todo
+		return events.stream()
+				.map(event -> EventMapper.toEventFullDto(event, 0L, 0L))
 				.toList();
 	}
 
@@ -222,15 +224,20 @@ public class EventServiceImpl implements EventService {
 			);
 		}
 
-		return EventMapper.toEventFullDto(eventRepository.save(newEvent));
+		// todo
+		return EventMapper.toEventFullDto(eventRepository.save(newEvent), 0L, 0L);
 	}
 
 	@Override
 	public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
 		checkUser(userId);
 
-		return eventRepository.findByInitiatorId(userId, PageRequest.of(from / size, size)).stream()
-				.map(EventMapper::toEventShortDto)
+		// todo
+		return eventRepository.findByInitiatorId(
+						userId,
+						PageRequest.of(from / size, size)
+				).stream()
+				.map(event -> EventMapper.toEventShortDto(event, 0L, 0L))
 				.toList();
 	}
 
@@ -244,7 +251,8 @@ public class EventServiceImpl implements EventService {
 			throw new ConflictException("Пользователь должен быть инициатором");
 		}
 
-		return EventMapper.toEventFullDto(event);
+		// todo
+		return EventMapper.toEventFullDto(event, 0L, 0L);
 	}
 
 	@Override
@@ -303,7 +311,9 @@ public class EventServiceImpl implements EventService {
 			Event patched = eventRepository.save(event);
 
 			log.info("Ивент обновлен: {}", patched.getId());
-			return EventMapper.toEventFullDto(patched);
+
+			// todo
+			return EventMapper.toEventFullDto(patched, 0L, 0L);
 
 		} catch (DataIntegrityViolationException e) {
 			log.debug("Конфликт вовремя обновления ивента {}", request, e);

@@ -57,7 +57,6 @@ class EventServiceIntegrationTest {
 		Event event = Event.builder()
 				.annotation("annotation".repeat(10))
 				.category(category)
-				.confirmedRequests(0L)
 				.createdOn(LocalDateTime.parse("2026-11-10T19:00:00"))
 				.description("description".repeat(10))
 				.eventDate(LocalDateTime.parse("2027-01-01T00:00:01"))
@@ -69,7 +68,6 @@ class EventServiceIntegrationTest {
 				.requestModeration(true)
 				.state(EventState.PUBLISHED)
 				.title("title")
-				.views(0L)
 				.build();
 
 		Event publishedFuture = event.toBuilder().state(EventState.PUBLISHED).build();
@@ -97,7 +95,9 @@ class EventServiceIntegrationTest {
 				eventService.getFreeEvents(dto, mock(HttpServletRequest.class));
 
 		assertThat(result).hasSize(1);
-		assertThat(result).contains(EventMapper.toEventShortDto(publishedFuture.toBuilder().id(1L).build()));
+		assertThat(result).contains(
+				EventMapper.toEventShortDto(publishedFuture.toBuilder().id(1L).build(), 0L, 0L)
+		);
 		verify(statRepository).sendHitRequest(any(HttpServletRequest.class));
 	}
 }

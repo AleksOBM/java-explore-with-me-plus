@@ -8,28 +8,35 @@ import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @UtilityClass
 public class CompilationMapper {
 
-    public CompilationDto toCompilationDto(@NonNull Compilation compilation) {
-        return CompilationDto.builder()
-                .id(compilation.getId())
-                .pinned(compilation.isPinned())
-                .title(compilation.getTitle())
-                .events(compilation.getEvents().stream()
-                        .map(EventMapper::toEventShortDto)
-                        .collect(Collectors.toList()))
-                .build();
-    }
+	public CompilationDto toCompilationDto(@NonNull Compilation compilation,
+	                                       @NonNull Map<Long, Long> confirmedRequests,
+	                                       @NonNull Map<Long, Long> views) {
+		long id = compilation.getId();
+		return CompilationDto.builder()
+				.id(id)
+				.pinned(compilation.isPinned())
+				.title(compilation.getTitle())
+				.events(compilation.getEvents().stream()
+						.map(event ->
+								EventMapper.toEventShortDto(
+										event, confirmedRequests.get(id),
+										views.get(id)
+								))
+						.toList())
+				.build();
+	}
 
-    public Compilation toEntity(@NonNull NewCompilationDto dto, Set<Event> events) {
-        return Compilation.builder()
-                .title(dto.getTitle())
-                .pinned(dto.isPinned())
-                .events(events != null ? events : new HashSet<>())
-                .build();
-    }
+	public Compilation toEntity(@NonNull NewCompilationDto dto, Set<Event> events) {
+		return Compilation.builder()
+				.title(dto.getTitle())
+				.pinned(dto.isPinned())
+				.events(events != null ? events : new HashSet<>())
+				.build();
+	}
 }

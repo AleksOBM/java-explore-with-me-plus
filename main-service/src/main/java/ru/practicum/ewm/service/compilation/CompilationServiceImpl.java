@@ -22,11 +22,7 @@ import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.ewm.util.statistic.StatRepository;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +40,11 @@ public class CompilationServiceImpl implements CompilationService {
 
 		Compilation compilation = getCompilationById(compilationId);
 
-		return CompilationMapper.toCompilationDto(compilation);
+		return CompilationMapper.toCompilationDto(
+				compilation,
+				getConfirmedRequests(compilationId),
+				getViews(compilationId)
+		);
 	}
 
 	@Override
@@ -70,7 +70,11 @@ public class CompilationServiceImpl implements CompilationService {
 		Compilation compilation = CompilationMapper.toEntity(compilationDto, events);
 		Compilation savedCompilation = compilationRepository.save(compilation);
 
-		return CompilationMapper.toCompilationDto(savedCompilation);
+		return CompilationMapper.toCompilationDto(
+				savedCompilation,
+				Map.of(savedCompilation.getId(), 0L),
+				Map.of(savedCompilation.getId(), 0L)
+		);
 	}
 
 	@Override
@@ -99,7 +103,8 @@ public class CompilationServiceImpl implements CompilationService {
 			compilationInDb.setPinned(compilationUpdateDto.getPinned());
 		}
 
-		return CompilationMapper.toCompilationDto(compilationInDb);
+		return CompilationMapper.toCompilationDto(
+				compilationInDb, getConfirmedRequests(compilationId), getViews(compilationId));
 	}
 
 	@Override
@@ -114,8 +119,12 @@ public class CompilationServiceImpl implements CompilationService {
 		}
 
 		return compilations.getContent().stream()
-				.map(CompilationMapper::toCompilationDto)
-				.collect(Collectors.toList());
+				.map(compilation -> CompilationMapper
+						.toCompilationDto(compilation,
+								getConfirmedRequests(compilation.getId()),
+								getViews(compilation.getId())
+						)
+				).toList();
 	}
 
 	@NonNull
@@ -123,5 +132,19 @@ public class CompilationServiceImpl implements CompilationService {
 		return compilationRepository.findById(compilationId).orElseThrow(
 				() -> new NotFoundException("Подборка с id=" + compilationId + " не найдена")
 		);
+	}
+
+	/// Map<eventId, confirmedRequests>
+	@NonNull
+	private Map<Long, Long> getConfirmedRequests(long compilationId) {
+		// todo
+		return Map.of(compilationId, 0L);
+	}
+
+	/// Map<eventId, views>
+	@NonNull
+	private Map<Long, Long> getViews(long compilationId) {
+		// todo
+		return Map.of(compilationId, 0L);
 	}
 }
