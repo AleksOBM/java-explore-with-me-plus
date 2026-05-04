@@ -24,8 +24,8 @@ public class CompilationMapper {
 				.events(compilation.getEvents().stream()
 						.map(event -> EventMapper.toEventShortDto(
 									event,
-									confirmedRequests.get(event.getId()),
-									views.get(event.getId())
+									confirmedRequests.getOrDefault(event.getId(), 0L),
+									views.getOrDefault(event.getId(), 0L)
 							))
 						.toList())
 				.build();
