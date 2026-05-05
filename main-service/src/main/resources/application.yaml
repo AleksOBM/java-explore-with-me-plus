@@ -29,3 +29,6 @@ logging:
     org:
       zalando:
         logbook: trace
+
+stats-server:
+  url: ${STATS_SERVER_URL:http://stats-server:9090}

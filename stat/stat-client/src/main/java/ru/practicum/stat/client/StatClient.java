@@ -2,6 +2,7 @@ package ru.practicum.stat.client;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -22,11 +23,13 @@ import java.util.List;
 @Component
 public class StatClient {
 
-    private final String serverUrl = "http://localhost:9090";
+    private final String serverUrl;
 
     private final RestTemplate rest;
 
-    public StatClient(RestTemplateBuilder builder) {
+    public StatClient(@Value("${stats-server.url:http://localhost:9090}") String serverUrl,
+                      RestTemplateBuilder builder) {
+        this.serverUrl = serverUrl;
         this.rest = builder.build();
     }
 
