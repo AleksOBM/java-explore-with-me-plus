@@ -144,7 +144,7 @@ class EventServiceImplTest {
 			when(eventRepository.existsByIdAndState(event.getId(), EventState.PUBLISHED)).thenReturn(Boolean.TRUE);
 			when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
 			when(httpServletRequest.getRequestURI()).thenReturn("/events");
-			when(statRepository.getStat(List.of("/events")))
+			when(statRepository.getStat(List.of("/events"), true))
 					.thenReturn(List.of(ViewStatsDto.builder()
 									.hits(0L)
 									.build()

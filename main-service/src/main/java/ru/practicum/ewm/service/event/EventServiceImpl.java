@@ -142,7 +142,7 @@ public class EventServiceImpl implements EventService {
 		statRepository.sendHitRequest(request);
 		Event event = getEventById(eventId);
 
-		long views = statRepository.getStat(List.of(request.getRequestURI())).getFirst().getHits();
+		long views = statRepository.getStat(List.of(request.getRequestURI()), true).getFirst().getHits();
 
 		long confirmedRequests = getConfirmedRequests(eventId);
 
@@ -306,7 +306,7 @@ public class EventServiceImpl implements EventService {
 		}
 
 		List<String> uris = events.stream().map(event -> "/events/" + event.getId()).toList();
-		List<ViewStatsDto> stats = statRepository.getStat(uris);
+		List<ViewStatsDto> stats = statRepository.getStat(uris, true);
 
 		return events.stream()
 				.map(event -> EventMapper.toEventShortDto(
@@ -434,7 +434,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	private long getHits(long eventId) {
-		List<ViewStatsDto> stats = statRepository.getStat(List.of("/events/" + eventId));
+		List<ViewStatsDto> stats = statRepository.getStat(List.of("/events/" + eventId), true);
 		if (stats.isEmpty()) {
 			return 0;
 		}

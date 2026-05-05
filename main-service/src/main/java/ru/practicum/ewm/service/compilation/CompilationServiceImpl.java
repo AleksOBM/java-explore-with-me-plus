@@ -192,7 +192,7 @@ public class CompilationServiceImpl implements CompilationService {
 				.map(e -> "/events/" + e.getId())
 				.toList();
 
-		List<ViewStatsDto> stats = statRepository.getStat(uris, null, null, false);
+		List<ViewStatsDto> stats = statRepository.getStat(uris, false);
 
 		//  Map<eventId, hits>
 		return stats.stream()

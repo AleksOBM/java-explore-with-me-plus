@@ -79,29 +79,7 @@ public class StatRepository {
 		return stats;
 	}
 
-	public List<ViewStatsDto> getStat(List<String> statUris) {
-		if (statUris == null || statUris.isEmpty()) {
-			throw new StatResponseException();
-		}
-
-		StatsRequest request = StatsRequest.builder()
-				.uris(statUris)
-				.start(startUnixEpoch.truncatedTo(ChronoUnit.MILLIS).format(formatter))
-				.end(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS).format(formatter))
-				.unique(true)
-				.build();
-
-		List<ViewStatsDto> stats;
-		try {
-			stats = statClient.getStat(request);
-		} catch (Exception ex) {
-			throw new StatResponseException(ex);
-		}
-
-		if (stats == null) {
-			throw new StatResponseException();
-		}
-
-		return stats;
+	public List<ViewStatsDto> getStat(List<String> statUris, boolean uniqe) {
+		return getStat(statUris, null, null, uniqe);
 	}
 }
