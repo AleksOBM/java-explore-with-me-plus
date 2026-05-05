@@ -2,6 +2,7 @@ package ru.practicum.ewm.util.error;
 
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -153,6 +154,19 @@ public class MainServiceErrorHandler {
 		return new ApiError(
 				CONFLICT,
 				"For the requested operation the conditions are not met.",
+				ex.getMessage(),
+				getStackTrace(ex),
+				LocalDateTime.now()
+		);
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(CONFLICT)
+	public ApiError handleHttpMessageNotReadableException(@NonNull final HttpMessageNotReadableException ex) {
+		log.warn("409 CONFLICT: Required request body is missing or invalid");
+		return new ApiError(
+				BAD_REQUEST,
+				"Incorrectly made request.",
 				ex.getMessage(),
 				getStackTrace(ex),
 				LocalDateTime.now()
