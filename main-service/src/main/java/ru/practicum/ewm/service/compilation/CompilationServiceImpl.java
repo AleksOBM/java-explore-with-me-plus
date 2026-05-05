@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dao.CompilationRepository;
 import ru.practicum.ewm.dao.EventRepository;
+import ru.practicum.ewm.dao.RequestRepository;
 import ru.practicum.ewm.dto.compilation.CompilationDto;
 import ru.practicum.ewm.dto.compilation.CompilationSearchFilter;
 import ru.practicum.ewm.dto.compilation.CompilationUpdateDto;
@@ -19,10 +20,13 @@ import ru.practicum.ewm.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.mapper.CompilationMapper;
 import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.enums.ParticipationStatus;
+import ru.practicum.ewm.service.request.EventRequestCount;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.ewm.util.statistic.StatRepository;
-
+import ru.practicum.stat.dto.ViewStatsDto;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +37,7 @@ public class CompilationServiceImpl implements CompilationService {
 	CompilationRepository compilationRepository;
 	EventRepository eventRepository;
 	StatRepository statRepository;
+	RequestRepository requestRepository;
 
 	@Override
 	public CompilationDto getById(Long compilationId, HttpServletRequest request) {
@@ -42,8 +47,8 @@ public class CompilationServiceImpl implements CompilationService {
 
 		return CompilationMapper.toCompilationDto(
 				compilation,
-				getConfirmedRequests(compilation),
-				getViews(compilation)
+				getConfirmedRequests(List.of(compilation)),
+				getViews(List.of(compilation))
 		);
 	}
 
@@ -110,27 +115,37 @@ public class CompilationServiceImpl implements CompilationService {
 		}
 
 		return CompilationMapper.toCompilationDto(
-				compilationInDb, getConfirmedRequests(compilationInDb), getViews(compilationInDb));
+				compilationInDb, getConfirmedRequests(List.of(compilationInDb)), getViews(List.of(compilationInDb)));
 	}
 
 	@Override
 	public List<CompilationDto> getByFilter(@NonNull CompilationSearchFilter filter, HttpServletRequest request) {
 		Pageable pageable = PageRequest.of(filter.getFrom() / filter.getSize(), filter.getSize());
-		Page<Compilation> compilations;
+		Page<Compilation> compilationsPage;
 
 		if (filter.getPinned() != null) {
-			compilations = compilationRepository.findAllByPinned(filter.getPinned(), pageable);
+			compilationsPage = compilationRepository.findAllByPinned(filter.getPinned(), pageable);
 		} else {
-			compilations = compilationRepository.findAll(pageable);
+			compilationsPage = compilationRepository.findAll(pageable);
 		}
 
-		return compilations.getContent().stream()
-				.map(compilation -> CompilationMapper
-						.toCompilationDto(compilation,
-								getConfirmedRequests(compilation),
-								getViews(compilation)
-						)
-				).toList();
+		List<Compilation> compilations = compilationsPage.getContent();
+
+		if (compilations.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		Map<Long, Long> allConfirmedRequests = getConfirmedRequests(compilations);
+		Map<Long, Long> allViews = getViews(compilations);
+
+		// Теперь маппим, просто подставляя готовые Map
+		return compilations.stream()
+				.map(compilation -> CompilationMapper.toCompilationDto(
+						compilation,
+						allConfirmedRequests,
+						allViews
+				))
+				.toList();
 	}
 
 	@NonNull
@@ -142,31 +157,49 @@ public class CompilationServiceImpl implements CompilationService {
 
 	/// Map<eventId, confirmedRequests>
 	@NonNull
-	private Map<Long, Long> getConfirmedRequests(Compilation compilation) {
-		Set<Event> events = compilation.getEvents();
-		if (events.isEmpty()) {
-			return Collections.emptyMap();
-		}
-		Map<Long, Long> confirmedRequests = new HashMap<>();
-		for (Event event : events) {
-			// todo
-			confirmedRequests.put(event.getId(), 0L); // вместо 0 должно быть значение из базы
-		}
-		return confirmedRequests;
+	private Map<Long, Long> getConfirmedRequests(Collection<Compilation> compilations) {
+		List<Event> events = compilations.stream()
+				.flatMap(c -> c.getEvents().stream())
+				.toList();
+
+		if (events.isEmpty()) return Collections.emptyMap();
+
+		List<EventRequestCount> eventRequestCountList = requestRepository.countConfirmedRequestsByEventIds(
+				events.stream().map(Event::getId).toList(),
+				ParticipationStatus.CONFIRMED);
+
+		return eventRequestCountList.stream()
+				.collect(Collectors.toMap(
+						EventRequestCount::getEventId,
+						EventRequestCount::getCount,
+						(existing, replacement) -> existing
+				));
 	}
 
 	/// Map<eventId, views>
 	@NonNull
-	private Map<Long, Long> getViews(Compilation compilation) {
-		Set<Event> events = compilation.getEvents();
-		if (events.isEmpty()) {
-			return Collections.emptyMap();
-		}
-		Map<Long, Long> views = new HashMap<>();
-		for (Event event : events) {
-			// todo
-			views.put(event.getId(), 0L); // вместо 0 должно быть значение из базы
-		}
-		return views;
+	private Map<Long, Long> getViews(Collection<Compilation> compilations) {
+		// Все уникальные события
+		List<Event> allEvents = compilations.stream()
+				.flatMap(c -> c.getEvents().stream())
+				.distinct()
+				.toList();
+
+		if (allEvents.isEmpty()) return Collections.emptyMap();
+
+		// Все URIs
+		List<String> uris = allEvents.stream()
+				.map(e -> "/events/" + e.getId())
+				.toList();
+
+		List<ViewStatsDto> stats = statRepository.getStat(uris, null, null, false);
+
+		//  Map<eventId, hits>
+		return stats.stream()
+				.collect(Collectors.toMap(
+						s ->  Long.parseLong(s.getUri().replace("/events/", "")),
+						ViewStatsDto::getHits,
+						(a, b) -> a
+				));
 	}
 }
