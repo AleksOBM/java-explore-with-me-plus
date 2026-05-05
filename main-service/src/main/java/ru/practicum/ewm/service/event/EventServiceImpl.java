@@ -205,9 +205,9 @@ public class EventServiceImpl implements EventService {
 
 		Map<Long, Long> requestCountMap = new HashMap<>();
 		if (!eventRequestCountList.isEmpty()) {
-			eventRequestCountList.forEach(eventRequestCount -> {
-				requestCountMap.put(eventRequestCount.getEventId(), eventRequestCount.getCount());
-			});
+			eventRequestCountList.forEach(eventRequestCount ->
+				requestCountMap.put(eventRequestCount.getEventId(), eventRequestCount.getCount())
+			);
 		}
 
 		List<String> uris = events.stream().map(event -> "/events/" + event.getId()).toList();
@@ -220,8 +220,8 @@ public class EventServiceImpl implements EventService {
 		return events.stream()
 				.map(event -> EventMapper.toEventFullDto(
 								event,
-								requestCountMap.get(event.getId()) == null ? 0L : requestCountMap.get(event.getId()),
-								stats.size()
+								getConfirmedRequests(requestCountMap, event.getId()),
+								getHits(stats, event.getId())
 						)
 				).toList();
 	}
@@ -278,21 +278,43 @@ public class EventServiceImpl implements EventService {
 			);
 		}
 
-		// todo
-		return EventMapper.toEventFullDto(eventRepository.save(newEvent), 0L, 0L);
+		return EventMapper.toEventFullDto(
+				eventRepository.save(newEvent),
+				getConfirmedRequests(oldEvent.getId()),
+				getHits(oldEvent.getId())
+		);
 	}
 
 	@Override
 	public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
 		checkUser(userId);
 
-		// todo
-		return eventRepository.findByInitiatorId(
-						userId,
-						PageRequest.of(from / size, size)
-				).stream()
-				.map(event -> EventMapper.toEventShortDto(event, 0L, 0L))
-				.toList();
+		PageRequest pageRequest = PageRequest.of(from / size, size);
+		Collection<Event> events = eventRepository.findByInitiatorId(userId, pageRequest);
+		if (events.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<EventRequestCount> eventRequestCountList = requestRepository.countConfirmedRequestsByEventIds(
+				events.stream().map(Event::getId).toList(), ParticipationStatus.CONFIRMED);
+
+		Map<Long, Long> requestCountMap = new HashMap<>();
+		if (!eventRequestCountList.isEmpty()) {
+			eventRequestCountList.forEach(eventRequestCount ->
+					requestCountMap.put(eventRequestCount.getEventId(), eventRequestCount.getCount())
+			);
+		}
+
+		List<String> uris = events.stream().map(event -> "/events/" + event.getId()).toList();
+		List<ViewStatsDto> stats = statRepository.getStat(uris);
+
+		return events.stream()
+				.map(event -> EventMapper.toEventShortDto(
+								event,
+								getConfirmedRequests(requestCountMap, event.getId()),
+								getHits(stats, event.getId())
+						)
+				).toList();
 	}
 
 	@Override
@@ -305,8 +327,11 @@ public class EventServiceImpl implements EventService {
 			throw new ConflictException("Пользователь должен быть инициатором");
 		}
 
-		// todo
-		return EventMapper.toEventFullDto(event, 0L, 0L);
+		return EventMapper.toEventFullDto(
+				event,
+				getConfirmedRequests(event.getId()),
+				getHits(event.getId())
+		);
 	}
 
 	@Override
@@ -366,8 +391,11 @@ public class EventServiceImpl implements EventService {
 
 			log.info("Ивент обновлен: {}", patched.getId());
 
-			// todo
-			return EventMapper.toEventFullDto(patched, 0L, 0L);
+			return EventMapper.toEventFullDto(
+					event,
+					getConfirmedRequests(event.getId()),
+					getHits(event.getId())
+			);
 
 		} catch (DataIntegrityViolationException e) {
 			log.debug("Конфликт вовремя обновления ивента {}", request, e);
@@ -403,5 +431,35 @@ public class EventServiceImpl implements EventService {
 
 	private long getConfirmedRequests(Long eventId) {
 		return requestRepository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED);
+	}
+
+	private long getHits(long eventId) {
+		List<ViewStatsDto> stats = statRepository.getStat(List.of("/events/" + eventId));
+		if (stats.isEmpty()) {
+			return 0;
+		}
+		return stats.getFirst().getHits();
+	}
+
+	private long getHits(@NonNull List<ViewStatsDto> stats, long eventId) {
+		if (stats.isEmpty()) {
+			return 0;
+		}
+		for (ViewStatsDto stat : stats) {
+			if (stat.getUri().equals("/events/" + eventId)) {
+				return stat.getHits();
+			}
+		}
+		return 0;
+	}
+
+	private long getConfirmedRequests(@NonNull Map<Long, Long> requestCountMap, long eventId) {
+		if (requestCountMap.isEmpty()) {
+			return 0;
+		}
+		if (requestCountMap.containsKey(eventId)) {
+			return requestCountMap.get(eventId);
+		}
+		return 0;
 	}
 }

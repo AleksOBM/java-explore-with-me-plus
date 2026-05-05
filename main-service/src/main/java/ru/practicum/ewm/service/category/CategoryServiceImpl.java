@@ -28,7 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
 	EventRepository eventRepository;
 
 	@Override
-	public CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto) {
+	public CategoryDto adminAddNewCategory(@NonNull NewCategoryDto newCategoryDto) {
 		if (categoryRepository.existsByName(newCategoryDto.name())) {
 			throw new ConflictException(
 					"Категория с именем '" + newCategoryDto.name() + "' уже существует");
@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Transactional
-	public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
+	public CategoryDto updateCategory(Long catId, @NonNull CategoryDto categoryDto) {
 		Category category = getCategoryById(catId);
 		if (!category.getName().equals(categoryDto.name()) &&
 				categoryRepository.existsByName(categoryDto.name())) {
