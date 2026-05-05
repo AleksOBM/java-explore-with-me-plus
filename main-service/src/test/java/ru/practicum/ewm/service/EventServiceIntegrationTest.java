@@ -6,32 +6,37 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.practicum.ewm.MainServiceApp;
-import ru.practicum.ewm.dao.CategoryRepository;
-import ru.practicum.ewm.dao.UserRepository;
+import ru.practicum.ewm.TestUtils;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.FreeGetDto;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.model.*;
+import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.util.statistic.StatRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
 @Transactional
+@SpringBootTest
+@EnableAutoConfiguration(exclude = {
+		WebMvcAutoConfiguration.class
+})
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ContextConfiguration(classes = {MainServiceApp.class, EntityManager.class})
+@ContextConfiguration(classes = MainServiceApp.class)
 class EventServiceIntegrationTest {
 
 	@MockitoBean
@@ -41,63 +46,49 @@ class EventServiceIntegrationTest {
 	EventService eventService;
 
 	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	CategoryRepository categoryRepository;
+	TestUtils testUtils;
 
 	@PersistenceContext
 	EntityManager em;
 
-	@Test
-	void shouldReturnOnlyPublishedAndFutureEvents() {
-		// region setup
-		User initiator = userRepository.save(User.builder().name("User").email("user@email.ry").build());
-		Category category = categoryRepository.save(Category.builder().name("Category").build());
-		Event event = Event.builder()
-				.annotation("annotation".repeat(10))
-				.category(category)
-				.createdOn(LocalDateTime.parse("2026-11-10T19:00:00"))
-				.description("description".repeat(10))
-				.eventDate(LocalDateTime.parse("2027-01-01T00:00:01"))
-				.initiator(initiator)
-				.location(Location.builder().lat(25.55F).lon(35.77F).build())
-				.paid(true)
-				.participantLimit(30)
-				.publishedOn(LocalDateTime.parse("2026-12-10T21:00:00"))
-				.requestModeration(true)
-				.state(EventState.PUBLISHED)
-				.title("title")
-				.build();
+	private Event mergeEvent(Event event) {
+		event.setInitiator(em.merge(event.getInitiator()));
+		event.setCategory(em.merge(event.getCategory()));
+		return em.merge(event);
+	}
 
-		Event publishedFuture = event.toBuilder().state(EventState.PUBLISHED).build();
-		Event pendingFuture = event.toBuilder().state(EventState.PENDING).build();
-		Event canceledFuture = event.toBuilder().state(EventState.CANCELED).build();
-		Event publishedPast = event.toBuilder()
-				.eventDate(LocalDateTime.parse("2025-01-01T00:00:01"))
-				.state(EventState.PUBLISHED)
-				.build();
+	@Nested
+	@DisplayName("Получение публичного события по поиску")
+	class GetFreeEvents {
 
-		FreeGetDto dto = FreeGetDto.builder()
-				.from(0)
-				.size(10)
-				.build();
+		@Test
+		void whenBaseFlow_thenReturnOnlyPublishedAndFutureEvents() {
+			// region setup
+			Event event = mergeEvent(
+					testUtils.generateEvent(testUtils.futureDate, EventState.PUBLISHED)
+			);
+			mergeEvent(testUtils.getNewCopyOfEvent(event, EventState.PENDING));
+			mergeEvent(testUtils.getNewCopyOfEvent(event, EventState.CANCELED));
+			mergeEvent(testUtils.getNewCopyOfEvent(event, EventState.CANCELED))
+					.toBuilder().eventDate(testUtils.pastDate).build();
 
-		em.merge(publishedFuture);
-		em.merge(pendingFuture);
-		em.merge(canceledFuture);
-		em.merge(publishedPast);
-		// endregion setup
+			FreeGetDto dto = FreeGetDto.builder().from(0).size(10).build();
+			// endregion setup
 
-		doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
+			doNothing().when(statRepository).sendHitRequest(any(HttpServletRequest.class));
 
-		List<EventShortDto> result =
-				eventService.getFreeEvents(dto, mock(HttpServletRequest.class));
+			List<EventShortDto> result =
+					eventService.getFreeEvents(dto, mock(HttpServletRequest.class));
 
-		assertThat(result).hasSize(1);
-		assertThat(result).contains(
-				EventMapper.toEventShortDto(publishedFuture.toBuilder().id(1L).build(), 0L, 0L)
-		);
-		verify(statRepository).sendHitRequest(any(HttpServletRequest.class));
+			assertThat(result).hasSize(1);
+			assertThat(result).contains(
+					EventMapper.toEventShortDto(
+							event.toBuilder().id(1L).build(),
+							0L,
+							0L
+					)
+			);
+			verify(statRepository).sendHitRequest(any(HttpServletRequest.class));
+		}
 	}
 }

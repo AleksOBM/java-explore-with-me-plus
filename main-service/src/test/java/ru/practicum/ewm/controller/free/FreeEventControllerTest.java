@@ -2,7 +2,9 @@ package ru.practicum.ewm.controller.free;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
 import lombok.SneakyThrows;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,28 +43,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = FreeEventController.class)
 @ContextConfiguration(classes = MainServiceApp.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 class FreeEventControllerTest {
 
 	@Autowired
-	private ObjectMapper mapper;
+	ObjectMapper mapper;
 
 	@Autowired
-	private MockMvc mvc;
+	MockMvc mvc;
 
 	@MockitoBean
-	private EventService eventService;
+	EventService eventService;
 
 	@MockitoBean
-	private StatRepository statRepository;
+	StatRepository statRepository;
 
 	@MockitoBean
-	private CategoryService categoryService;
+	CategoryService categoryService;
 
 	@MockitoBean
-	private UserService userService;
+	UserService userService;
 
 	@MockitoBean
-	private StatClient statClient;
+	StatClient statClient;
 
 	@MockitoBean
 	CompilationRepository compilationRepository;
@@ -76,9 +79,9 @@ class FreeEventControllerTest {
 	@MockitoBean
 	EventRepository eventRepository;
 
-	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	private static Event event;
+	static Event event;
 
 	@BeforeAll
 	static void setup() {
