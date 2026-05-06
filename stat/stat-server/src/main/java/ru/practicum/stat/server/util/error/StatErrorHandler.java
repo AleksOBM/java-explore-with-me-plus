@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -17,7 +16,9 @@ public class StatErrorHandler {
 	// Обработка 400 Bad Request
 	@ExceptionHandler({
 			MethodArgumentNotValidException.class,
-			IllegalArgumentException.class
+			IllegalArgumentException.class,
+			org.springframework.web.bind.MissingServletRequestParameterException.class, // Отсутствие параметра
+			org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class // Неверный формат
 	})
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ApiError handleBadRequest(final Exception e) { // Здесь Exception
