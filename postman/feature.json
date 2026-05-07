@@ -1,0 +1,363 @@
+{
+	"info": {
+		"_postman_id": "3f1bf201-4169-477e-89f3-801890a0f950",
+		"name": "feature_rating_events",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50204807",
+		"_collection_link": "https://aleksobm-7059599.postman.co/workspace/Team's-Workspace~91ebb0d8-1476-4e40-85ec-9b22813a2ce5/collection/50204807-3f1bf201-4169-477e-89f3-801890a0f950?action=share&source=collection_link&creator=50204807"
+	},
+	"item": [
+		{
+			"name": "Поставить лайк событию",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {",
+							"    const api = new API(pm);",
+							"    const rnd = new RandomUtils();",
+							"",
+							"    let event;",
+							"    try {",
+							"        const user = await api.addUser(rnd.getUser());",
+							"        pm.collectionVariables.set(\"uid\", user.id)",
+							"        const category = await api.addCategory(rnd.getCategory());",
+							"        event = rnd.getEvent(category.id);",
+							"        pm.collectionVariables.set(\"eid\", event.id)",
+							"    } catch(err) {",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+							"    }",
+							"",
+							"    pm.request.body.update({",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(event),",
+							"        options: { raw: { language: 'json' } }",
+							"    });",
+							"};",
+							"",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса успеха\", function() {",
+							"    pm.response.to.be.success;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"likeAction\" : \"LIKE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/events/:eventId/likes",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"events",
+						":eventId",
+						"likes"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{uid}}"
+						},
+						{
+							"key": "eventId",
+							"value": "{{eid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Поставить дизлайк событию",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {",
+							"    const api = new API(pm);",
+							"    const rnd = new RandomUtils();",
+							"",
+							"    let event;",
+							"    try {",
+							"        const user = await api.addUser(rnd.getUser());",
+							"        pm.collectionVariables.set(\"uid\", user.id)",
+							"        const category = await api.addCategory(rnd.getCategory());",
+							"        event = rnd.getEvent(category.id);",
+							"        pm.collectionVariables.set(\"eid\", event.id)",
+							"    } catch(err) {",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+							"    }",
+							"",
+							"    pm.request.body.update({",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(event),",
+							"        options: { raw: { language: 'json' } }",
+							"    });",
+							"};",
+							"",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса успеха\", function() {",
+							"    pm.response.to.be.success;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"likeAction\" : \"DISLIKE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/events/:eventId/likes",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"events",
+						":eventId",
+						"likes"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{uid}}"
+						},
+						{
+							"key": "eventId",
+							"value": "{{eid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение событий, добавленных текущим пользователем",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    try {\r",
+							"        const user = await api.addUser(rnd.getUser());\r",
+							"        pm.collectionVariables.set(\"uid\", user.id)\r",
+							"        const category = await api.addCategory(rnd.getCategory());\r",
+							"        const event = await api.addEvent(user.id, rnd.getEvent(category.id));\r",
+							"        let eid = event.id;\r",
+							"\r",
+							"         try {\r",
+							"            await pm.sendRequest({\r",
+							"                url: baseUrl + \"/users/\" + uid + \"/events/\" + eid + \"/likes\",\r",
+							"                method: \"POST\",\r",
+							"                body: {\r",
+							"                    mode: \"raw\",\r",
+							"                    raw: JSON.stringify({\"likeAction\" : \"LIKE\"}),\r",
+							"                    contentType: \"application/json\"\r",
+							"                },\r",
+							"\r",
+							"            });\r",
+							"        } catch (err) {\r",
+							"           console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"        }\r",
+							"\r",
+							"    } catch(err) {\r",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json()[0];\r",
+							"\r",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate\", function () {\r",
+							"    pm.expect(target).to.contain.keys('id', 'title', 'annotation', 'category', 'paid', 'eventDate');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(target.id).to.not.be.null;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны содержать поле 'rate'\", function () {\r",
+							"    pm.expect(target).to.contain.keys('rate');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Поле 'rate' должно быть равно 1\", function () {\r",
+							"    pm.expect(target.rate).to.be(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users/:userId/events?from=0&size=1000",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":userId",
+						"events"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "0",
+							"description": "количество элементов, которые нужно пропустить для формирования текущего набора"
+						},
+						{
+							"key": "size",
+							"value": "1000",
+							"description": "количество элементов в наборе"
+						}
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{uid}}",
+							"description": "(Required) id текущего пользователя"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
