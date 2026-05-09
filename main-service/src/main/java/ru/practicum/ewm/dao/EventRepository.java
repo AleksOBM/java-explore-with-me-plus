@@ -7,11 +7,14 @@ import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.enums.EventState;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long>,
         JpaSpecificationExecutor<Event> {
 
     Collection<Event> findByInitiatorId(Long userId, PageRequest pageRequest);
+
+    Optional<Event> findByIdAndState(Long eventId, EventState state);
 
     boolean existsByCategoryId(Long categoryId);
 
