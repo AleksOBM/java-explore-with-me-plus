@@ -14,10 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import ru.practicum.ewm.MainServiceApp;
-import ru.practicum.ewm.dao.CompilationRepository;
-import ru.practicum.ewm.dao.EventRepository;
-import ru.practicum.ewm.dao.RequestRepository;
-import ru.practicum.ewm.dao.UserRepository;
+import ru.practicum.ewm.dao.*;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.FreeGetDto;
@@ -26,6 +23,7 @@ import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.service.category.CategoryService;
 import ru.practicum.ewm.service.event.EventService;
+import ru.practicum.ewm.service.rating.RatingService;
 import ru.practicum.ewm.service.user.UserService;
 import ru.practicum.ewm.util.statistic.StatRepository;
 import ru.practicum.stat.client.StatClient;
@@ -78,6 +76,12 @@ class FreeEventControllerTest {
 
 	@MockitoBean
 	EventRepository eventRepository;
+
+	@MockitoBean
+	RatingService ratingService;
+
+	@MockitoBean
+	RatingRepository ratingRepository;
 
 	final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

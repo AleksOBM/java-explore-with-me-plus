@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS events (
     title VARCHAR(120) NOT NULL,
     category_id BIGINT,
     initiator_id BIGINT,
+    rate BIGINT NOT NULL DEFAULT 0,
 
     CONSTRAINT fk_events_users
         FOREIGN KEY (initiator_id)
@@ -79,4 +80,14 @@ CREATE TABLE IF NOT EXISTS compilation_events (
         FOREIGN KEY (events_id)
         REFERENCES events(id)
         ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS ratings (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    event_id BIGINT NOT NULL,
+    reaction VARCHAR(10) NOT NULL CHECK (reaction IN ('LIKE', 'DISLIKE')),
+    CONSTRAINT uq_ratings_user_event UNIQUE (user_id, event_id),
+    CONSTRAINT fk_ratings_users FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_ratings_events FOREIGN KEY (event_id) REFERENCES events(id)
 );
