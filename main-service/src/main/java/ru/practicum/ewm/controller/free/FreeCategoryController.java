@@ -24,9 +24,9 @@ public class FreeCategoryController {
 	 * В случае, если по заданным фильтрам не найдено ни одной категории, возвращает пустой список
 	 *
 	 * @param from количество категорий, которые нужно пропустить для формирования текущего набора
-	 * Default value : 0
+	 *             Default value : 0
 	 * @param size количество категорий в наборе
-	 * Default value : 10
+	 *             Default value : 10
 	 * @return List<{@link CategoryDto}>
 	 */
 	@GetMapping

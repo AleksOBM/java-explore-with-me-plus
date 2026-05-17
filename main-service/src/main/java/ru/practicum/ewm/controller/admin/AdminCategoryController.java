@@ -15,7 +15,8 @@ public class AdminCategoryController {
 
 	private final CategoryService categoryService;
 
-	/** Добавление новой категории. Обратите внимание: имя категории должно быть уникальным
+	/**
+	 * Добавление новой категории. Обратите внимание: имя категории должно быть уникальным
 	 *
 	 * @param newCategoryDto данные добавляемой категории
 	 * @return CategoryDto
@@ -26,11 +27,12 @@ public class AdminCategoryController {
 		return categoryService.adminAddNewCategory(newCategoryDto);
 	}
 
-	/** Изменение категории
+	/**
+	 * Изменение категории
 	 * <p>
 	 * Обратите внимание: имя категории должно быть уникальным
 	 *
-	 * @param catId id категории
+	 * @param catId       id категории
 	 * @param categoryDto Данные категории для изменения
 	 * @return CategoryDto
 	 */
@@ -40,7 +42,8 @@ public class AdminCategoryController {
 		return categoryService.updateCategory(catId, categoryDto);
 	}
 
-	/** Удаление категории
+	/**
+	 * Удаление категории
 	 * <p>
 	 * Обратите внимание: с категорией не должно быть связано ни одного события.
 	 *

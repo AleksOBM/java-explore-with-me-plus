@@ -27,7 +27,7 @@ import java.util.List;
 public class Event extends BaseEntity {
 
 	/// Краткое описание
-	@Column(nullable = false,  length = 2000)
+	@Column(nullable = false, length = 2000)
 	String annotation;
 
 	/// Категория

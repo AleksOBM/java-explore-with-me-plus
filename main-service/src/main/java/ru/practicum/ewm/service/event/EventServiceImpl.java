@@ -206,7 +206,7 @@ public class EventServiceImpl implements EventService {
 		Map<Long, Long> requestCountMap = new HashMap<>();
 		if (!eventRequestCountList.isEmpty()) {
 			eventRequestCountList.forEach(eventRequestCount ->
-				requestCountMap.put(eventRequestCount.getEventId(), eventRequestCount.getCount())
+					requestCountMap.put(eventRequestCount.getEventId(), eventRequestCount.getCount())
 			);
 		}
 

@@ -2,15 +2,11 @@ package ru.practicum.ewm.mapper;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.NonNull;
-import ru.practicum.ewm.dto.event.EventFullDto;
-import ru.practicum.ewm.dto.event.EventShortDto;
-import ru.practicum.ewm.dto.event.NewEventDto;
-import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
-import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
-import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.model.Category;
-import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.User;
+import ru.practicum.ewm.model.enums.EventState;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -75,25 +71,7 @@ public class EventMapper {
 				.requestModeration(newEventDto.requestModeration() == null || newEventDto.requestModeration())
 				.state(state)
 				.title(newEventDto.title())
-				.build();
-	}
-
-	public Event toEntity(@NonNull EventFullDto eventFullDto, LocalDateTime createdOn) {
-		return Event.builder()
-				.id(eventFullDto.id())
-				.annotation(eventFullDto.annotation())
-				.category(CategoryMapper.toEntity(eventFullDto.category()))
-				.createdOn(createdOn)
-				.description(eventFullDto.description())
-				.eventDate(eventFullDto.eventDate())
-				.initiator(UserMapper.toEntity(eventFullDto.initiator()))
-				.location(eventFullDto.location())
-				.paid(eventFullDto.paid())
-				.participantLimit(eventFullDto.participantLimit())
-				.publishedOn(eventFullDto.publishedOn())
-				.requestModeration(eventFullDto.requestModeration())
-				.state(eventFullDto.state())
-				.title(eventFullDto.title())
+				.rate(0)
 				.build();
 	}
 

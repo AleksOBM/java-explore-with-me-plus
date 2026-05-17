@@ -2,11 +2,11 @@ package ru.practicum.ewm.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.dto.request.ParticipationRequestDto;
-import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.ParticipationRequest;
-import ru.practicum.ewm.model.User;
 
-import static ru.practicum.ewm.util.Utils.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 @Component
 public class RequestMapper {
@@ -22,15 +22,10 @@ public class RequestMapper {
 				.build();
 	}
 
-	public static ParticipationRequest toEntity(ParticipationRequestDto participationRequestDto, Event event,
-	                                            User requester) {
-		if (participationRequestDto == null) return null;
-		return ParticipationRequest.builder()
-				.id(participationRequestDto.id())
-				.event(event)
-				.requester(requester)
-				.status(participationRequestDto.status())
-				.created(parseDateTime(participationRequestDto.created()))
-				.build();
+	private static String formatDateTime(LocalDateTime dateTime) {
+		if (dateTime == null) return null;
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		return dateTime.format(formatter);
 	}
 }

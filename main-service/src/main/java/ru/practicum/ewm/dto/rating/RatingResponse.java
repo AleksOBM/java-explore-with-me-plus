@@ -1,6 +1,9 @@
 package ru.practicum.ewm.dto.rating;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewm.model.enums.Reaction;
 
 @Data
@@ -8,8 +11,8 @@ import ru.practicum.ewm.model.enums.Reaction;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RatingResponse {
-    private Long id;
-    private Long userId;
-    private Long eventId;
-    private Reaction reaction;
+	private Long id;
+	private Long userId;
+	private Long eventId;
+	private Reaction reaction;
 }

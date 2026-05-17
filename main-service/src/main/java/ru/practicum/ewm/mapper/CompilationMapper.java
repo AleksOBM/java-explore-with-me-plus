@@ -23,10 +23,10 @@ public class CompilationMapper {
 				.title(compilation.getTitle())
 				.events(compilation.getEvents().stream()
 						.map(event -> EventMapper.toEventShortDto(
-									event,
-									confirmedRequests.getOrDefault(event.getId(), 0L),
-									views.getOrDefault(event.getId(), 0L)
-							))
+								event,
+								confirmedRequests.getOrDefault(event.getId(), 0L),
+								views.getOrDefault(event.getId(), 0L)
+						))
 						.toList())
 				.build();
 	}

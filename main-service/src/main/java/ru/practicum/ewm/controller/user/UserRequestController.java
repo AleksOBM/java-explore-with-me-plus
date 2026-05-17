@@ -46,7 +46,7 @@ public class UserRequestController {
 	 * если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в
 	 * состояние подтвержденного
 	 *
-	 * @param userId id текущего пользователя
+	 * @param userId  id текущего пользователя
 	 * @param eventId id события
 	 * @return {@link ParticipationRequestDto}
 	 */
@@ -60,7 +60,7 @@ public class UserRequestController {
 	/**
 	 * Отмена своего запроса на участие в событии
 	 *
-	 * @param userId id текущего пользователя
+	 * @param userId    id текущего пользователя
 	 * @param requestId id запроса на участие
 	 * @return {@link ParticipationRequestDto}
 	 */

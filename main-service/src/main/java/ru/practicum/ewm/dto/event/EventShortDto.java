@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 public record EventShortDto(
 		long id,
 		String annotation,
-        CategoryDto category,
-        long confirmedRequests,
-        LocalDateTime eventDate,
-        UserShortDto initiator,
-        boolean paid,
-        String title,
-        long views,
+		CategoryDto category,
+		long confirmedRequests,
+		LocalDateTime eventDate,
+		UserShortDto initiator,
+		boolean paid,
+		String title,
+		long views,
 		long rate
 ) {
 }

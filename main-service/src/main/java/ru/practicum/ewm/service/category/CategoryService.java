@@ -8,16 +8,16 @@ import java.util.List;
 
 public interface CategoryService {
 
-    @Transactional
-    CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
+	@Transactional
+	CategoryDto adminAddNewCategory(NewCategoryDto newCategoryDto);
 
-    List<CategoryDto> findAll(Integer from, Integer size);
+	List<CategoryDto> findAll(Integer from, Integer size);
 
-    CategoryDto findById(Long catId);
+	CategoryDto findById(Long catId);
 
-    @Transactional
-    CategoryDto updateCategory(Long catId, CategoryDto categoryDto);
+	@Transactional
+	CategoryDto updateCategory(Long catId, CategoryDto categoryDto);
 
-    @Transactional
-    void deleteCategory(Long catId);
+	@Transactional
+	void deleteCategory(Long catId);
 }

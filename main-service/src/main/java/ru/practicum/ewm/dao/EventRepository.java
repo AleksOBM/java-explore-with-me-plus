@@ -10,13 +10,13 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long>,
-        JpaSpecificationExecutor<Event> {
+		JpaSpecificationExecutor<Event> {
 
-    Collection<Event> findByInitiatorId(Long userId, PageRequest pageRequest);
+	Collection<Event> findByInitiatorId(Long userId, PageRequest pageRequest);
 
-    Optional<Event> findByIdAndState(Long eventId, EventState state);
+	Optional<Event> findByIdAndState(Long eventId, EventState state);
 
-    boolean existsByCategoryId(Long categoryId);
+	boolean existsByCategoryId(Long categoryId);
 
-    boolean existsByIdAndState(Long eventId, EventState state);
+	boolean existsByIdAndState(Long eventId, EventState state);
 }

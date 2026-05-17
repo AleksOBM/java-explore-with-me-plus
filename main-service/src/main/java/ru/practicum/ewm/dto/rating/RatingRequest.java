@@ -1,7 +1,10 @@
 package ru.practicum.ewm.dto.rating;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewm.model.enums.Reaction;
 
 @Data
@@ -10,6 +13,6 @@ import ru.practicum.ewm.model.enums.Reaction;
 @AllArgsConstructor
 public class RatingRequest {
 
-    @NotNull
-    private Reaction reaction;
+	@NotNull
+	private Reaction reaction;
 }

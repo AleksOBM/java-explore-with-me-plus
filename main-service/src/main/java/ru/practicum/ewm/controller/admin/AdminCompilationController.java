@@ -13,9 +13,11 @@ import ru.practicum.ewm.service.compilation.CompilationService;
 @RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
 public class AdminCompilationController {
+
 	private final CompilationService compilationService;
 
-	/** Добавление новой подборки (подборка может не содержать событий)
+	/**
+	 * Добавление новой подборки (подборка может не содержать событий)
 	 *
 	 * @param newCompilationDto данные новой подборки
 	 * @return {@link CompilationDto}
@@ -29,7 +31,7 @@ public class AdminCompilationController {
 	/**
 	 *
 	 * @param compilationUpdateDto данные для обновления подборки
-	 * @param compId id подборки
+	 * @param compId               id подборки
 	 * @return {@link CompilationDto}
 	 */
 	@PatchMapping("/{compId}")
@@ -38,7 +40,8 @@ public class AdminCompilationController {
 		return compilationService.updateCompilation(compId, compilationUpdateDto);
 	}
 
-	/** Удаление подборки
+	/**
+	 * Удаление подборки
 	 *
 	 * @param compId id подборки
 	 */

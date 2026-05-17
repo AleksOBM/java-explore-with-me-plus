@@ -77,6 +77,7 @@ public class TestUtils {
 				.requestModeration(random.nextBoolean())
 				.state(eventState)
 				.title(generateRandomText(15, "", ' '))
+				.rate(0)
 				.build();
 	}
 

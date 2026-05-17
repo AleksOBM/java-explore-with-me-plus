@@ -11,17 +11,17 @@ import java.time.format.DateTimeFormatter;
 @SpringBootConfiguration
 public class MainServiceConfig {
 
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        return builder -> {
-            builder.simpleDateFormat(pattern);
-            builder.serializers(new LocalDateTimeSerializer(
-                    DateTimeFormatter.ofPattern(pattern)
-            ));
-            builder.deserializers(new LocalDateTimeDeserializer(
-                    DateTimeFormatter.ofPattern(pattern)
-            ));
-        };
-    }
+	@Bean
+	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+		String pattern = "yyyy-MM-dd HH:mm:ss";
+		return builder -> {
+			builder.simpleDateFormat(pattern);
+			builder.serializers(new LocalDateTimeSerializer(
+					DateTimeFormatter.ofPattern(pattern)
+			));
+			builder.deserializers(new LocalDateTimeDeserializer(
+					DateTimeFormatter.ofPattern(pattern)
+			));
+		};
+	}
 }

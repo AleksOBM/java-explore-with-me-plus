@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface UserService {
 
-    @Transactional
-    UserDto adminAddNewUser(NewUserRequest newUserRequest);
+	@Transactional
+	UserDto adminAddNewUser(NewUserRequest newUserRequest);
 
-    List<UserDto> getUsers(List<Long> ids, int from, int size);
+	List<UserDto> getUsers(List<Long> ids, int from, int size);
 
-    @Transactional
-    void deleteUser(Long userId);
+	@Transactional
+	void deleteUser(Long userId);
 }

@@ -3,8 +3,6 @@ package ru.practicum.ewm.service.event;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.event.*;
-import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
-import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 
 import java.util.List;
 
@@ -14,7 +12,8 @@ public interface EventService {
 	/// Получение событий незарегистрированным пользователем с возможностью фильтрации
 	List<EventShortDto> getFreeEvents(FreeGetDto freeGetDto, HttpServletRequest request);
 
-	/** Получение незарегистрированным пользователем подробной информации об опубликованном событии
+	/**
+	 * Получение незарегистрированным пользователем подробной информации об опубликованном событии
 	 * по его идентификатору
 	 */
 	EventFullDto getFreeEventById(Long eventId, HttpServletRequest request);

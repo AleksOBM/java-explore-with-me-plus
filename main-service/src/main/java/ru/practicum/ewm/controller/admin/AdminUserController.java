@@ -17,7 +17,8 @@ public class AdminUserController {
 
 	private final UserService userService;
 
-	/** Добавление нового пользователя
+	/**
+	 * Добавление нового пользователя
 	 *
 	 * @param newUserRequest Данные добавляемого пользователя
 	 * @return {@link UserDto}
@@ -35,11 +36,11 @@ public class AdminUserController {
 	 * либо о конкретных (учитываются указанные идентификаторы)
 	 * В случае, если по заданным фильтрам не найдено ни одного пользователя, возвращает пустой список
 	 *
-	 * @param ids id пользователей
+	 * @param ids  id пользователей
 	 * @param from количество элементов, которые нужно пропустить для формирования текущего набора
-	 * Default value : 0
+	 *             Default value : 0
 	 * @param size количество элементов в наборе
-	 * Default value : 10
+	 *             Default value : 10
 	 * @return List<{@link UserDto}>
 	 */
 	@GetMapping
@@ -51,7 +52,8 @@ public class AdminUserController {
 		return userService.getUsers(ids, from, size);
 	}
 
-	/** Удаление пользователя
+	/**
+	 * Удаление пользователя
 	 *
 	 * @param userId id пользователя
 	 */

@@ -20,9 +20,9 @@ import ru.practicum.ewm.util.entity.BaseEntity;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
 
-    @Column(nullable = false)
-    String name;
+	@Column(nullable = false)
+	String name;
 
-    @Column(nullable = false, unique = true)
-    String email;
+	@Column(nullable = false, unique = true)
+	String email;
 }

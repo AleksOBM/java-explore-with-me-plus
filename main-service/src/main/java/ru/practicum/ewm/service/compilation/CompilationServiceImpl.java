@@ -25,6 +25,7 @@ import ru.practicum.ewm.service.request.EventRequestCount;
 import ru.practicum.ewm.util.error.exception.NotFoundException;
 import ru.practicum.ewm.util.statistic.StatRepository;
 import ru.practicum.stat.dto.ViewStatsDto;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -197,7 +198,7 @@ public class CompilationServiceImpl implements CompilationService {
 		//  Map<eventId, hits>
 		return stats.stream()
 				.collect(Collectors.toMap(
-						s ->  Long.parseLong(s.getUri().replace("/events/", "")),
+						s -> Long.parseLong(s.getUri().replace("/events/", "")),
 						ViewStatsDto::getHits,
 						(a, b) -> a
 				));

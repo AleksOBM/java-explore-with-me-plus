@@ -23,62 +23,62 @@ import java.util.List;
 @Component
 public class StatClient {
 
-    private final String serverUrl;
+	private final String serverUrl;
 
-    private final RestTemplate rest;
+	private final RestTemplate rest;
 
-    public StatClient(@Value("${stats-server.url:http://localhost:9090}") String serverUrl,
-                      RestTemplateBuilder builder) {
-        this.serverUrl = serverUrl;
-        this.rest = builder.build();
-    }
+	public StatClient(@Value("${stats-server.url:http://localhost:9090}") String serverUrl,
+	                  RestTemplateBuilder builder) {
+		this.serverUrl = serverUrl;
+		this.rest = builder.build();
+	}
 
-    public void hit(EndpointHitDto endpointHitDto) {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+	public void hit(EndpointHitDto endpointHitDto) {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<EndpointHitDto> requestEntity = new HttpEntity<>(endpointHitDto, headers);
+			HttpEntity<EndpointHitDto> requestEntity = new HttpEntity<>(endpointHitDto, headers);
 
-            rest.exchange(
-                    serverUrl + "/hit",
-                    HttpMethod.POST,
-                    requestEntity,
-                    Void.class
-            );
-        } catch (Exception e) {
-            log.error("Ошибка записи: {}", endpointHitDto, e);
-        }
+			rest.exchange(
+					serverUrl + "/hit",
+					HttpMethod.POST,
+					requestEntity,
+					Void.class
+			);
+		} catch (Exception e) {
+			log.error("Ошибка записи: {}", endpointHitDto, e);
+		}
 
-    }
+	}
 
-    public List<ViewStatsDto> getStat(StatsRequest statsRequest) {
-        try {
-            UriComponentsBuilder builder = UriComponentsBuilder
-                    .fromHttpUrl(serverUrl + "/stats")
-                    .queryParam("start", statsRequest.getStart())
-                    .queryParam("end", statsRequest.getEnd())
-                    .queryParam("unique", statsRequest.getUnique());
+	public List<ViewStatsDto> getStat(StatsRequest statsRequest) {
+		try {
+			UriComponentsBuilder builder = UriComponentsBuilder
+					.fromHttpUrl(serverUrl + "/stats")
+					.queryParam("start", statsRequest.getStart())
+					.queryParam("end", statsRequest.getEnd())
+					.queryParam("unique", statsRequest.getUnique());
 
-            List<String> uris = statsRequest.getUris();
+			List<String> uris = statsRequest.getUris();
 
-            if (uris != null && !uris.isEmpty()) {
-                builder.queryParam("uris", uris);
-            }
+			if (uris != null && !uris.isEmpty()) {
+				builder.queryParam("uris", uris);
+			}
 
-            URI uri = builder.encode().build().toUri();
+			URI uri = builder.encode().build().toUri();
 
-            return rest.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<ViewStatsDto>>() {
-                    }
-            ).getBody();
+			return rest.exchange(
+					uri,
+					HttpMethod.GET,
+					null,
+					new ParameterizedTypeReference<List<ViewStatsDto>>() {
+					}
+			).getBody();
 
-        } catch (Exception e) {
-            log.error("Ошибка записи: {}", statsRequest, e);
-            return null;
-        }
-    }
+		} catch (Exception e) {
+			log.error("Ошибка записи: {}", statsRequest, e);
+			return null;
+		}
+	}
 }

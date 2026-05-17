@@ -18,16 +18,16 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation extends BaseEntity {
 
-    @Column(nullable = false, length = 50)
-    String title;
+	@Column(nullable = false, length = 50)
+	String title;
 
-    @ManyToMany
-    @JoinTable(name = "compilation_events",
-            joinColumns = @JoinColumn(name = "compilations_id"),
-            inverseJoinColumns = @JoinColumn(name = "events_id"))
-    @Builder.Default
-    Set<Event> events = new HashSet<>();
+	@ManyToMany
+	@JoinTable(name = "compilation_events",
+			joinColumns = @JoinColumn(name = "compilations_id"),
+			inverseJoinColumns = @JoinColumn(name = "events_id"))
+	@Builder.Default
+	Set<Event> events = new HashSet<>();
 
-    @Column(nullable = false)
-    boolean pinned;
+	@Column(nullable = false)
+	boolean pinned;
 }

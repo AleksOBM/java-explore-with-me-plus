@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.compilation.CompilationDto;
 import ru.practicum.ewm.dto.compilation.CompilationSearchFilter;
 import ru.practicum.ewm.service.compilation.CompilationService;
+
 import java.util.List;
 
 @RestController
@@ -20,11 +21,11 @@ public class FreeCompilationController {
 	 * <p>
 	 * В случае, если по заданным фильтрам не найдено ни одной подборки, возвращает пустой список
 	 *
-	 * @param pinned искать только закрепленные/не закрепленные подборки
-	 * @param from количество элементов, которые нужно пропустить для формирования текущего набора
-	 * Default value : 0
-	 * @param size количество элементов в наборе
-	 * Default value : 10
+	 * @param pinned  искать только закрепленные/не закрепленные подборки
+	 * @param from    количество элементов, которые нужно пропустить для формирования текущего набора
+	 *                Default value : 0
+	 * @param size    количество элементов в наборе
+	 *                Default value : 10
 	 * @param request Данные HTTP-запроса
 	 * @return List<{@link CompilationDto}>
 	 */
@@ -47,9 +48,7 @@ public class FreeCompilationController {
 	/**
 	 * Получение подборки событий по его id
 	 *
-	 *
-	 *
-	 * @param compId id подборки
+	 * @param compId  id подборки
 	 * @param request Данные HTTP-запроса
 	 * @return {@link CompilationDto}
 	 */

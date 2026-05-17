@@ -25,70 +25,70 @@ import java.util.Objects;
 @Transactional
 public class RatingServiceImpl implements RatingService {
 
-    private final RatingRepository ratingRepository;
-    private final UserRepository userRepository;
-    private final EventRepository eventRepository;
+	private final RatingRepository ratingRepository;
+	private final UserRepository userRepository;
+	private final EventRepository eventRepository;
 
-    @Override
-    public RatingResponse addOrUpdateReaction(Long userId, Long eventId, RatingRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
-        Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED)
-                .orElseThrow(() ->
-                        new NotFoundException("Событие с id=" + eventId + " не существует или не опубликовано.")
-                );
-        User initiator = event.getInitiator();
-        if (Objects.equals(user.getId(), initiator.getId())) {
-            throw new ValidationException("Нельзя ставить реакции своим событиям");
-        }
+	@Override
+	public RatingResponse addOrUpdateReaction(Long userId, Long eventId, RatingRequest request) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
+		Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED)
+				.orElseThrow(() ->
+						new NotFoundException("Событие с id=" + eventId + " не существует или не опубликовано.")
+				);
+		User initiator = event.getInitiator();
+		if (Objects.equals(user.getId(), initiator.getId())) {
+			throw new ValidationException("Нельзя ставить реакции своим событиям");
+		}
 
-        Rating rating = ratingRepository.findByUserIdAndEventId(userId, eventId).orElse(null);
+		Rating rating = ratingRepository.findByUserIdAndEventId(userId, eventId).orElse(null);
 
-        if (rating != null) {
-            if (rating.getReaction() == request.getReaction()) {
-                ratingRepository.delete(rating);
-                updateEventRate(event);
-                throw new ConflictException("Reaction removed");
-            } else {
-                rating.setReaction(request.getReaction());
-                ratingRepository.save(rating);
-                updateEventRate(event);
-                return mapToResponse(rating);
-            }
-        } else {
-            rating = Rating.builder()
-                    .user(user)
-                    .event(event)
-                    .reaction(request.getReaction())
-                    .build();
-            ratingRepository.save(rating);
-            updateEventRate(event);
-            return mapToResponse(rating);
-        }
-    }
+		if (rating != null) {
+			if (rating.getReaction() == request.getReaction()) {
+				ratingRepository.delete(rating);
+				updateEventRate(event);
+				throw new ConflictException("Reaction removed");
+			} else {
+				rating.setReaction(request.getReaction());
+				ratingRepository.save(rating);
+				updateEventRate(event);
+				return mapToResponse(rating);
+			}
+		} else {
+			rating = Rating.builder()
+					.user(user)
+					.event(event)
+					.reaction(request.getReaction())
+					.build();
+			ratingRepository.save(rating);
+			updateEventRate(event);
+			return mapToResponse(rating);
+		}
+	}
 
-    @Override
-    public void removeReaction(Long userId, Long eventId) {
-        Rating rating = ratingRepository.findByUserIdAndEventId(userId, eventId)
-                .orElseThrow(() -> new NotFoundException("Реакция не найдена"));
-        ratingRepository.delete(rating);
-        Event event = rating.getEvent();
-        updateEventRate(event);
-    }
+	@Override
+	public void removeReaction(Long userId, Long eventId) {
+		Rating rating = ratingRepository.findByUserIdAndEventId(userId, eventId)
+				.orElseThrow(() -> new NotFoundException("Реакция не найдена"));
+		ratingRepository.delete(rating);
+		Event event = rating.getEvent();
+		updateEventRate(event);
+	}
 
-    private void updateEventRate(@NonNull Event event) {
-        long likes = ratingRepository.countByEventIdAndReaction(event.getId(), Reaction.LIKE);
-        long dislikes = ratingRepository.countByEventIdAndReaction(event.getId(), Reaction.DISLIKE);
-        event.setRate(likes - dislikes);
-        eventRepository.save(event);
-    }
+	private void updateEventRate(@NonNull Event event) {
+		long likes = ratingRepository.countByEventIdAndReaction(event.getId(), Reaction.LIKE);
+		long dislikes = ratingRepository.countByEventIdAndReaction(event.getId(), Reaction.DISLIKE);
+		event.setRate(likes - dislikes);
+		eventRepository.save(event);
+	}
 
-    private RatingResponse mapToResponse(@NonNull Rating rating) {
-        return RatingResponse.builder()
-                .id(rating.getId())
-                .userId(rating.getUser().getId())
-                .eventId(rating.getEvent().getId())
-                .reaction(rating.getReaction())
-                .build();
-    }
+	private RatingResponse mapToResponse(@NonNull Rating rating) {
+		return RatingResponse.builder()
+				.id(rating.getId())
+				.userId(rating.getUser().getId())
+				.eventId(rating.getEvent().getId())
+				.reaction(rating.getReaction())
+				.build();
+	}
 }

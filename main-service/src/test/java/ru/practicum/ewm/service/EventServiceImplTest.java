@@ -76,6 +76,7 @@ class EventServiceImplTest {
 				.requestModeration(true)
 				.state(EventState.PUBLISHED)
 				.title("title")
+				.rate(0)
 				.build();
 	}
 
@@ -146,8 +147,8 @@ class EventServiceImplTest {
 			when(httpServletRequest.getRequestURI()).thenReturn("/events");
 			when(statRepository.getStat(List.of("/events"), true))
 					.thenReturn(List.of(ViewStatsDto.builder()
-									.hits(0L)
-									.build()
+							.hits(0L)
+							.build()
 					));
 			when(requestRepository.countByEventIdAndStatus(event.getId(), ParticipationStatus.CONFIRMED))
 					.thenReturn(0);

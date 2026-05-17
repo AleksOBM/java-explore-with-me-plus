@@ -6,12 +6,13 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import ru.practicum.ewm.dto.event.*;
+import ru.practicum.ewm.dto.event.EventFullDto;
+import ru.practicum.ewm.dto.event.EventShortDto;
+import ru.practicum.ewm.dto.event.NewEventDto;
+import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.dto.request.ParticipationRequestDto;
-import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.service.request.RequestService;
 
@@ -29,10 +30,10 @@ public class UserEventController {
 	 * Получение событий, добавленных текущим пользователем
 	 *
 	 * @param userId id текущего пользователя
-	 * @param from количество элементов, которые нужно пропустить для формирования текущего набора
-	 * Default value : 0
-	 * @param size количество элементов в наборе
-	 * Default value : 10
+	 * @param from   количество элементов, которые нужно пропустить для формирования текущего набора
+	 *               Default value : 0
+	 * @param size   количество элементов в наборе
+	 *               Default value : 10
 	 * @return List<{@link EventShortDto}>
 	 */
 	@GetMapping
@@ -45,7 +46,7 @@ public class UserEventController {
 	/**
 	 * Получение полной информации о событии добавленном текущим пользователем
 	 *
-	 * @param userId id текущего пользователя
+	 * @param userId  id текущего пользователя
 	 * @param eventId id события
 	 * @return {@link EventFullDto}
 	 */
@@ -61,7 +62,7 @@ public class UserEventController {
 	 * Обратите внимание: дата и время на которые намечено событие не может быть раньше,
 	 * чем через два часа от текущего момента
 	 *
-	 * @param userId id текущего пользователя
+	 * @param userId      id текущего пользователя
 	 * @param newEventDto данные добавляемого события
 	 * @return {@link EventFullDto}
 	 */
@@ -83,7 +84,7 @@ public class UserEventController {
 	 * - дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента
 	 * (Ожидается код ошибки 409)
 	 *
-	 * @param userId id текущего пользователя
+	 * @param userId  id текущего пользователя
 	 * @param eventId id редактируемого события
 	 * @param request Данные HTTP-запроса
 	 * @return {@link EventFullDto}
@@ -100,7 +101,7 @@ public class UserEventController {
 	 * <p>
 	 * В случае, если по заданным фильтрам не найдено ни одной заявки, возвращает пустой список
 	 *
-	 * @param userId id текущего пользователя
+	 * @param userId  id текущего пользователя
 	 * @param eventId id события
 	 * @return List<{@link ParticipationRequestDto}>
 	 */
@@ -124,9 +125,9 @@ public class UserEventController {
 	 * - если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки
 	 * необходимо отклонить
 	 *
-	 * @param userId id текущего пользователя
+	 * @param userId  id текущего пользователя
 	 * @param eventId id события текущего пользователя
-	 * @param status Новый статус для заявок на участие в событии текущего пользователя
+	 * @param status  Новый статус для заявок на участие в событии текущего пользователя
 	 * @return {@link EventRequestStatusUpdateResult}
 	 */
 	@PatchMapping("/{eventId}/requests")
