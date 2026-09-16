@@ -39,10 +39,52 @@
 - Основной сервис
 - Сервис учета статистики
 
-### Http API
+### Public API
 ```mermaid
 mindmap
-  root((API))
+  root((Free API))
+    FreeCategoryController
+      🌐/categories
+        GET /categories
+        GET /categories/:catId
+    FreeCompilationController
+      🌐/compilations
+        GET /compilations
+        GET /compilations/:compId
+    FreeEventController
+      🌐/events
+        GET /events
+        GET /events/:eventId
+```
+
+### User API
+```mermaid
+mindmap
+  root((User API))
+    RatingController
+      🌐/users/:userId/events/:eventId/likes
+        DELETE /users/:userId/events/:eventId/likes
+        POST /users/:userId/events/:eventId/likes
+    UserEventController
+      🌐/users/:userId/events
+        GET /users/:userId/events
+        GET /users/:userId/events/:eventId
+        PATCH /users/:userId/events/:eventId
+        POST /users/:userId/events
+      🌐/users/:userId/events/:eventId/requests
+        GET /users/:userId/events/:eventId/requests
+        PATCH /users/:userId/events/:eventId/requests
+    UserRequestController
+      🌐/users/:userId/requests
+        GET /users/:userId/requests
+        PATCH /users/:userId/requests/:requestId/cancel
+        POST /users/:userId/requests
+```
+
+### Admin API
+```mermaid
+mindmap
+  root((Admin API))
     AdminCategoryController
       🌐/admin/categories
         DELETE /admin/categories/:catId
@@ -62,40 +104,15 @@ mindmap
         DELETE /admin/users/:userId
         GET /admin/users
         POST /admin/users
-    FreeCategoryController
-      🌐/categories
-        GET /categories
-        GET /categories/:catId
-    FreeCompilationController
-      🌐/compilations
-        GET /compilations
-        GET /compilations/:compId
-    FreeEventController
-      🌐/events
-        GET /events
-        GET /events/:eventId
-    RatingController
-      🌐/users/:userId/events/:eventId/likes
-        DELETE /users/:userId/events/:eventId/likes
-        POST /users/:userId/events/:eventId/likes
+```
+
+### Stat API
+```mermaid
+mindmap
+  root((Stat API))
     StatController
-      🌐/stats
         GET /stats
         POST /hit
-    UserEventController
-      🌐/users/:userId/events
-        GET /users/:userId/events
-        GET /users/:userId/events/:eventId
-        PATCH /users/:userId/events/:eventId
-        POST /users/:userId/events
-      🌐/users/:userId/events/:eventId/requests
-        GET /users/:userId/events/:eventId/requests
-        PATCH /users/:userId/events/:eventId/requests
-    UserRequestController
-      🌐/users/:userId/requests
-        GET /users/:userId/requests
-        PATCH /users/:userId/requests/:requestId/cancel
-        POST /users/:userId/requests
 ```
 
 ### Database map
