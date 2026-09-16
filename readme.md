@@ -78,6 +78,7 @@ mindmap
 
 ### Admin API
 ```mermaid
+%%{init: { 'mindmap': { 'maxNodeWidth': 500 } }}%%
 mindmap
   root((Admin API))
       🌐/admin/categories
