@@ -16,7 +16,88 @@
 
 
 ## Бэкэнд для сервиса поиска мероприятий
-![](image.png)
+
+**Учебный проект**
+
+<img alt="preview.png" src=".img/preview.png" width="600"/>
+
+### Основные возможности
+- Просмотр предстоящих мероприятий
+- Фильтрация мероприятий по различным параметрам
+- Запись на мероприятие
+- Оценка мероприятия (лайк/дизлайк)
+- Добавление новых мероприятий
+- Одобрение/отклонение мероприятий администратором
+- Групировка мероприятий по категориям 
+- Создание/удаление категорий
+- Учет количества просмотров по каждому мероприятию
+- Топ по просмотрам для главной страницы
+- Создание подборок событий
+- Закрепление подборок на главной
+
+### Состав проекта
+- Основной сервис
+- Сервис учета статистики
+
+### Http API
+```mermaid
+mindmap
+  root((API))
+    AdminCategoryController
+      🌐/admin/categories
+        DELETE /admin/categories/:catId
+        PATCH /admin/categories/:catId
+        POST /admin/categories
+    AdminCompilationController
+      🌐/admin/compilations
+        DELETE /admin/compilations/:compId
+        PATCH /admin/compilations/:compId
+        POST /admin/compilations
+    AdminEventController
+      🌐/admin/events
+        GET /admin/events
+        PATCH /admin/events/:eventId
+    AdminUserController
+      🌐/admin/users
+        DELETE /admin/users/:userId
+        GET /admin/users
+        POST /admin/users
+    FreeCategoryController
+      🌐/categories
+        GET /categories
+        GET /categories/:catId
+    FreeCompilationController
+      🌐/compilations
+        GET /compilations
+        GET /compilations/:compId
+    FreeEventController
+      🌐/events
+        GET /events
+        GET /events/:eventId
+    RatingController
+      🌐/users/:userId/events/:eventId/likes
+        DELETE /users/:userId/events/:eventId/likes
+        POST /users/:userId/events/:eventId/likes
+    StatController
+      🌐/stats
+        GET /stats
+        POST /hit
+    UserEventController
+      🌐/users/:userId/events
+        GET /users/:userId/events
+        GET /users/:userId/events/:eventId
+        PATCH /users/:userId/events/:eventId
+        POST /users/:userId/events
+      🌐/users/:userId/events/:eventId/requests
+        GET /users/:userId/events/:eventId/requests
+        PATCH /users/:userId/events/:eventId/requests
+    UserRequestController
+      🌐/users/:userId/requests
+        GET /users/:userId/requests
+        PATCH /users/:userId/requests/:requestId/cancel
+        POST /users/:userId/requests
+```
 
 ### Database map
-![db](db-schema.png)
+
+<img alt="db" src=".img/db-schema.png" width="600"/>
