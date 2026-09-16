@@ -43,15 +43,12 @@
 ```mermaid
 mindmap
   root((Free API))
-    FreeCategoryController
       🌐/categories
         GET /categories
         GET /categories/:catId
-    FreeCompilationController
       🌐/compilations
         GET /compilations
         GET /compilations/:compId
-    FreeEventController
       🌐/events
         GET /events
         GET /events/:eventId
@@ -59,13 +56,12 @@ mindmap
 
 ### User API
 ```mermaid
+%%{init: { 'mindmap': { 'maxNodeWidth': 500 } }}%%
 mindmap
   root((User API))
-    RatingController
       🌐/users/:userId/events/:eventId/likes
         DELETE /users/:userId/events/:eventId/likes
         POST /users/:userId/events/:eventId/likes
-    UserEventController
       🌐/users/:userId/events
         GET /users/:userId/events
         GET /users/:userId/events/:eventId
@@ -74,7 +70,6 @@ mindmap
       🌐/users/:userId/events/:eventId/requests
         GET /users/:userId/events/:eventId/requests
         PATCH /users/:userId/events/:eventId/requests
-    UserRequestController
       🌐/users/:userId/requests
         GET /users/:userId/requests
         PATCH /users/:userId/requests/:requestId/cancel
@@ -85,21 +80,17 @@ mindmap
 ```mermaid
 mindmap
   root((Admin API))
-    AdminCategoryController
       🌐/admin/categories
         DELETE /admin/categories/:catId
         PATCH /admin/categories/:catId
         POST /admin/categories
-    AdminCompilationController
       🌐/admin/compilations
         DELETE /admin/compilations/:compId
         PATCH /admin/compilations/:compId
         POST /admin/compilations
-    AdminEventController
       🌐/admin/events
         GET /admin/events
         PATCH /admin/events/:eventId
-    AdminUserController
       🌐/admin/users
         DELETE /admin/users/:userId
         GET /admin/users
@@ -110,7 +101,6 @@ mindmap
 ```mermaid
 mindmap
   root((Stat API))
-    StatController
         GET /stats
         POST /hit
 ```
